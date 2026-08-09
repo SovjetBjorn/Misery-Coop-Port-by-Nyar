@@ -142,8 +142,13 @@ chemical_burn_immunity		= 0.2
 explosion_immunity			= 0.2
 fire_wound_immunity  		= 0.2
 [mp_actor_condition]:actor_condition
-; Misery SP bleeding model, ported to co-op. Base xrMPE uses bleeding_v=0.06
-; which drains wounds far too fast and outpaces bandages.
+; User-selected Misery-faithful MP bleeding model (2026-08-10).
+; OpenXRay-relative inference: MP condition updates run on wall-clock while Misery
+; SP uses time_factor=10. Thus retain the real-time feel by rate * 10:
+;   bleeding_v           0.0041 SP * 10 = 0.041 MP
+;   wound_incarnation_v  0.0020 SP * 10 = 0.020 MP
+; THE ORGINAL LINE's 0.060 / 0.003 is a working co-op baseline, not this balance
+; target: it deals ~1.46x Misery's bleed damage and clots ~6.7x more slowly.
 satiety_v					= 0.000162
 radiation_v					= 0.002
 satiety_power_v				= 0.05
@@ -158,8 +163,8 @@ power_hit_part				= 0.025
 max_power_leak_speed		= 0.0
 max_walk_weight				= 70
 
-bleeding_v					= 0.0041
-wound_incarnation_v			= 0.0020
+bleeding_v					= 0.041
+wound_incarnation_v			= 0.020
 min_wound_size				= 0.0068
 
 bleeding_v_sleep			= 0.0
