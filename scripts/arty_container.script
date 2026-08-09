@@ -1,0 +1,50 @@
+-- PORT_NOTES (Misery_Coop_Port, tools/build_cooking.py) -- coop-adapted
+-- Misery artefact-container dispatcher, coop. Opens ui_arty_container on USE of a
+-- container (af_iam/af_aac/af_aam/lead_box) or the container_tool; already wired in
+-- axr_main on_game_start (:109) + reached via the actor_on_item_use chain. Coop fix:
+-- STRIP the 2 nil callback registers -- Misery registers actor_on_update +
+-- actor_on_item_drop but never DEFINES them, and the coop axr_main.callback_register
+-- does NOT nil-guard (table.insert + direct intercepts[i]() in the fire loop) -> a
+-- nil register would crash the per-frame loop. Keep only the defined
+-- actor_on_item_use. No db.actor/alife in the dispatcher itself.
+
+--------------------------------------------------------------------------------------
+--Artefact Containers Script
+
+--Written By Yastiandrie
+--------------------------------------------------------------------------------------
+
+local ini = ini_file("plugins\\arty_container.ltx")
+local ContainerEnable = alun_utils.read_from_ini(ini,"artifact_container","enable","bool",true)
+local ArtyList = alun_utils.collect_section(ini,"artifacts",true)
+local ArtyCon = ContainerEnable and alun_utils.collect_section(ini,"containers",true)
+local Combined = alun_utils.collect_section(ini,"artyandcon", true)
+
+
+function on_game_start()
+	callback_register("actor_on_item_use",actor_on_item_use)
+end
+
+
+function actor_on_item_use(obj)
+	if ArtyCon[obj:section()] then -- Yasti. Searching for Artifact
+		local con_id = obj:id()
+	--	alun_utils.printf("arty_container.on_item_use: container check: "..tostring(obj:section()))
+		local hud = get_hud()
+		local ui = ui_arty_container and ui_arty_container.arty_ui(hud,obj:section()) --Yasti. Bring up UI
+		if (ui) then
+			ui:ShowDialog(true)
+			ui:FillPartsList()
+		end
+	end
+	
+	if obj:section() == "container_tool" then
+	--	alun_utils.printf("arty_container.on_item_use: container check: "..tostring(obj:section()))
+		local hud = get_hud()
+		local ui = ui_arty_container and ui_arty_container.arty_ui(hud,obj:section()) --Yasti. Bring up UI
+		if (ui) then
+			ui:ShowDialog(true)
+			ui:FillPartsList()
+		end
+	end
+end

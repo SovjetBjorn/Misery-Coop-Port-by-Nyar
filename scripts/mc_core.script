@@ -1,0 +1,82 @@
+-- mc_core.script
+-- Misery Coop Port: framework core - constants and shared helpers.
+-- PORT_NOTES: new file, no vanilla/coop counterpart. All Misery-port network
+-- messages live in the GM_SCRIPT_ADDON_EVENTS range reserved by _g.script.
+
+MC_PROTO_VERSION = 1
+MC_SAVE_VERSION  = 1
+
+-- GM_SCRIPT_ADDON_EVENTS = 100 (XRAY patches _g.script). 101..119 are ours.
+GM_MC_CLIENT_HELLO  = 101 -- client -> server: actor_id, player_key, proto version
+GM_MC_STATE_PUSH    = 102 -- client -> server: dirty per-player vars
+GM_MC_STATE_RESTORE = 103 -- server -> one client: full var set for that player
+GM_MC_PLAYER_EVENT  = 104 -- bidirectional: u8 event code + payload (Phase 4)
+GM_MC_SLEEP_EVENT   = 105 -- bidirectional: coop consent-sleep (mc_sleep), u8 sub-event
+GM_MC_NEWS_TIP      = 106 -- server -> one client: harvest/loot feedback tip. u16 actor_id, stringZ news_id
+-- 107..119 reserved for later subsystems
+
+-- pstor-compatible type codes (must match xr_logic pstor_number/string/boolean)
+MC_T_NUMBER  = 0
+MC_T_STRING  = 1
+MC_T_BOOLEAN = 2
+
+function mc_log(fmt, ...)
+	printf_msg("[MC] "..fmt, ...)
+end
+
+function is_coop()
+	return GameType() == game_cl.game_id_coop
+end
+
+-- Game object of the local player's actor, or nil (dedicated server / not spawned yet).
+function local_actor()
+	local id = LocalActor()
+	if id == nil or id == 0 then
+		return nil
+	end
+	return db.mp_actors[id]
+end
+
+-- Stable identity for the local player = the actor object name (the player
+-- nickname from `-start client(.../name=X)`). This is the ONLY identity stable
+-- across reconnect on this engine: LocalActor() is a fresh entity id each join,
+-- and the GameSpy account API (profile:unique_nick) is login-gated/async, absent
+-- in private/LAN coop. Same-nickname collisions are handled SERVER-SIDE in
+-- mc_player_state.sv_on_hello (live duplicates get an isolated bucket so state
+-- never silently merges); the primary holder keeps persistence + reconnect-restore.
+-- If a stable per-account id ever becomes available, change only this function.
+function player_key()
+	local actor = local_actor()
+	if actor == nil then
+		return nil
+	end
+	return actor:name()
+end
+
+function write_typed_value(packet, val)
+	local tv = type(val)
+	if tv == "number" then
+		packet:w_u8(MC_T_NUMBER)
+		packet:w_float(val)
+	elseif tv == "string" then
+		packet:w_u8(MC_T_STRING)
+		packet:w_stringZ(val)
+	elseif tv == "boolean" then
+		packet:w_u8(MC_T_BOOLEAN)
+		packet:w_bool(val)
+	else
+		abort("mc_core: write_typed_value: unsupported type '%s'", tv)
+	end
+end
+
+function read_typed_value(packet)
+	local tv = packet:r_u8()
+	if tv == MC_T_NUMBER then
+		return packet:r_float()
+	elseif tv == MC_T_STRING then
+		return packet:r_stringZ()
+	elseif tv == MC_T_BOOLEAN then
+		return packet:r_bool()
+	end
+	abort("mc_core: read_typed_value: unknown type code %s", tostring(tv))
+end

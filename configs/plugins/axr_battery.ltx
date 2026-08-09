@@ -1,0 +1,17 @@
+[main] ;Drain amount every 1 second of use
+pda_drain_speed = 0.000003
+nv_drain_speed	= 0.000012
+fl_drain_speed	= 0.000005
+
+[battery_sections]
+batteries_ccell
+batteries
+batteries_dead
+
+; ExecuteBatteryTiersContentFromConfigs() in itms_dismantle.script uses these too, Plaargath
+[batteries_ccell]
+power = 0.93
+[batteries]
+power = 0.52
+[batteries_dead]
+power = 0.14

@@ -1,0 +1,140 @@
+
+;сюжетные задания 
+
+[pri_a17_task_find_gauss_rifle]
+icon = ui_inGame2_Neizvestnoe_oruzhie
+on_init = %=send_tip(st_resupply_ready:can_resupply) +PRI_A22_ACTOR_NEEDS_AMMO_SUPPLY -PRI_A22_ACTOR_NEEDS_AMMO_SUPPLY_ONE_DONE +PRI_A22_ACTOR_NEEDS_GRENADE_SUPPLY +PRI_A25_ACTOR_NEEDS_MEDIKIT_SUPPLY +PRI_A25_ACTOR_NEEDS_MEDIKIT_BASIC_SUPPLY +PRI_A25_FREE_REPAIR%
+prior = 120
+storyline = true
+title = {+ZAT_A23_ACTOR_HAS_GAUSS_RIFLE_DOCUMENTATION} pri_a17_talk_with_kovalski_about_gauss_rifle_information_name, {+ZAT_A23_ACTOR_HAS_ACCESS_CARD_TO_TESTING_WORKSHOP} pri_a17_get_gauss_rifle_documentation_name, {+ZAT_B3_STALKER_TECH_PRODUCE_62_SHOW +ZAT_B3_TECH_HAS_AWAKEN} pri_a17_stalker_tech_produce_62_get_info_name, {+ZAT_B3_TECH_SEE_PRODUCE_62_QUEST} pri_a17_stalker_tech_produce_62_show_name, {+PRI_A17_ACTOR_BRING_GAUSS_RIFLE} pri_a17_get_info_name, {=any_actor_has_item(pri_a17_gauss_rifle)} pri_a17_task_give_gauss_rifle_to_kovalski_name, {+PRI_A17_GAUSS_FALLED} pri_a17_task_get_gauss_rifle_from_preacher_name, {+PRI_A17_ACTOR_ATTACK_MILITARY_ANTIBUG -PRI_A17_MON_PREACHER_DEAD} pri_a17_kill_preacher_name, {+PRI_A17_IN_COVER -PRI_A17_MON_PREACHER_DEAD} pri_a17_kill_preacher_name, {+PRI_A17_ICE_DEAD -PRI_A17_ACTOR_ATTACK_MILITARY} pri_a17_get_in_cover_name, {+PRI_A17_PATROL_DEAD} pri_a17_maraud_name,  {+PRI_A17_MILITARY_RECON_SQUAD_AMBUSH_DIALOG_END} pri_a17_watch_recons_six_name, pri_a17_task_find_gauss_rifle_name
+descr = {+ZAT_A23_ACTOR_HAS_GAUSS_RIFLE_DOCUMENTATION} pri_a17_talk_with_kovalski_about_gauss_rifle_information_text, {+ZAT_A23_ACTOR_HAS_ACCESS_CARD_TO_TESTING_WORKSHOP} pri_a17_get_gauss_rifle_documentation_text, {+ZAT_B3_STALKER_TECH_PRODUCE_62_SHOW +ZAT_B3_TECH_HAS_AWAKEN} pri_a17_stalker_tech_produce_62_get_info_text, {+ZAT_B3_TECH_SEE_PRODUCE_62_QUEST} pri_a17_stalker_tech_produce_62_show_text, {+PRI_A17_ACTOR_BRING_GAUSS_RIFLE} pri_a17_get_info_text, {=any_actor_has_item(pri_a17_gauss_rifle)} pri_a17_task_give_gauss_rifle_to_kovalski_text, {+PRI_A17_GAUSS_FALLED} pri_a17_task_get_gauss_rifle_from_preacher_text, {+PRI_A17_ACTOR_ATTACK_MILITARY_ANTIBUG -PRI_A17_MON_PREACHER_DEAD} pri_a17_kill_preacher_text, {+PRI_A17_IN_COVER -PRI_A17_MON_PREACHER_DEAD} pri_a17_kill_preacher_text, {+PRI_A17_ICE_DEAD -PRI_A17_ACTOR_ATTACK_MILITARY} pri_a17_get_in_cover_text, {+PRI_A17_PATROL_DEAD} pri_a17_maraud_text,  {+PRI_A17_MILITARY_RECON_SQUAD_AMBUSH_DIALOG_END} pri_a17_watch_recons_six_text, pri_a17_task_find_gauss_rifle_text
+target = {+ZAT_A23_ACTOR_HAS_GAUSS_RIFLE_DOCUMENTATION} pri_a17_military_colonel_kovalski, {+ZAT_A23_ACTOR_HAS_ACCESS_CARD_TO_TESTING_WORKSHOP} zat_a23_gauss_rifle_docs, {+ZAT_B3_TECH_SEE_PRODUCE_62_QUEST} zat_a2_stalker_mechanic, {+PRI_A17_ACTOR_BRING_GAUSS_RIFLE} nil, {=any_actor_has_item(pri_a17_gauss_rifle)} pri_a17_military_colonel_kovalski,  {+PRI_A17_GAUSS_FALLED} pri_a17_gauss_rifle, {+PRI_A17_ACTOR_ATTACK_MILITARY_ANTIBUG -PRI_A17_MON_PREACHER_DEAD} pri_a17_monolith_preacher, {+PRI_A17_IN_COVER -PRI_A17_MON_PREACHER_DEAD} pri_a17_monolith_preacher, {+PRI_A17_ICE_DEAD -PRI_A17_ACTOR_ATTACK_MILITARY} pri_a17_cover_zone, {+PRI_A17_PATROL_DEAD} pri_a17_monolith_patrol_lead,  pri_a17_recon_squad
+condlist_0 = {+PRI_A23_DIALOG_ABOUT_GAUSS_LABX8_END} complete
+condlist_1 = {=is_dead(pri_a17_military_colonel_kovalski) =story_object_exist(pri_a17_military_colonel_kovalski)} fail, {+PRI_A28_ACTOR_ENEMY} fail
+condlist_2 = {+PRI_A28_UPDATE_TASK_COVER_STRELOK} reversed 
+on_complete = {=local_actor_story_id(actor_degtyarev) +PRI_A23_DIALOG_ABOUT_GAUSS_LABX8_END} %=pri_army_increase_goodwill%
+
+[pri_a20_check_recon_squad_task]
+icon = ui_inGame2_Propavshaya_razvedgruppa
+on_init = %=send_tip(st_resupply_ready:can_resupply) +PRI_A22_ACTOR_NEEDS_AMMO_SUPPLY -PRI_A22_ACTOR_NEEDS_AMMO_SUPPLY_ONE_DONE +PRI_A22_ACTOR_NEEDS_GRENADE_SUPPLY +PRI_A25_ACTOR_NEEDS_MEDIKIT_SUPPLY +PRI_A25_ACTOR_NEEDS_MEDIKIT_ADVANCED_SUPPLY%
+prior = 121
+storyline = true
+title = pri_a20_check_recon_squad_task_name
+descr = pri_a20_check_recon_squad_task_text
+target = pri_a20_check_recon_squad_task
+condlist_0 = {+PRI_A20_TALK_WITH_COLONEL_COMPLETE} complete
+
+[pri_a18_inspect_monolith]
+icon = ui_inGame2_Skoplenie_monolita
+on_init = %=send_tip(st_resupply_ready:can_resupply) +PRI_A22_ACTOR_NEEDS_AMMO_SUPPLY -PRI_A22_ACTOR_NEEDS_AMMO_SUPPLY_ONE_DONE +PRI_A22_ACTOR_NEEDS_GRENADE_SUPPLY +PRI_A25_ACTOR_NEEDS_MEDIKIT_SUPPLY +PRI_A25_ACTOR_NEEDS_MEDIKIT_BASIC_SUPPLY%
+prior = 122
+storyline = true
+title = {!squad_exist(pri_a18_monolith_idol_squad) !squad_exist(pri_a18_monolith_post_guard_squad) !squad_exist(pri_a18_monolith_corridor_squad) !squad_exist(pri_a18_monolith_2nd_corridor_squad) +PRI_A18_FIND_ANTENA} pri_a18_use_idol_name, {+PRI_A18_GET_REINFORCEMENT_DONE} pri_a18_go_post_name, {+PRI_A18_WAIT_REINF -PRI_A18_NEAR_BUS} pri_a18_wait_reinf_name, pri_a18_get_reinforcement_name
+descr = {!squad_exist(pri_a18_monolith_idol_squad) !squad_exist(pri_a18_monolith_post_guard_squad) !squad_exist(pri_a18_monolith_corridor_squad) !squad_exist(pri_a18_monolith_2nd_corridor_squad) +PRI_A18_FIND_ANTENA} pri_a18_use_idol_text, {+PRI_A18_GET_REINFORCEMENT_DONE} pri_a18_go_post_text, {+PRI_A18_WAIT_REINF -PRI_A18_NEAR_BUS} pri_a18_wait_reinf_text, pri_a18_get_reinforcement_text
+target = {!squad_exist(pri_a18_monolith_idol_squad) !squad_exist(pri_a18_monolith_post_guard_squad) !squad_exist(pri_a18_monolith_corridor_squad) !squad_exist(pri_a18_monolith_2nd_corridor_squad) +PRI_A18_FIND_ANTENA} pri_a18_use_idol, {+PRI_A18_GET_REINFORCEMENT_DONE} pri_a18_go_post, pri_a18_wait_reinf
+condlist_0 = {+PRI_A18_USE_IDOL_DONE !squad_exist(pri_a18_monolith_idol_squad)} complete
+on_complete = {=local_actor_story_id(actor_degtyarev)} %=pri_army_increase_goodwill%
+
+[pri_a21_find_sentry_task]
+icon = ui_inGame2_Propavshiy_chasovoy
+prior = 123
+storyline = true
+title = {+PRI_A21_KILL_KONTROLER} pri_a21_kill_kontroler_name, {+PRI_A21_CHASOVOI_DEAD} pri_a21_chasovoi_body_search_name, {+PRI_A21_COLONEL_GIVE_SENTRY_TASK} pri_a21_find_chasovoi_name
+descr = {+PRI_A21_KILL_KONTROLER} pri_a21_kill_kontroler_text, {+PRI_A21_CHASOVOI_DEAD} pri_a21_chasovoi_body_search_text, {+PRI_A21_COLONEL_GIVE_SENTRY_TASK} pri_a21_find_chasovoi_text
+target = {+PRI_A21_KILL_KONTROLER} pri_a21_kontroler_squad, {+PRI_A21_CHASOVOI_DEAD} pri_a21_chasovoi_target, {+PRI_A21_COLONEL_GIVE_SENTRY_TASK} pri_a21_chasovoi_target
+condlist_0 = {+PRI_A21_SENTRY_TASK_DONE} complete
+on_complete = {=local_actor_story_id(actor_degtyarev)} %+PRI_A21_TASK_END =pri_army_increase_goodwill%
+
+[pri_a22_talk_with_kovalski]
+icon = ui_inGame2_Razgovor_s_glazu_na_glaz
+prior = 125
+storyline = true
+title = pri_a22_talk_with_kovalski_name
+descr = pri_a22_talk_with_kovalski_text
+target = pri_a17_military_colonel_kovalski
+condlist_0 = {+PRI_A22_TALK_WITH_KOVALSKI_TASK_COMPETE} complete 
+on_complete = {=local_actor_story_id(actor_degtyarev)} %+PRI_A21_TASK_END =pri_army_increase_goodwill%
+
+[pri_a22_rfi_source]
+icon = ui_inGame2_Radiopomehi
+on_init = %=send_tip(st_resupply_ready:can_resupply) +PRI_A22_ACTOR_NEEDS_AMMO_SUPPLY -PRI_A22_ACTOR_NEEDS_AMMO_SUPPLY_ONE_DONE +PRI_A22_ACTOR_NEEDS_GRENADE_SUPPLY +PRI_A25_ACTOR_NEEDS_MEDIKIT_SUPPLY +PRI_A25_ACTOR_NEEDS_MEDIKIT_BASIC_SUPPLY%
+prior = 126
+storyline = true
+title = {+PRI_A25_CHECK_FREEZER_KNOCK} pri_a25_check_freezer_knock_name, {+PRI_A25_DESTROY_ANTENNA} pri_a25_destroy_antenna_name, {+PRI_A25_FIND_ANTENNA} pri_a25_find_antenna_name, {+PRI_A25_BLOW_UP_DOOR} pri_a25_blow_up_door_name, {+PRI_A25_FIND_EXPLOSIVE} pri_a25_find_explosive_name, {+PRI_A22_SCENE_DONE} pri_a25_remove_source_of_hindrances_name, {+PRI_A22_ACTOR_IN_ZONE_PRI_A22_FIND_SQUAD} pri_a22_search_yarmoshuk_body_name, pri_a22_find_dead_squad_name
+descr = {+PRI_A25_CHECK_FREEZER_KNOCK} pri_a25_check_freezer_knock_text, {+PRI_A25_DESTROY_ANTENNA} pri_a25_destroy_antenna_text, {+PRI_A25_FIND_ANTENNA} pri_a25_find_antenna_text, {+PRI_A25_BLOW_UP_DOOR} pri_a25_blow_up_door_text, {+PRI_A25_FIND_EXPLOSIVE} pri_a25_find_explosive_text, {+PRI_A22_SCENE_DONE} pri_a25_remove_source_of_hindrances_text, {+PRI_A22_ACTOR_IN_ZONE_PRI_A22_FIND_SQUAD} pri_a22_search_yarmoshuk_body_text, pri_a22_find_dead_squad_text
+target = {+PRI_A25_CHECK_FREEZER_KNOCK} pri_a25_base_medic, {+PRI_A25_DESTROY_ANTENNA} pri_a25_destroy_antenna, {+PRI_A25_FIND_ANTENNA} pri_a25_destroy_antenna, {+PRI_A25_BLOW_UP_DOOR} pri_a25_enter_door, {+PRI_A25_FIND_EXPLOSIVE} pri_a22_military_yarmoshuk, {+PRI_A22_SCENE_DONE} pri_a25_enter_door, {+PRI_A22_ACTOR_IN_ZONE_PRI_A22_FIND_SQUAD} pri_a22_military_yarmoshuk, pri_a22_find_squad
+condlist_0 = {+PRI_A25_RFI_SOURCE_ELIMINATED} complete 
+
+[pri_b305_check_unknown_signal]
+icon = ui_inGame2_Neizvestniy
+on_init = %=send_tip(st_resupply_ready:can_resupply) +PRI_A22_ACTOR_NEEDS_AMMO_SUPPLY -PRI_A22_ACTOR_NEEDS_AMMO_SUPPLY_ONE_DONE +PRI_A22_ACTOR_NEEDS_GRENADE_SUPPLY +PRI_A25_ACTOR_NEEDS_MEDIKIT_SUPPLY +PRI_A25_ACTOR_NEEDS_MEDIKIT_ADVANCED_SUPPLY%
+prior = 128
+storyline = true
+title = {+PRI_B305_THIRD_CAM_END} pri_b305_check_unknown_signal_4_name, {+PRI_B305_KIRILOV_SIGNAL_LOST_DONE} pri_b305_check_unknown_signal_3_name, {+PRI_B305_MOOVING_SIGNAL} pri_b305_check_unknown_signal_2_name, pri_b305_check_unknown_signal_1_name
+descr = {+PRI_B305_THIRD_CAM_END} pri_b305_check_unknown_signal_4_text, {+PRI_B305_KIRILOV_SIGNAL_LOST_DONE} pri_b305_check_unknown_signal_3_text, {+PRI_B305_MOOVING_SIGNAL} pri_b305_check_unknown_signal_2_text, pri_b305_check_unknown_signal_1_text
+target = {+PRI_B305_THIRD_CAM_END} pri_surge_hide_a16, {+PRI_B305_KIRILOV_SIGNAL_LOST_DONE} pri_b305_mooving_signal_end, {+PRI_B305_MOOVING_SIGNAL} pri_b305_signal_man, pri_b305_signal_first_sight
+condlist_0 = {+PRI_B305_QUEST_COMPLETED} complete
+
+[pri_b305_kovalskiy_talk]
+icon = ui_inGame2_Radiopomehi
+prior = 127	
+storyline = true
+title = pri_b305_kovalskiy_talk_name
+descr = pri_b305_kovalskiy_talk_text
+target = pri_a17_military_colonel_kovalski
+condlist_0 = {+PRI_B305_SECOND_CAM_END} complete
+
+[pri_a28_evacuation]
+icon = ui_inGame2_Evakuatsiya
+on_init = %=send_tip(st_resupply_ready:can_resupply) +PRI_A22_ACTOR_NEEDS_AMMO_SUPPLY -PRI_A22_ACTOR_NEEDS_AMMO_SUPPLY_ONE_DONE +PRI_A22_ACTOR_NEEDS_GRENADE_SUPPLY +PRI_A25_ACTOR_NEEDS_MEDIKIT_SUPPLY +PRI_A25_ACTOR_NEEDS_MEDIKIT_ELITE_SUPPLY%
+prior = 129
+storyline = true
+title = {+PRI_A28_HELIS_DEFENDED} pri_a28_helis_gonna_fly_name, {+PRI_A28_DEFENDER_NEEDED} pri_a28_return_to_helis_name, {+PRI_A28_DEFEND_START} pri_a28_defend_helis_name, {+PRI_A28_SQUAD_DEAD} pri_a28_go_hellis_name, {+PRI_A28_KOVAL_DEAD +PRI_A28_STRELOK_DEAD} pri_a28_go_hellis_name, {+PRI_A28_STRELOK_DEAD -PRI_A28_KOVAL_DEAD} pri_a28_cover_militarys_name, {+PRI_A28_UPDATE_TASK_COVER_STRELOK} pri_a28_cover_strelok_name, {+PRI_A28_UPDATE_TASK_TELL_KOVALSKI_WHEN_READY} pri_a28_tell_kovalski_when_ready_name, {+PRI_A28_MILITARYS_GO_TO_THE_DOOR} pri_a28_talk_with_kovalski_name, pri_a28_wait_surge_end_name 
+descr = {+PRI_A28_HELIS_DEFENDED} pri_a28_helis_gonna_fly_text, {+PRI_A28_DEFENDER_NEEDED} pri_a28_return_to_helis_text, {+PRI_A28_DEFEND_START} pri_a28_defend_helis_text, {+PRI_A28_SQUAD_DEAD} pri_a28_go_hellis_text, {+PRI_A28_KOVAL_DEAD +PRI_A28_STRELOK_DEAD} pri_a28_go_hellis_text, {+PRI_A28_STRELOK_DEAD -PRI_A28_KOVAL_DEAD} pri_a28_cover_militarys_text, {+PRI_A28_UPDATE_TASK_COVER_STRELOK} pri_a28_cover_strelok_text, {+PRI_A28_UPDATE_TASK_TELL_KOVALSKI_WHEN_READY} pri_a28_tell_kovalski_when_ready_text, {+PRI_A28_MILITARYS_GO_TO_THE_DOOR} pri_a28_talk_with_kovalski_text, pri_a28_wait_surge_end_text 
+target = {+PRI_A28_SQUAD_DEAD} pri_a28_evac_com, {+PRI_A28_KOVAL_DEAD +PRI_A28_STRELOK_DEAD} pri_a28_evac_com, {+PRI_A28_KOVAL_DEAD -PRI_A28_STRELOK_DEAD} pri_b305_strelok, {+PRI_A28_STRELOK_DEAD -PRI_A28_KOVAL_DEAD} pri_a17_military_colonel_kovalski, {+PRI_A28_UPDATE_TASK_COVER_STRELOK} pri_b305_strelok
+condlist_0 = {+PRI_A28_SCENE_END} complete
+condlist_1 = {+PRI_A28_HELIS_LEAVE} fail %+PRI_A28_SCENE_END%
+
+[pri_a28_recover_medic]
+icon = ui_inGame2_Evakuatsiya
+prior = 128
+storyline = false
+title = pri_a28_save_medic_name
+descr = pri_a28_save_medic_text
+target = pri_a25_base_medic
+condlist_0 = {-PRI_A28_EVAC_DONE -PRI_A28_ACTOR_ENEMY -PRI_A28_HELIS_LEAVE +PRI_A28_MEDIC_RECOVERED} complete
+condlist_1 = {+PRI_A28_EVAC_DONE =is_alive(pri_a25_base_medic)} fail %=kill_npc(pri_a25_base_medic) =set_active_task(pri_a28_evacuation)%, {+PRI_A28_EVAC_DONE !is_alive(pri_a25_base_medic)} fail %=set_active_task(pri_a28_evacuation)%
+condlist_2 = {+PRI_A28_ACTOR_ENEMY =is_alive(pri_a25_base_medic)} fail %=kill_npc(pri_a25_base_medic) =set_active_task(pri_a28_evacuation)%, {+PRI_A28_ACTOR_ENEMY !is_alive(pri_a25_base_medic)} fail %=set_active_task(pri_a28_evacuation)%
+condlist_3 = {+PRI_A28_HELIS_LEAVE =is_alive(pri_a25_base_medic)} fail %=kill_npc(pri_a25_base_medic)%, {+PRI_A28_HELIS_LEAVE !is_alive(pri_a25_base_medic)} fail
+
+[pri_a19_lab_x8_investigation]
+icon = ui_inGame2_Laboratoriya_X8
+prior = 124
+storyline = true
+title = {-LX8_DOC_1 -LX8_DOC_2 -LX8_DOC_3 -LX8_DOC_4 -LX8_DOC_5 -LX8_DOC_6} pri_a19_lab_x8_investigation_name, {-LX8_DOC_2 -LX8_DOC_3 -LX8_DOC_4 -LX8_DOC_5 -LX8_DOC_6} pri_a19_lab_x8_investigation_1_name, {-LX8_DOC_3 -LX8_DOC_4 -LX8_DOC_5 -LX8_DOC_6} pri_a19_lab_x8_investigation_2_name, {-LX8_DOC_4 -LX8_DOC_5 -LX8_DOC_6} pri_a19_lab_x8_investigation_1_name,  {-LX8_DOC_5 -LX8_DOC_6} pri_a19_lab_x8_investigation_2_name, {-LX8_DOC_6} pri_a19_lab_x8_investigation_1_name, pri_a19_lab_x8_investigation_3_name
+descr = {-LX8_DOC_1 -LX8_DOC_2 -LX8_DOC_3 -LX8_DOC_4 -LX8_DOC_5 -LX8_DOC_6} pri_a19_lab_x8_investigation_text, {-LX8_DOC_2 -LX8_DOC_3 -LX8_DOC_4 -LX8_DOC_5 -LX8_DOC_6} pri_a19_lab_x8_investigation_1_text, {-LX8_DOC_3 -LX8_DOC_4 -LX8_DOC_5 -LX8_DOC_6} pri_a19_lab_x8_investigation_2_text, {-LX8_DOC_4 -LX8_DOC_5 -LX8_DOC_6} pri_a19_lab_x8_investigation_1_text,  {-LX8_DOC_5 -LX8_DOC_6} pri_a19_lab_x8_investigation_2_text, {-LX8_DOC_6} pri_a19_lab_x8_investigation_1_text, pri_a19_lab_x8_investigation_3_text
+target = {!actor_on_level(labx8)} pri_b306_sr_control, {=actor_on_level(labx8) -LX8_DOC_1} nil, {=actor_on_level(labx8)} lx8_lift_button ;{-LX8_DOC_1 -LX8_DOC_2 -LX8_DOC_3 -LX8_DOC_4 -LX8_DOC_5} pri_a19_lab_x8_investigation_map, {-LX8_DOC_2 -LX8_DOC_3 -LX8_DOC_4 -LX8_DOC_5} pri_a19_lab_x8_investigation_map, {-LX8_DOC_3 -lx8_doc_4 -LX8_DOC_5} pri_a19_lab_x8_investigation_map, {-LX8_DOC_4 -LX8_DOC_5} pri_a19_lab_x8_investigation_map, {-LX8_DOC_5} pri_a19_lab_x8_investigation_map, pri_a19_lab_x8_investigation_map
+condlist_0 = {!actor_on_level(labx8) +LX8_DOC_1} complete
+
+;второстепенные задания
+
+[pri_b35_task]
+icon = ui_inGame2_Odin_vistrel
+prior = 2	
+storyline = false
+title = {+PRI_B35_ENVOY_OUT +PRI_B35_MERC_LEADER_OUT} pri_b35_task_reward_name, {+PRI_B35_MERC_LEADER_OUT +PRI_B35_ENVOY_ESCAPE} pri_b35_task_reward_name, {+PRI_B35_ENVOY_OUT +PRI_B35_MERC_LEADER_ESCAPE} pri_b35_task_reward_name, {+PRI_B35_TARGET_ENVOY +PRI_B35_ENVOY_OUT -PRI_B35_MERC_LEADER_OUT -PRI_B35_MERC_LEADER_ESCAPE} pri_b35_task_merc_name, {+PRI_B35_TARGET_MERC +PRI_B35_MERC_LEADER_OUT -PRI_B35_ENVOY_OUT -PRI_B35_ENVOY_ESCAPE} pri_b35_task_envoy_name, {+PRI_B35_TARGET_MERC +PRI_B35_MERC_LEADER_SIGHTED} pri_b35_task_merc_name, {+PRI_B35_TARGET_ENVOY +PRI_B35_ENVOY_SIGHTED} pri_b35_task_envoy_name, {+PRI_B35_TARGET_MERC -PRI_B35_MERC_LEADER_SIGHTED} pri_b35_task_merc_wait_name, {+PRI_B35_TARGET_ENVOY -PRI_B35_ENVOY_SIGHTED} pri_b35_task_envoy_wait_name
+descr = {+PRI_B35_ENVOY_OUT +PRI_B35_MERC_LEADER_OUT} pri_b35_task_reward_text, {+PRI_B35_MERC_LEADER_OUT +PRI_B35_ENVOY_ESCAPE} pri_b35_task_reward_text, {+PRI_B35_ENVOY_OUT +PRI_B35_MERC_LEADER_ESCAPE} pri_b35_task_reward_text, {+PRI_B35_TARGET_ENVOY +PRI_B35_ENVOY_OUT -PRI_B35_MERC_LEADER_OUT -PRI_B35_MERC_LEADER_ESCAPE} pri_b35_task_merc_text, {+PRI_B35_TARGET_MERC +PRI_B35_MERC_LEADER_OUT -PRI_B35_ENVOY_OUT -PRI_B35_ENVOY_ESCAPE} pri_b35_task_envoy_text, {+PRI_B35_TARGET_MERC +PRI_B35_MERC_LEADER_SIGHTED} pri_b35_task_merc_text, {+PRI_B35_TARGET_ENVOY +PRI_B35_ENVOY_SIGHTED} pri_b35_task_envoy_text, {+PRI_B35_TARGET_MERC -PRI_B35_MERC_LEADER_SIGHTED} pri_b35_task_merc_wait_text, {+PRI_B35_TARGET_ENVOY -PRI_B35_ENVOY_SIGHTED} pri_b35_task_envoy_wait_text
+target = {+PRI_B35_ENVOY_OUT +PRI_B35_MERC_LEADER_OUT} pri_a17_military_colonel_kovalski, {+PRI_B35_MERC_LEADER_OUT +PRI_B35_ENVOY_ESCAPE} pri_a17_military_colonel_kovalski, {+PRI_B35_ENVOY_OUT +PRI_B35_MERC_LEADER_ESCAPE} pri_a17_military_colonel_kovalski, {+PRI_B35_TARGET_ENVOY +PRI_B35_ENVOY_OUT -PRI_B35_MERC_LEADER_OUT -PRI_B35_MERC_LEADER_ESCAPE} pri_b35_merc_leader, {+PRI_B35_TARGET_MERC +PRI_B35_MERC_LEADER_OUT -PRI_B35_ENVOY_OUT -PRI_B35_ENVOY_ESCAPE} pri_b35_envoy, {+PRI_B35_TARGET_MERC +PRI_B35_MERC_LEADER_SIGHTED} pri_b35_merc_leader, {+PRI_B35_TARGET_ENVOY +PRI_B35_ENVOY_SIGHTED} pri_b35_envoy
+condlist_0 = {+PRI_B35_REWARD_GIVEN} complete
+condlist_1 = {+PRI_B35_TARGET_MERC +PRI_B35_MERC_LEADER_ESCAPE} fail %+PRI_B35_TASK_END%, {+PRI_B35_TARGET_ENVOY +PRI_B35_ENVOY_ESCAPE} fail %+PRI_B35_TASK_END%
+condlist_2 = {+PRI_A28_UPDATE_TASK_COVER_STRELOK} reversed 
+on_complete = {=local_actor_story_id(actor_degtyarev)} %+PRI_B35_TASK_END =pri_army_increase_goodwill% 
+
+[pri_b306_task]
+icon = ui_inGame2_Laboratoriya_X8
+prior = 125
+storyline = false
+title = {+PRI_B306_LIFT_USED +PRI_B306_LIFT_GENERATOR_STARTED} pri_b306_task_3_name, {+PRI_B306_LIFT_USED -PRI_B306_LIFT_GENERATOR_STARTED} pri_b306_task_2_name, {-PRI_B306_LIFT_USED -PRI_B306_LIFT_GENERATOR_STARTED} pri_b306_task_1_name
+descr = {+PRI_B306_LIFT_USED +PRI_B306_LIFT_GENERATOR_STARTED} pri_b306_task_3_text, {+PRI_B306_LIFT_USED -PRI_B306_LIFT_GENERATOR_STARTED} pri_b306_task_2_text, {-PRI_B306_LIFT_USED -PRI_B306_LIFT_GENERATOR_STARTED} pri_b306_task_1_text
+target = {+PRI_B306_LIFT_USED +PRI_B306_LIFT_GENERATOR_STARTED} pri_b306_sr_control, {+PRI_B306_LIFT_USED -PRI_B306_LIFT_GENERATOR_STARTED} pri_b306_generator, {-PRI_B306_LIFT_USED -PRI_B306_LIFT_GENERATOR_STARTED} pri_b306_sr_control
+condlist_0 = {+PRI_B306_TASK_END} complete

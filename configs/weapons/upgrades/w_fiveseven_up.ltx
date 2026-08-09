@@ -1,0 +1,185 @@
+;------------------------------------------fiveseven_reliability------------------------------------------
+[up_sect_fiveseven_reliability]
+cost		      		= 3900
+value					= +20
+
+fire_dispersion_condition_factor = -2.0
+
+misfire_start_condition		= -0.07
+misfire_start_prob       = -0.0015
+misfire_end_prob	     	= -0.02
+condition_shot_dec = -0.00001
+
+[up_fiveseven_reliability]
+scheme_index            = 0, 0
+known                   = 1
+effects                 = vartree_fiveseven_barrel
+section                 = up_sect_fiveseven_reliability
+property                = prop_reliability
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = on_weapon_upgrade_something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = 
+name                    = st_up_fiveseven_reliability_name
+description             = st_up_fiveseven_reliability_descr
+icon                    = ui_up_fiveseven_body
+;------------------------------------------fiveseven_barrel_sil------------------------------------------
+[up_sect_fiveseven_barrel_sil]
+cost		      		= 9100
+value					= 0
+fire_dispersion_base	= -0.01
+inv_weight              = +0.02
+
+silencer_status        			 = 2
+silencer_name  				= wpn_addon_silencer_pistol_57x28		; section name for the attachable silencer
+silencer_x 						= 61						; offset in inventory icon
+silencer_y 						= -19
+silencer_smoke_particles 	= weapons\generic_shoot_00
+snd_silencer_shot = weapons\fiveseven\layers\fiveseven_silencer_a_1
+snd_silencer_shot1 = weapons\fiveseven\layers\fiveseven_silencer_a_2
+snd_silencer_shot2 = weapons\fiveseven\layers\fiveseven_silencer_a_3
+
+overriding_show_bones = barrel_silencer
+overriding_hide_bones = barrel, barrel_compensator
+
+upgrade_addon_icon = upgrade_addon_icon_barrel_silencer_long_1
+upgrade_addon_icon_offset_x = 50
+upgrade_addon_icon_offset_y = 0
+
+[up_fiveseven_barrel_sil]
+scheme_index            = 1, 0
+known                   = 1
+effects                 = vartree_fiveseven_usm
+section                 = up_sect_fiveseven_barrel_sil
+property                = prop_silencer
+
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+
+name                    = st_up_fiveseven_barrel_sil_name
+description             = st_up_fiveseven_barrel_sil_descr
+icon                    = ui_up_fiveseven_sil_barrel
+;------------------------------------------fiveseven_barrel_sil------------------------------------------
+[up_sect_fiveseven_usm_accuracy]
+cost		      		= 9100
+value					= +30
+
+bullet_speed		 	= 80
+fire_dispersion_base	= -0.04
+inv_weight              = -0.1
+cam_dispersion          = -0.3
+cam_dispersion_inc		= -0.1
+crosshair_inertion = -0.6
+cam_dispersion_frac = +0.12
+
+zoom_cam_dispersion          = -0.10 
+zoom_cam_dispersion_inc		= -0.31	
+zoom_cam_step_angle_horz		= -0.3
+zoom_cam_dispersion_frac    = +0.7
+
+[up_fiveseven_usm_accuracy]
+scheme_index            = 2, 0
+known                   = 1
+effects                 = 
+section                 = up_sect_fiveseven_usm_accuracy
+property                = prop_bullet_speed
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+name                    = st_up_fiveseven_usm_accuracy_name
+description             = st_up_fiveseven_usm_accuracy_descr
+icon                    = ui_up_fiveseven_internals
+;------------------------------------------fiveseven_sights------------------------------------------
+[up_sect_fiveseven_sights]
+cost		      		= 5850
+overriding_show_bones = sight
+crosshair_inertion = -0.1
+
+[up_fiveseven_sights]
+scheme_index            = 0, 1
+known                   = 1
+effects                 = 
+section                 = up_sect_fiveseven_sights
+property                = prop_lightingsights
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = on_weapon_upgrade_something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+name                    = st_up_fiveseven_sights_name
+description             = st_up_fiveseven_sights_descr
+icon                    = ui_up_fiveseven_sights
+;------------------------------------------fiveseven_torch------------------------------------------
+[up_sect_fiveseven_torch]
+cost		      		= 5850
+overriding_show_bones = flash, laser
+
+laserdot_world_attach_offset_x = 0.0
+laserdot_world_attach_offset_y = 0.1
+laserdot_world_attach_offset_z = 0.05
+
+upgrade_addon_icon = upgrade_addon_icon_laser_m6x_1
+upgrade_addon_icon_offset_x = 50
+upgrade_addon_icon_offset_y = 0
+
+[up_fiveseven_torch]
+scheme_index            = 1, 1
+known                   = 1
+effects                 = 
+section                 = up_sect_fiveseven_torch
+property                = prop_laser
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = on_weapon_upgrade_something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = 
+
+
+name                    = st_up_fiveseven_torch_name
+description             = st_up_fiveseven_torch_descr
+icon                    = ui_up_fiveseven_torch
+;------------------------------------------------------------------------------------
+[vartree_fiveseven_body]
+elements                = up_fiveseven_reliability
+[vartree_fiveseven_barrel]
+elements                = up_fiveseven_barrel_sil
+[vartree_fiveseven_usm]
+elements                = up_fiveseven_usm_accuracy
+[vartree_fiveseven_sights]
+elements                = up_fiveseven_sights
+[vartree_fiveseven_torch]
+elements                = up_fiveseven_torch

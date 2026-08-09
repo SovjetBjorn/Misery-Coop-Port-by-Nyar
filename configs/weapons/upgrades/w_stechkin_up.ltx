@@ -1,0 +1,445 @@
+;------------------------------------------stechkin_shell_ejector------------------------------------------
+[up_sect_stechkin_shell_ejector]
+cost = 2100
+value = +10
+misfire_start_prob = -0.0001
+misfire_end_prob = -0.01
+condition_shot_dec = -0.0001
+condition_queue_shot_dec = -0.0002
+
+[up_stechkin_shell_ejector]
+scheme_index = 0, 0
+known = 1
+effects = vartree_stechkin_usm
+section = up_sect_stechkin_shell_ejector
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_shell_ejector_name
+description = st_up_stechkin_shell_ejector_descr
+icon = ui_up_stechkin_shell_ejector
+;------------------------------------------stechkin_usm_rpm------------------------------------------
+[up_sect_stechkin_usm_rpm]
+cost = 2100
+value = +20
+rpm = +140
+condition_queue_shot_dec = +0.0005
+
+[up_stechkin_usm_rpm]
+scheme_index = 1, 0
+known = 1
+effects = vartree_stechkin_barrel
+section = up_sect_stechkin_usm_rpm
+property = prop_rpm
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_usm_rpm_name
+description = st_up_stechkin_usm_rpm_descr
+icon = ui_up_stechkin_usm_rpm
+;------------------------------------------stechkin_usm_recoil------------------------------------------
+[up_sect_stechkin_usm_recoil]
+cost = 2100
+value = -20
+PDM_disp_base = -0.1
+
+cam_dispersion = -0.11
+cam_dispersion_inc = -0.18
+
+zoom_cam_dispersion = -0.04
+zoom_cam_dispersion_inc = -0.2
+
+[up_stechkin_usm_recoil]
+scheme_index = 1, 1
+known = 1
+effects = vartree_stechkin_barrel
+section = up_sect_stechkin_usm_recoil
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_usm_recoil_name
+description = st_up_stechkin_usm_recoil_descr
+icon = ui_up_stechkin_usm_recoil
+;------------------------------------------stechkin_barrel_speed------------------------------------------
+[up_sect_stechkin_barrel_speed]
+cost = 4900
+value = +30
+bullet_speed = +100
+PDM_disp_base = -0.05
+
+[up_stechkin_barrel_speed]
+scheme_index = 2, 0
+known = 1
+effects = 
+section = up_sect_stechkin_barrel_speed
+property = prop_bullet_speed
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_barrel_speed_name
+description = st_up_stechkin_barrel_speed_descr
+icon = ui_up_stechkin_barrel_speed
+;------------------------------------------stechkin_barrel_accuracy------------------------------------------
+[up_sect_stechkin_barrel_accuracy]
+cost = 4900
+value = +30
+PDM_disp_base = -0.3
+fire_dispersion_base = -0.07
+bullet_speed = +30
+
+[up_stechkin_barrel_accuracy]
+scheme_index = 2, 1
+known = 1
+effects = 
+section = up_sect_stechkin_barrel_accuracy
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_barrel_accuracy_name
+description = st_up_stechkin_barrel_accuracy_descr
+icon = ui_up_stechkin_barrel_accuracy
+;------------------------------------------stechkin_zapiratel------------------------------------------
+[up_sect_stechkin_zapiratel]
+cost = 4900
+value = +10
+bullet_speed = +30
+
+[up_stechkin_zapiratel]
+scheme_index = 0, 1
+known = 1
+effects = vartree_stechkin_details
+section = up_sect_stechkin_zapiratel
+property = prop_bullet_speed
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_zapiratel_name
+description = st_up_stechkin_zapiratel_descr
+icon = ui_up_stechkin_zapiratel
+;------------------------------------------stechkin_light_details------------------------------------------
+[up_sect_stechkin_light_details]
+cost = 3150
+value = -0.2
+inv_weight = -0.2
+
+[up_stechkin_light_details]
+scheme_index = 1, 2
+known = 1
+effects = vartree_stechkin_zatvor
+section = up_sect_stechkin_light_details
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_light_details_name
+description = st_up_stechkin_light_details_descr
+icon = ui_up_stechkin_light_details
+;------------------------------------------stechkin_titan_details------------------------------------------
+[up_sect_stechkin_titan_details]
+cost = 2100
+value = +20
+condition_shot_dec = -0.0002
+condition_queue_shot_dec = -0.0004
+
+[up_stechkin_titan_details]
+scheme_index = 1, 3
+known = 1
+effects = vartree_stechkin_zatvor
+section = up_sect_stechkin_titan_details
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_titan_details_name
+description = st_up_stechkin_titan_details_descr
+icon = ui_up_stechkin_titan_details
+;------------------------------------------stechkin_zatvor_balancer------------------------------------------
+[up_sect_stechkin_zatvor_balancer]
+cost = 2100
+value = -30
+cam_dispersion = -0.18
+cam_dispersion_inc = -0.3
+
+zoom_cam_dispersion = -0.06
+zoom_cam_dispersion_inc = -0.3
+
+PDM_disp_base = -0.1
+PDM_disp_crouch = -0.1
+PDM_disp_crouch_no_acc = -0.1
+
+[up_stechkin_zatvor_balancer]
+scheme_index = 2, 2
+known = 1
+effects = 
+section = up_sect_stechkin_zatvor_balancer
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_zatvor_balancer_name
+description = st_up_stechkin_zatvor_balancer_descr
+icon = ui_up_stechkin_zatvor_balancer
+;------------------------------------------stechkin_zatvor_dispersion------------------------------------------
+[up_sect_stechkin_zatvor_dispersion]
+cost = 4900
+value = +30
+fire_dispersion_base = -0.04
+PDM_disp_base = -0.4
+PDM_disp_vel_factor = -0.1
+PDM_disp_crouch = -0.1
+PDM_disp_crouch_no_acc = -0.1
+
+[up_stechkin_zatvor_dispersion]
+scheme_index = 2, 3
+known = 1
+effects = 
+section = up_sect_stechkin_zatvor_dispersion
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_zatvor_dispersion_name
+description = st_up_stechkin_zatvor_dispersion_descr
+icon = ui_up_stechkin_zatvor_dispersion
+;------------------------------------------stechkin_perevodchik------------------------------------------
+[up_sect_stechkin_perevodchik]
+cost = 7900
+rpm = +50
+fire_modes = 3, 1
+
+[up_stechkin_perevodchik]
+scheme_index = 2, 4
+known = 1
+effects = 
+section = up_sect_stechkin_perevodchik
+property = prop_3xfire
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_perevodchik_name
+description = st_up_stechkin_perevodchik_descr
+icon = ui_up_stechkin_perevodchik
+;------------------------------------------stechkin_zaschelka------------------------------------------
+[up_sect_stechkin_zaschelka]
+cost = 2100
+value = +10
+misfire_end_prob = -0.01
+misfire_start_condition = -0.05
+
+[up_stechkin_zaschelka]
+scheme_index = 0, 2
+known = 1
+effects = vartree_stechkin_body
+section = up_sect_stechkin_zaschelka
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_zaschelka_name
+description = st_up_stechkin_zaschelka_descr
+icon = ui_up_stechkin_zaschelka
+;------------------------------------------stechkin_prujina------------------------------------------
+[up_sect_stechkin_prujina]
+cost = 3150
+value = +15
+rpm = +100
+
+[up_stechkin_prujina]
+scheme_index = 0, 3
+known = 1
+effects = vartree_stechkin_body
+section = up_sect_stechkin_prujina
+property = prop_rpm
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_prujina_name
+description = st_up_stechkin_prujina_descr
+icon = ui_up_stechkin_prujina
+;------------------------------------------stechkin_pokritie------------------------------------------
+[up_sect_stechkin_pokritie]
+cost = 2100
+value = +25
+misfire_start_condition = -0.05
+condition_shot_dec = -0.0005
+condition_queue_shot_dec = -0.0008
+
+[up_stechkin_pokritie]
+scheme_index = 1, 4
+known = 1
+effects = 
+section = up_sect_stechkin_pokritie
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_pokritie_name
+description = st_up_stechkin_pokritie_descr
+icon = ui_up_stechkin_pokritie
+;------------------------------------------stechkin_sights------------------------------------------
+[up_sect_stechkin_sights]
+cost = 3150
+overriding_show_bones = sight
+
+crosshair_inertion = -1
+control_inertion_factor = -0.1
+
+[up_stechkin_sights]
+scheme_index = 0, 4
+known = 1
+effects = 
+section = up_sect_stechkin_sights
+property = prop_lightingsights
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_sights_name
+description = st_up_stechkin_sights_descr
+icon = ui_up_stechkin_sights
+;------------------------------------------stechkin_light_mag------------------------------------------
+[up_sect_stechkin_light_mag]
+cost = 3150
+value = -0.1
+inv_weight = -0.1
+
+[up_stechkin_light_mag]
+scheme_index = 1, 5
+known = 1
+effects = 
+section = up_sect_stechkin_light_mag
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_light_mag_name
+description = st_up_stechkin_light_mag_descr
+icon = ui_up_stechkin_light_mag
+;------------------------------------------stechkin_handle------------------------------------------
+[up_sect_stechkin_handle]
+cost = 2100
+value = +20
+overriding_show_bones = body
+
+control_inertion_factor = -0.15
+
+cam_relax_speed         = +1.0
+cam_dispersion          = -0.05
+cam_dispersion_inc = -0.05
+
+zoom_cam_relax_speed = +2
+zoom_cam_dispersion = -0.02
+zoom_cam_dispersion_inc = -0.05
+
+PDM_disp_base = -0.1
+PDM_disp_vel_factor = -0.1
+
+upgrade_addon_icon = icon_element_stechkin_handle
+upgrade_addon_icon_offset_x = 0
+upgrade_addon_icon_offset_y = 0
+
+[up_stechkin_handle]
+scheme_index = 2, 5
+known = 1
+effects = 
+section = up_sect_stechkin_handle
+property = prop_inertion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_stechkin_handle_name
+description = st_up_stechkin_handle_descr
+icon = ui_up_stechkin_handle
+;------------------------------------------------------------------------------------
+[vartree_stechkin_shell_ejector]
+elements = up_stechkin_shell_ejector
+[vartree_stechkin_usm]
+elements = up_stechkin_usm_rpm, up_stechkin_usm_recoil
+[vartree_stechkin_barrel]
+elements = up_stechkin_barrel_speed, up_stechkin_barrel_accuracy
+[vartree_stechkin_zapiratel]
+elements = up_stechkin_zapiratel
+[vartree_stechkin_details]
+elements = up_stechkin_light_details, up_stechkin_titan_details
+[vartree_stechkin_zatvor]
+elements = up_stechkin_zatvor_balancer, up_stechkin_zatvor_dispersion, up_stechkin_perevodchik
+[vartree_stechkin_prujina]
+elements = up_stechkin_zaschelka, up_stechkin_prujina
+[vartree_stechkin_body]
+elements = up_stechkin_pokritie
+[vartree_stechkin_sights]
+elements = up_stechkin_sights
+[vartree_stechkin_mag]
+elements = up_stechkin_light_mag
+[vartree_stechkin_handle]
+elements = up_stechkin_handle

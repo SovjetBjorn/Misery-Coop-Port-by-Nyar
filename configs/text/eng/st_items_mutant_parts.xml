@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<!-- Mutant body parts -->
+	<string id="mutant_flesh_eye_description">
+		<text>The mutated, swollen eye of the Flesh acquired a number of strange characteristics, the most useful of which is the ability to regenerate the lens. The specifics of the process are hitherto unknown, although such discovery would most certainly revolutionize modern medicine. You can play your part in scientific development by selling Flesh eyes to scientists for their experiments.</text>
+	</string>
+	<string id="mutant_flesh_eye">
+		<text>Flesh Eye</text>
+	</string>
+	<string id="mutant_boar_leg_description">
+		<text>Hoofs of Boars can be used to produce various drugs, for example antiradation serums.</text>
+	</string>
+	<string id="mutant_boar_leg">
+		<text>Boar Leg</text>
+	</string>
+	<string id="mutant_dog_tail_description">
+		<text>The resistance of mutant dogs' skin to electricity and chemical agents has long been the subject of scientific attention. Since the animal's tail is almost completely free of fat tissue, it is especially suited for lab examination.</text>
+	</string>
+	<string id="mutant_dog_tail">
+		<text>Dog Tail</text>
+	</string>
+	<string id="mutant_psevdodog_tail_description">
+		<text>The resistance of mutant dogs' skin to electricity and chemical agents has long been the subject of scientific attention. Since the animal's tail is almost completely free of fat tissue, it is especially suited for lab examination.</text>
+	</string>
+	<string id="mutant_psevdodog_tail">
+		<text>Psuedodog Tail</text>
+	</string>
+	<string id="mutant_krovosos_jaw_description">
+		<text>Bloodsucker tentacles contain a special gland producing an enzyme capable of dissolving the skin and simultaneously preventing blood from clotting. Discovering the enzyme's composition could be the cornerstone of a whole series of great medical advances.</text>
+	</string>
+	<string id="mutant_krovosos_jaw">
+		<text>Bloodsucker Jaw</text>
+	</string>
+	<string id="mutant_snork_leg_description">
+		<text>Snork feet and legs contain a huge number of highly elastic tendons. This explains the beast's ability to make those unbelievably long jumps. Scientists still look for useful possibilities to use them, and they would be thankful for all help they get.</text>
+	</string>
+	<string id="mutant_snork_leg">
+		<text>Snork's Leg</text>
+	</string>
+	<string id="mutant_chimera_cogot_description">
+		<text>The claw of a Chimera. It's exact molecular composition is unknown, but it is known that it is as strong as diamonds, explaining the beasts capacity to rip apart a man even inside an armoured suit.</text>
+	</string>
+	<string id="mutant_chimera_cogot">
+		<text>Chimera's Claw</text>
+	</string>
+	<string id="mutant_tushkano_head_description">
+		<text>The head of a Tushkano mutant. Scientists wish to study these in order to help them identify what creature the Tushkano originated from.</text>
+	</string>
+	<string id="mutant_tushkano_head">
+		<text>Tushkano's Head</text>
+	</string>
+	<string id="mutant_controller_hand">
+	<text>Controller's Hand</text>
+	</string>
+	<string id="mutant_controller_hand_description">
+	<text>This hand interests scientists who wish to ascertain how psi waves emanate from it.</text>
+	</string>
+	<string id="mutant_burer_hand">
+	<text>Burer's Hand</text>
+	</string>
+	<string id="mutant_burer_hand_description">
+	<text>It is believed the Burer's hand may hold the key to being able to actually control Anti-grav fields.</text>
+	</string>
+	<string id="mutant_giant_eye">
+	<text>Psuedogiant's Eye</text>
+	</string>
+	<string id="mutant_giant_eye_description">
+	<text>This eye is of great interest due to its visual enhancing properties. The hope is that one day it may provide the cure for blindness.</text>
+	</string>
+	<!-- Mutant looting messages -->
+	<string id="st_mutant_loot_found">
+		<text>Mutant parts harvested.</text>
+	</string>
+	<string id="st_mutant_loot_not_found">
+		<text>Body is too damaged to gather parts.</text>
+	</string>
+	<string id="st_mutant_loot_already_found">
+		<text>Body has already been harvested.</text>
+	</string>
+	<string id="st_mutant_loot_tip">
+		<text>[$$ACTION_USE$$] HARVEST PARTS.</text>
+	</string>
+</string_table>

@@ -1,0 +1,535 @@
+[up_sect_sr2m_mag_lock]
+cost = 5400
+value = +10
+misfire_start_condition = -0.05
+misfire_end_condition = -0.05
+misfire_end_prob = -0.03
+
+condition_shot_dec = -0.0001
+condition_queue_shot_dec = -0.0001
+
+[up_sr2m_mag_lock]
+scheme_index = 0, 0
+known = 1
+effects = vartree_sr2m_usm
+section = up_sect_sr2m_mag_lock
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_mag_lock_name
+description = st_up_sr2m_mag_lock_descr
+icon = ui_up_bizon_mag_lock
+;------------------------------------------bizon_usm_recoil------------------------------------------
+
+[up_sect_sr2m_usm_recoil]
+cost = 5400
+value = -20
+PDM_disp_base = -0.25
+cam_dispersion = -0.1
+zoom_cam_dispersion = -0.05
+
+[up_sr2m_usm_recoil]
+scheme_index = 1, 0
+known = 1
+effects = vartree_sr2m_barrel
+section = up_sect_sr2m_usm_recoil
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_usm_recoil_name
+description = st_up_sr2m_usm_recoil_descr
+icon = ui_up_bizon_usm_recoil
+;------------------------------------------bizon_usm_rpm------------------------------------------
+
+[up_sect_sr2m_usm_rpm]
+cost = 5400
+value = +20
+condition_queue_shot_dec = +0.0003
+rpm = +100
+
+[up_sr2m_usm_rpm]
+scheme_index = 1, 1
+known = 1
+effects = vartree_sr2m_barrel
+section = up_sect_sr2m_usm_rpm
+property = prop_rpm
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_usm_rpm_name
+description = st_up_sr2m_usm_rpm_descr
+icon = ui_up_bizon_usm_rpm
+;------------------------------------------bizon_barrel_bullet_speed------------------------------------------
+
+[up_sect_sr2m_barrel_bullet_speed]
+cost = 12600
+value = +30
+bullet_speed  = +70
+
+[up_sr2m_barrel_bullet_speed]
+scheme_index = 2, 0
+known = 1
+effects = 
+section = up_sect_sr2m_barrel_bullet_speed
+property = prop_bullet_speed
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_barrel_bullet_speed_name
+description = st_up_sr2m_barrel_bullet_speed_descr
+icon = ui_up_bizon_barrel_bullet_speed
+;------------------------------------------bizon_barrel_dispersion------------------------------------------
+
+[up_sect_sr2m_barrel_dispersion]
+cost = 12600
+value = +30
+PDM_disp_base = -0.2
+fire_dispersion_base = -0.08
+PDM_disp_crouch = -0.1
+PDM_disp_crouch_no_acc = -0.1
+
+[up_sr2m_barrel_dispersion]
+scheme_index = 2, 1
+known = 1
+effects = 
+section = up_sect_sr2m_barrel_dispersion
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_barrel_dispersion_name
+description = st_up_sr2m_barrel_dispersion_descr
+icon = ui_up_bizon_barrel_dispersion
+;------------------------------------------bizon_barrel_9x19------------------------------------------
+
+[up_sr2m_barrel_9x19]
+scheme_index = 2, 2
+known = 1
+effects = 
+section = up_sect_sr2m_barrel_9x19
+property = prop_calibre
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_barrel_9x19_name
+description = st_up_sr2m_barrel_9x19_descr
+icon = ui_up_bizon_barrel_9x19
+;------------------------------------------bizon_mag_shnek------------------------------------------
+
+[up_sect_sr2m_mag_shnek]
+cost = 5400
+value = +10
+misfire_start_condition = -0.2
+misfire_end_condition = -0.2
+misfire_end_prob = -0.02
+
+[up_sr2m_mag_shnek]
+scheme_index = 0, 1
+known = 1
+effects = vartree_sr2m_details
+section = up_sect_sr2m_mag_shnek
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_mag_shnek_name
+description = st_up_sr2m_mag_shnek_descr
+icon = ui_up_bizon_mag_shnek
+;------------------------------------------bizon_light_details------------------------------------------
+
+[up_sect_sr2m_light_details]
+cost = 8100
+value = -0.5
+inv_weight = -0.5
+
+[up_sr2m_light_details]
+scheme_index = 1, 2
+known = 1
+effects = vartree_sr2m_zatvor
+section = up_sect_sr2m_light_details
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_light_details_name
+description = st_up_sr2m_light_details_descr
+icon = ui_up_bizon_light_details
+;------------------------------------------bizon_pokritie_reliability------------------------------------------
+
+[up_sect_sr2m_pokritie_reliability]
+cost = 5400
+value = +20
+misfire_end_prob = -0.02
+
+condition_shot_dec = -0.0002
+condition_queue_shot_dec = -0.0003
+
+[up_sr2m_pokritie_reliability]
+scheme_index = 1, 3
+known = 1
+effects = vartree_sr2m_zatvor
+section = up_sect_sr2m_pokritie_reliability
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_pokritie_reliability_name
+description = st_up_sr2m_pokritie_reliability_descr
+icon = ui_up_bizon_pokritie_reliability
+;------------------------------------------bizon_zatvor_balancer------------------------------------------
+
+[up_sect_sr2m_zatvor_balancer]
+cost = 5400
+value = -25
+PDM_disp_base - 0.1
+cam_dispersion = -0.15
+zoom_cam_dispersion = -0.06
+cam_dispersion_inc = -0.2
+zoom_cam_dispersion_inc = -0.05
+
+[up_sr2m_zatvor_balancer]
+scheme_index = 2, 3
+known = 1
+effects = 
+section = up_sect_sr2m_zatvor_balancer
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_zatvor_balancer_name
+description = st_up_sr2m_zatvor_balancer_descr
+icon = ui_up_bizon_zatvor_balancer
+;------------------------------------------bizon_shell_ejector------------------------------------------
+
+[up_sect_sr2m_shell_ejector]
+cost = 5400
+value = +25
+misfire_start_prob = -0.003
+condition_shot_dec = -0.0001
+misfire_end_prob = -0.03
+condition_queue_shot_dec = -0.0002
+
+[up_sr2m_shell_ejector]
+scheme_index = 2, 4
+known = 1
+effects = 
+section = up_sect_sr2m_shell_ejector
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_shell_ejector_name
+description = st_up_sr2m_shell_ejector_descr
+icon = ui_up_bizon_shell_ejector
+;------------------------------------------bizon_zatvor_prujina------------------------------------------
+
+[up_sect_sr2m_zatvor_prujina]
+cost = 8100
+value = +25
+rpm = +120
+
+[up_sr2m_zatvor_prujina]
+scheme_index = 2, 5
+known = 1
+effects = 
+section = up_sect_sr2m_zatvor_prujina
+property = prop_rpm
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_zatvor_prujina_name
+description = st_up_sr2m_zatvor_prujina_descr
+icon = ui_up_bizon_zatvor_prujina
+;------------------------------------------bizon_light_tsevie------------------------------------------
+
+[up_sect_sr2m_light_tsevie]
+cost = 8100
+value = -0.3
+inv_weight              = -0.3
+control_inertion_factor = -0.05
+
+[up_sr2m_light_tsevie]
+scheme_index = 0, 2
+known = 1
+effects = vartree_sr2m_rail
+section = up_sect_sr2m_light_tsevie
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_light_tsevie_name
+description = st_up_sr2m_light_tsevie_descr
+icon = ui_up_bizon_light_tsevie
+;------------------------------------------bizon_rail------------------------------------------
+
+[up_sect_sr2m_rail]
+cost = 5400
+inv_weight        = +0.05
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_sr2m_rail]
+scheme_index = 1, 4
+known = 1
+effects =
+;effects = vartree_sr2m_laser, vartree_sr2m_flash
+section = up_sect_sr2m_rail
+property = prop_rail
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_rail_name
+description = st_up_sr2m_rail_descr
+icon = ui_up_bizon_rail
+;------------------------------------------bizon_laser------------------------------------------
+
+[up_sect_sr2m_laser]
+cost = 5400
+inv_weight              = +0.2
+crosshair_inertion = -0.1
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_sr2m_laser]
+scheme_index = 2, 6
+known = 1
+effects = 
+section = up_sect_sr2m_laser
+property = prop_laser
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_laser_name
+description = st_up_sr2m_laser_descr
+icon = ui_up_bizon_laser
+;------------------------------------------bizon_flash------------------------------------------
+
+[up_sect_sr2m_flash]
+cost = 5400
+inv_weight              = +0.3
+
+
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_sr2m_flash]
+scheme_index = 2, 7
+known = 1
+effects = 
+section = up_sect_sr2m_flash
+property = prop_torch
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_flash_name
+description = st_up_sr2m_flash_descr
+icon = ui_up_bizon_flash
+;------------------------------------------bizon_sights------------------------------------------
+
+[up_sect_sr2m_sights]
+cost = 5400
+crosshair_inertion = -1
+control_inertion_factor = -0.05
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_sr2m_sights]
+scheme_index = 0, 3
+known = 1
+effects = 
+section = up_sect_sr2m_sights
+property = prop_lightingsights
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_sights_name
+description = st_up_sr2m_sights_descr
+icon = ui_up_bizon_sights
+;------------------------------------------bizon_nakladka------------------------------------------
+
+[up_sect_sr2m_nakladka]
+cost = 5400
+value = -25
+PDM_disp_base = -0.1
+cam_dispersion          = -0.15
+cam_dispersion_inc      = -0.05
+inv_weight              = +0.1
+
+
+zoom_cam_dispersion = -0.1
+zoom_cam_dispersion_inc = -0.07
+
+inv_addons_correction_x = +2
+
+[up_sr2m_nakladka]
+scheme_index = 1, 5
+known = 1
+effects = 
+section = up_sect_sr2m_nakladka
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_nakladka_name
+description = st_up_sr2m_nakladka_descr
+icon = ui_up_bizon_nakladka
+;------------------------------------------bizon_handle------------------------------------------
+
+[up_sect_sr2m_handle]
+cost = 5400
+value = +10
+control_inertion_factor = -0.1
+cam_dispersion = -0.1
+zoom_cam_dispersion_inc = -0.03
+zoom_cam_dispersion = -0.02
+inv_weight = -0.05
+PDM_disp_vel_factor = -0.12
+
+[up_sr2m_handle]
+scheme_index = 2, 6
+known = 1
+effects = 
+section = up_sect_sr2m_handle
+property = prop_inertion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sr2m_handle_name
+description = st_up_sr2m_handle_descr
+icon = ui_up_bizon_handle
+;------------------------------------------------------------------------------------
+
+[vartree_sr2m_mag_lock]
+elements = up_sr2m_mag_lock
+
+[vartree_sr2m_usm]
+elements = up_sr2m_usm_recoil, up_sr2m_usm_rpm
+
+[vartree_sr2m_barrel]
+elements = up_sr2m_barrel_bullet_speed, up_sr2m_barrel_dispersion, up_sr2m_barrel_9x19
+
+[vartree_sr2m_mag_shnek]
+elements = up_sr2m_mag_shnek
+
+[vartree_sr2m_details]
+elements = up_sr2m_light_details, up_sr2m_pokritie_reliability
+
+[vartree_sr2m_zatvor]
+elements = up_sr2m_zatvor_balancer, up_sr2m_shell_ejector, up_sr2m_zatvor_prujina
+
+[vartree_sr2m_tsevie]
+elements = up_sr2m_light_tsevie
+
+[vartree_sr2m_rail]
+elements = up_sr2m_rail
+
+[vartree_sr2m_laser]
+elements = up_sr2m_laser
+
+[vartree_sr2m_flash]
+elements = up_sr2m_flash
+
+[vartree_sr2m_sights]
+elements = up_sr2m_sights
+
+[vartree_sr2m_stock]
+elements = up_sr2m_nakladka
+
+[vartree_sr2m_handle]
+elements = up_sr2m_handle
+
+;; Misery_Coop_Port: define missing up_sect(s) (mirror saiga12; tools\build_upgrade_variants.py)
+[up_sect_sr2m_barrel_9x19]
+cost = 12600
+value = +15
+bullet_speed = 50
+fire_dispersion_base = -0.03

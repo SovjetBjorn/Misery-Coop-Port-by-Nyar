@@ -1,0 +1,190 @@
+-- mc_player_loop.script
+-- Misery Coop Port: per-player lifecycle hooks, called from the port-layer
+-- bind_stalker.script shadow (mp_actor_binder, local-actor path only).
+-- PORT_NOTES: new file. Phase 4 survival systems register update callbacks
+-- here via register_system(); Phase 0 only runs the HELLO handshake and the
+-- periodic state flush.
+
+local hello_sent = false
+-- Fire the Misery callback-system game-start exactly once per script-VM session.
+-- on_game_start REGISTERS each ported system's callbacks (callback_register appends),
+-- so firing it more than once would double-register and double-fire every handler.
+-- The VM persists across level changes within a session (callbacks stay registered),
+-- and resets on a new game / load, which re-fires correctly.
+local game_started = false
+-- Per local-actor-spawn flag (reset on net_destroy): lets the Misery systems set up
+-- per-actor state once each spawn (e.g. atmosfear stores its managers on the actor
+-- object). Re-runs on respawn / level change.
+local actor_inited = false
+-- Misery UPD/flashlight power system. Must match POWER_LIVE in build_items/build_system/
+-- build_port_systems/build_cooking/build_bind_stalker. The starter-UPD grant below is a safe
+-- no-op (mc_cooking.sv_on_give section_exist guard) if wpn_upd isn't shipped, so a flag
+-- mismatch can't crash -- it just won't grant.
+local POWER_LIVE = true
+-- One-shot per spawn: grant the UPD battery host (reset in on_destroy for respawn/level change).
+local upd_granted = false
+-- One-shot per SESSION (never reset): the soldier's-hole STARTING kit. Granted on the actor's
+-- first spawn only; respawn does NOT re-grant (you keep what you carried). bm16 + PMM + their
+-- ammo come from the existing spawn source (all.spawn) and are kept; this adds the rest.
+local start_kit_granted = false
+
+-- systems[name] = { update = function(binder, delta), on_destroy = function(binder) }
+local systems = {}
+
+-- Coop hardening: base xr_logic.pstor_retrieve() does `obj:id()` with NO nil guard (unlike
+-- pstor_store, which already guards `obj is nil`). A base eat/use handler -- e.g. drinking a
+-- reusable multi-charge item -- calls it with a nil obj in coop, a hard Lua error that aborts
+-- the use (no animation, CTD). Wrap it nil-safe (return the caller's default) AND log the
+-- varname so the offending caller is identifiable from the log. Patched once per VM session.
+local xr_logic_hardened = false
+local function harden_xr_logic()
+	if xr_logic_hardened then return end
+	if not (xr_logic and xr_logic.pstor_retrieve) then return end
+	local orig = xr_logic.pstor_retrieve
+	xr_logic.pstor_retrieve = function(obj, varname, defval)
+		if obj == nil then
+			mc_core.mc_log("! pstor_retrieve nil obj (varname=%s) -> default; %s",
+				tostring(varname),
+				tostring((debug and debug.traceback and debug.traceback("", 2)) or "no-tb"))
+			return defval
+		end
+		return orig(obj, varname, defval)
+	end
+	xr_logic_hardened = true
+	mc_core.mc_log("xr_logic.pstor_retrieve hardened (nil-safe)")
+end
+
+function register_system(name, callbacks)
+	systems[name] = callbacks
+	mc_core.mc_log("system registered: %s", name)
+end
+
+-- One-shot, called from mp_actor_binder:update local-actor path after the
+-- bCheckStart block (net is ready by then; modeled on that pattern).
+function on_local_spawn(binder)
+	if not mc_core.is_coop() then
+		return
+	end
+	harden_xr_logic()   -- nil-safe pstor_retrieve before any item-use handler can fire
+	-- Once per game session: bring up the ported Misery callback layer (the systems
+	-- register their callbacks inside on_game_start; callback_register appends, so this
+	-- must fire once). Client-side (local-actor path) -- the Misery actor systems are
+	-- client-authoritative and push per-player state to the server via mc_player_state.
+	if not game_started and axr_main and axr_main.on_game_start then
+		axr_main.on_game_start()
+		game_started = true
+		mc_core.mc_log("axr_main.on_game_start fired")
+	end
+	-- Once per local-actor spawn: let the Misery systems set up per-actor state (e.g.
+	-- atmosfear stashes its emission managers on the actor object). actor_inited resets
+	-- in on_destroy so a respawn / level change re-inits the (possibly new) actor object.
+	if not actor_inited and axr_main and axr_main.actor_on_init then
+		axr_main.actor_on_init(getLocalActor())
+		actor_inited = true
+	end
+	-- POWER_LIVE: grant the UPD battery host (wpn_upd) once per spawn if absent. The Misery
+	-- power system no-ops without it (NV/PDA force-off, flashlight can't hold a charge). Server-
+	-- side via the item-wear RPC -> works for every client; idempotent per spawn.
+	if POWER_LIVE and not upd_granted then
+		local la = getLocalActor()
+		if la and not la:object("wpn_upd") and mc_cooking and mc_cooking.itemop_give then
+			mc_cooking.itemop_give("wpn_upd", 1)
+		end
+		upd_granted = true
+	end
+	-- STARTING KIT (user directive): soldier's-hole essentials, granted ONCE on first spawn.
+	-- bm16 + PMM + their ammo come from the existing spawn source (all.spawn) and are KEPT;
+	-- this adds the knife, wind-up flashlight, basic stove, Ukrainian ration, gun oil, lighter
+	-- (the stove needs one) + field medical. Each item only if absent + section deployed.
+	if not start_kit_granted then
+		local la = getLocalActor()
+		if la and mc_cooking and mc_cooking.itemop_give then
+			local kit = {
+				{"wpn_knife", 1}, {"device_flashlight", 1}, {"wood_stove", 1},
+				{"ration_ukr", 1}, {"gun_oil", 1}, {"lighter", 1},
+				{"bandage", 2}, {"medkit", 1},
+			}
+			for _, it in ipairs(kit) do
+				local sec, n = it[1], it[2]
+				if system_ini():section_exist(sec) and not la:object(sec) then
+					mc_cooking.itemop_give(sec, n)
+				end
+			end
+			start_kit_granted = true
+		end
+	end
+	-- Once: HELLO handshake (identity + per-player state restore).
+	if not hello_sent then
+		if mc_player_state.send_hello() then
+			hello_sent = true
+		end
+	end
+end
+
+function update(binder, delta)
+	if not mc_core.is_coop() then
+		return
+	end
+
+	if not hello_sent then
+		on_local_spawn(binder)
+	end
+
+	mc_player_state.flush(false)
+
+	-- feed the coop-sleep combat tracker: a local-actor health DROP = recent damage =
+	-- "in combat", which blocks (and counts against) a coop sleep for ~COMBAT_WINDOW ms.
+	if mc_sleep and mc_sleep.note_health then
+		local la = getLocalActor()
+		if la then mc_sleep.note_health(la.health) end
+	end
+
+	-- coop smoking: retry-eat the server-spawned _smoke booster once it syncs to inventory
+	-- (the alife->client sync can lag the EVENT_SMOKE_EAT RPC by a few ticks).
+	if mc_cooking and mc_cooking.try_eat_smoke then mc_cooking.try_eat_smoke() end
+
+	-- Drive the ported Misery actor-update chain for the local player (client). The
+	-- survival/medical/battery systems register actor_on_update handlers via
+	-- callback_register; axr_main.actor_on_update fires them + its own coop-safe
+	-- weapon/torch detection. Guarded until axr_main is present.
+	if axr_main and axr_main.actor_on_update then
+		axr_main.actor_on_update(getLocalActor(), delta)
+	end
+
+	-- the Misery client-side effects engine (hit/weapon/item-use FX + condition HUD).
+	-- In SP it is driven by a direct actor_effects.update() in bind_stalker; the coop
+	-- shadow has no such call, so drive it here for the local player. Self-guards on
+	-- getLocalActor() internally; guarded here until actor_effects is present.
+	if actor_effects and actor_effects.update then
+		actor_effects.update()
+	end
+
+	-- Misery survival-state screen post-process (drowsiness/fatigue), local player.
+	if postproces_mod and postproces_mod.sleep_update then
+		postproces_mod.sleep_update()
+	end
+
+	for name, sys in pairs(systems) do
+		if sys.update ~= nil then
+			sys.update(binder, delta)
+		end
+	end
+end
+
+function on_destroy(binder)
+	if not mc_core.is_coop() then
+		return
+	end
+
+	mc_player_state.flush(true)
+
+	for name, sys in pairs(systems) do
+		if sys.on_destroy ~= nil then
+			sys.on_destroy(binder)
+		end
+	end
+
+	hello_sent = false
+	actor_inited = false
+	upd_granted = false
+end

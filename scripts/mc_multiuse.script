@@ -1,0 +1,69 @@
+-- PORT_NOTES (Misery_Coop_Port, tools/build_port_systems.py) -- coop-native
+-- Misery "multi-use" consumables: staged sections that downgrade to a smaller
+-- "partially used" section on each use (ration_ru -> ration_ru2 -> ... -> ration_ru7,
+-- mre x3, vodka/vodka2/vodka_quality x3, mineral_water/bottle_metal/tea/flask x3,
+-- caffeine/mint x5, cocaine x3, drug_sleepingpills/coagulant/psy_blockade x5,
+-- drug_antidot x3, drug_radioprotector x2, akvatab x4). In Misery SP this is a flat
+-- if-chain in bind_stalker:use_inventory_item doing alife():create(next_stage,...).
+--
+-- COOP: alife():create is SERVER-ONLY (nil on pure clients), and the use event is
+-- client-auth (the local player's VM fires actor_on_item_use for ITS item use). So we
+-- register an actor_on_item_use handler here and route the next-stage spawn through
+-- mc_cooking.itemop_give -- the proven client->server item-give RPC (parents the new
+-- stage to the actor -> inventory, byte-identical outcome to Misery's parent=id create).
+-- The engine has already destroyed the used section by the time the handler fires, so
+-- only the new stage is added. Closed cans (conserva/tushonka/...) are NOT staged and
+-- stay single-use-per-open (their _opened variant is spawned by the cooking system).
+
+-- section -> next (smaller) stage. The terminal stage of each chain is absent here
+-- (using it consumes the last portion and spawns nothing). Map mirrors Misery's
+-- bind_stalker multi-use block verbatim (50 transitions).
+local NEXT_STAGE = {
+	-- Combat rations
+	ration_ukr = "ration_ukr2", ration_ukr2 = "ration_ukr3", ration_ukr3 = "ration_ukr4",
+	ration_ukr4 = "ration_ukr5", ration_ukr5 = "ration_ukr6",
+	ration_ru = "ration_ru2", ration_ru2 = "ration_ru3", ration_ru3 = "ration_ru4",
+	ration_ru4 = "ration_ru5", ration_ru5 = "ration_ru6", ration_ru6 = "ration_ru7",
+	mre = "mre2", mre2 = "mre3",
+	-- Imported drink
+	vodka = "vodka_2", vodka_2 = "vodka_3",
+	vodka2 = "vodka2_2", vodka2_2 = "vodka2_3",
+	vodka_quality = "vodka_quality2", vodka_quality2 = "vodka_quality3",
+	mineral_water = "mineral_water2", mineral_water2 = "mineral_water3",
+	bottle_metal = "bottle_metal2", bottle_metal2 = "bottle_metal3",
+	tea = "tea2", tea2 = "tea3",
+	flask = "flask2", flask2 = "flask3",
+	-- Medical
+	caffeine = "caffeine2", caffeine2 = "caffeine3", caffeine3 = "caffeine4", caffeine4 = "caffeine5",
+	cocaine = "cocaine2", cocaine2 = "cocaine3",
+	-- Drugs
+	drug_sleepingpills = "drug_sleepingpills2", drug_sleepingpills2 = "drug_sleepingpills3",
+	drug_sleepingpills3 = "drug_sleepingpills4", drug_sleepingpills4 = "drug_sleepingpills5",
+	drug_coagulant = "drug_coagulant2", drug_coagulant2 = "drug_coagulant3",
+	drug_coagulant3 = "drug_coagulant4", drug_coagulant4 = "drug_coagulant5",
+	drug_psy_blockade = "drug_psy_blockade2", drug_psy_blockade2 = "drug_psy_blockade3",
+	drug_psy_blockade3 = "drug_psy_blockade4", drug_psy_blockade4 = "drug_psy_blockade5",
+	drug_antidot = "drug_antidot2", drug_antidot2 = "drug_antidot3",
+	drug_radioprotector = "drug_radioprotector2",
+	akvatab = "akvatab2", akvatab2 = "akvatab3", akvatab3 = "akvatab4",
+	-- Imported food
+	mint = "mint2", mint2 = "mint3", mint3 = "mint4", mint4 = "mint5",
+}
+
+
+function on_game_start()
+	callback_register("actor_on_item_use", on_item_use)
+end
+
+
+function on_item_use(obj)
+	if not obj then return end
+	local next_stage = NEXT_STAGE[obj:section()]
+	if not next_stage then return end
+	-- itemop_give is the coop client->server item-give RPC (mc_cooking): the server
+	-- creates the section parented to the actor -> inventory, exactly as Misery's
+	-- alife():create(next, ..., actor:id()) did in SP. No-op outside a real client.
+	if mc_cooking and mc_cooking.itemop_give then
+		mc_cooking.itemop_give(next_stage, 1)
+	end
+end

@@ -1,0 +1,82 @@
+-- PORT_NOTES (Misery_Coop_Port) -- tools/build_cooking.py
+-- RE-ACTIVATED MSO skinning (user directive). MSO's bind_monster.use_callback fires
+-- SERVER-side on use-corpse (alife():create valid; MSO works in coop), so this owns the
+-- harvest. Augmented: (1) BLADE gate + tier -- no blade = no harvest; blade alone = up to
+-- 1 item; blade + kit_hunt (Hunting Kit) = up to 3 items (multiple skinning rolls);
+-- (2) Misery MEATS added to each mutant pool alongside the MSO trophy. The Misery client
+-- harvest (itms_manager.monster_on_actor_use_callback) is neutered to avoid double-loot.
+-- ponytail: mutant_parts pairs trophy+meat; the 1/3 tier caps are the tunable knobs.
+
+-- {amount, chance%, item_section} rows. Trophy (MSO) + meat (Misery) per mutant.
+local mutant_parts = {
+	[clsid.boar_s]        = { {4,40,"mutant_part_boar_leg"},     {2,50,"mutant_part_boar_chop"} },
+	[clsid.bloodsucker_s] = { {1,50,"mutant_part_krovosos_jaw"}, {2,50,"mutant_part_krovosos_meat"} },
+	[clsid.burer_s]       = { {2,70,"mutant_part_burer_hand"} },
+	[clsid.chimera_s]     = { {2,35,"mutant_part_chimera_kogot"},{1,25,"meat_chimera"} },
+	[clsid.controller_s]  = { {2,70,"mutant_part_controller_hand"},{1,25,"mutant_part_controller_glass"} },
+	[clsid.dog_s]         = { {1,60,"mutant_part_dog_tail"},     {2,50,"mutant_part_dog_meat"} },
+	[clsid.flesh_s]       = { {2,40,"mutant_part_flesh_eye"},    {3,50,"mutant_part_flesh_meat"} },
+	[clsid.gigant_s]      = { {1,70,"mutant_part_pseudogigant_hand"} },
+	[clsid.psy_dog_s]     = { {1,70,"mutant_part_psevdodog_tail"},{2,40,"mutant_part_psevdodog_meat"} },
+	[clsid.pseudodog_s]   = { {1,50,"mutant_part_psevdodog_tail"},{2,40,"mutant_part_psevdodog_meat"} },
+	[clsid.snork_s]       = { {2,40,"mutant_part_snork_leg"},    {2,40,"meat_snork"} },
+	[clsid.tushkano_s]    = { {1,70,"mutant_part_tushkano_head"},{2,40,"meat_tushkano"} },
+}
+
+-- BLADE = a skinning edge (NOT kit_hunt -- that's the tier booster). Matches the port
+-- harvest-tool set (use_tools_on_mutant) minus kit_hunt, checked on `actor` (the using
+-- player object passed by bind_monster.use_callback = getLocalActor() or who).
+local function has_blade(actor)
+	if actor:object("swiss_sharp") then return true end
+	if actor:object("shovel_mili_sharp") then return true end
+	if actor:object("shovel_old_sharp") then return true end
+	if actor:object("cutlery_sharp") then return true end
+	if actor:object("grooming_sharp") then return true end
+	if actor:object("mutant_part_chimera_claw") then return true end
+	for i = 0, actor:object_count() - 1 do
+		local s = actor:object(i):section()
+		if s and (string.sub(s,1,9) == "wpn_knife" or string.sub(s,1,7) == "wpn_axe"
+		          or string.find(s, "outfit_dismantler")) then return true end
+	end
+	return false
+end
+
+-- server -> looting client: harvest feedback tip (news_manager is client-only; the harvest
+-- runs server-side in bind_monster.use_callback, so bounce the tip through GM_MC_NEWS_TIP
+-- to the looting actor). No-op if mc_net/mc_core absent.
+local function notify(actor, news_id)
+	if not (alife() and mc_net and mc_core and actor and news_id) then return end
+	local p = mc_net.new_message(mc_core.GM_MC_NEWS_TIP)
+	p:w_u16(actor:id())
+	p:w_stringZ(news_id)
+	mc_net.send_to_client(p, actor:id())
+end
+
+function loot_mutant(obj, actor)
+	if not actor then return end
+	if not alife() then return end  -- guard: bind_monster.use_callback is server-side here
+	                               -- (MSO works in coop); no-op if not, never a CTD
+	-- tier: 0 = no blade (halt), 1 = blade only, 3 = blade + Hunting Kit (kit_hunt)
+	local max_items = 0
+	if has_blade(actor) then
+		max_items = (actor:object("kit_hunt") ~= nil) and 3 or 1
+	end
+	if max_items == 0 then return end
+	local spawns = mutant_parts[obj:clsid()]
+	if not spawns then return end
+	local made = 0
+	for _, row in ipairs(spawns) do
+		local amount, chance, item = row[1], row[2], row[3]
+		if item then
+			for _ = 1, amount do
+				if made >= max_items then break end
+				if math.random(100) < chance then
+					alife():create(item, actor:position(), 0, 0, actor:id())
+					made = made + 1
+				end
+			end
+		end
+		if made >= max_items then break end
+	end
+	notify(actor, made > 0 and "st_mutant_loot_found" or "st_mutant_loot_not_found")
+end

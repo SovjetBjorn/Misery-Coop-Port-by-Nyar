@@ -1,0 +1,60 @@
+;-------------------------------------------------------------------------------
+;------ disable params ---------------------------------------------------------
+[disable]
+linear_factor                = 1.0
+angular_factor                = 1.0
+
+;-------------------------------------------------------------------------------
+;------ capture params ---------------------------------------------------------
+[capture]
+bone                                = bip01_tail                        ; bone for capture
+distance                        = 0.3                                        ; distance - less this distance between bone and capture taget object is captured
+time_limit               = 3                                        ; max time for trying to capture object "sec"
+pull_force               = 8000                                        ; max force used to bring the taget to capture bone
+pull_distance           = 1.4                                        ; max distance taget can be puled
+velocity_scale           = 0.022                                        ; velocity scale for pulling 1- normal
+capture_force            = 20500                                        ; max force for holding tagett
+
+[capture_used_bones]
+bones = bip01_r_calf, bip01_l_calf, bip01_r_forearm, bip01_l_forearm
+
+;-------------------------------------------------------------------------------
+;------ particle bones ---------------------------------------------------------
+[particle_bones]
+bip01_head                         = 0,0,0
+bip01_spine                 = 0,0,0
+; bip01_l_upperarm        = 0,0,0
+; bip01_r_upperarm        = 0,0,0
+bip01_l_forearm                = 0,0,0
+bip01_r_forearm         = 0,0,0
+bip01_l_thigh                 = 0,0,0
+bip01_r_thigh                 = 0,0,0
+bip01_l_calf                 = 0,0,0
+bip01_r_calf                 = 0,0,0
+
+[ik]
+num_limbs = 4
+
+[ik_limb0]
+bones = bip01_l_thigh,bip01_l_calf,bip01_l_foot,bip01_l_toe0
+align_toe = false ;will use toe bone for calculating chain
+foot_normal = 1, 0, 0
+foot_direction = 0, 0, 1
+
+[ik_limb1]
+bones = bip01_r_thigh,bip01_r_calf,bip01_r_foot,bip01_r_toe0
+align_toe = false ;will use toe bone for calculating chain
+foot_normal = 1, 0, 0
+foot_direction = 0, 0, 1
+
+[ik_limb2]
+bones = bip01_l_upperarm,bip01_l_forearm,bip01_l_hand,bip01_l_finger0
+align_toe = true ;will use toe bone for calculating chain
+foot_normal = 0, 0, 0
+foot_direction = 0, 0, 1
+
+[ik_limb3]
+bones = bip01_r_upperarm,bip01_r_forearm,bip01_r_hand,bip01_r_finger0
+align_toe = true ;will use toe bone for calculating chain
+foot_normal = 0, 0, 0
+foot_direction = 0, 0, 1

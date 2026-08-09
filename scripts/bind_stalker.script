@@ -1,0 +1,970 @@
+-- PORT_NOTES (Misery_Coop_Port shadow)
+-- Base: Call_Of_Pripyat_addon\scripts\bind_stalker.script (the canonical superset:
+-- gameover screen, RPS game, gesture callback). Byte-identical except listed deltas.
+-- Re-diff against base whenever the coop layer updates.
+-- Delta 1: mp_actor_binder:update - mc_player_loop.on_local_spawn after the bCheckStart block.
+-- Delta 2: mp_actor_binder:update - mc_player_loop.update at end of local-actor path.
+-- Delta 3: mp_actor_binder:net_destroy - mc_player_loop.on_destroy before teardown.
+-- Phase 3 will add the Misery item-use/callback blocks here (guarded, marked).
+
+function init    (obj)
+				if (OnClient()) then
+					obj:bind_object(bind_stalker_cl(obj))
+				else
+					xr_motivator.AddToMotivator(obj)
+				end
+end
+
+function actor_init    (npc)
+	npc:bind_object(actor_binder(npc))	
+end
+
+function mp_actor_init    (npc)
+					npc:bind_object(mp_actor_binder(npc))			
+end
+
+local game_difficulty_by_num = {
+				[0] = "gd_novice",
+				[1] = "gd_stalker",
+				[2] = "gd_veteran",
+				[3] = "gd_master"
+				}
+
+local weapon_hide = {}
+
+class "mp_actor_binder" (object_binder)
+function mp_actor_binder:__init (obj) super(obj)
+	self.bCheckStart = false
+	self.last_level_name = nil
+	self.deimos_intensity = nil
+	self.loaded_active_slot = 3
+	self.loaded_slot_applied = false
+	self.weather_manager = level_weathers.get_weather_manager()											
+	self.surge_manager = surge_manager.get_surge_manager()
+end
+
+delayed_functions = {}
+
+function add_delayed_function(funcName, timeout, params)
+	local timestamp = time_global()
+	
+	local num = #delayed_functions + 1
+	delayed_functions[num] = {}
+	delayed_functions[num].name = funcName
+	delayed_functions[num].timestamp = timestamp
+	delayed_functions[num].timeout = timeout
+	delayed_functions[num].params = params
+end
+
+function mp_actor_binder:update_delayed_functions()
+	for k, v in pairs(delayed_functions) do
+		if time_global() - v.timestamp > v.timeout then
+			xr_effects[v.name](nil, nil, v.params)
+			table.remove(delayed_functions, k)
+		end
+	end
+end
+function mp_actor_binder:init_gameover_screen()
+	self.gameover_start_time = time_global()
+	self.gameover_wnd = ui_gameover_wnd.gameover_wnd()
+	self.gameover_wnd:InitControls()
+	self.gameover_wnd:ShowDialog(true)
+end
+
+function mp_actor_binder:update_gameover_screen()
+	local any_player_dead = xr_conditions.any_player_is_dead()
+	
+	if any_player_dead == false then
+		return
+	end
+	
+	if self.gameover_wnd == nil then
+		self:init_gameover_screen()
+	end
+	
+	local count = math.floor(10 - (time_global() - self.gameover_start_time) / 1000)
+	
+	if count >= 0 then
+		self.gameover_wnd:getTimer():SetText(tostring(count))
+	end 
+	
+	if count <= 0 and not story_flags.has_flag("LOAD_LAST_SAVE") then
+		story_flags.give_flag("LOAD_LAST_SAVE")
+		game_cl.executeFunctionOnServer("loadLastSave")
+	end
+end
+
+function mp_actor_binder:net_spawn(data)
+--	printf("actor net spawn")
+	level.show_indicators()
+	self.bCheckStart = true
+	self.weapon_hide = false -- �������� ��� ��� ������ ��� ���������.
+	self.weapon_hide_in_dialog = false
+	weapon_hide = {} -- ������������� ���������� ���������� ����.
+	self.task_manager = task_manager.get_task_manager()
+	if object_binder.net_spawn(self,data) == false then
+		return false
+	end
+	
+	self.weather_manager:reset()			 
+	db.add_obj(self.object)
+	db.add_mp_actor(self.object)
+
+	self.deimos_intensity = nil
+
+	level.enable_input()
+
+	--'������������� ������ �� ������������
+	--self.task_manager = task_manager.get_task_manager()
+	self.spawn_frame = device().frame
+	self.already_jumped = false
+	self.primary_objects_filled = false
+	self.loaded = true	
+
+	if data.story_id ~= "" then
+		local previous_sid = get_object_story_id(self.object:id())
+		if previous_sid == nil or previous_sid ~= data.story_id then
+			add_story_object(self.object:id(), data.story_id)
+		end
+	end
+	
+	return true
+end
+
+function mp_actor_binder:reinit()
+	object_binder.reinit(self)
+	local npc_id = self.object:id()
+	db.storage[npc_id] = { }
+	self.st = db.storage[npc_id]
+	self.st.pstor = nil
+	
+	self.object:set_callback(callback.inventory_info, self.info_callback, self)
+	self.object:set_callback(callback.on_item_take, self.on_item_take, self)
+	self.object:set_callback(callback.on_item_drop, self.on_item_drop, self)
+	self.object:set_callback(callback.trade_sell_buy_item, self.on_trade, self) -- for game stats
+	self.object:set_callback(callback.task_state, self.task_callback, self)
+	self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
+	self.object:set_callback(callback.use_object, self.use_inventory_item, self)
+	self.object:set_callback(callback.gesture, self.use_gesture, self)
+end
+
+function mp_actor_binder:task_callback(_task, _state)
+	if GameType() == game_cl.game_id_coop then
+		if _state ~= task.fail then
+			if not _task:is_silent_notify() then
+				if _state == task.completed then
+					news_manager.send_task(db.actor, "complete", _task)
+				else
+					news_manager.send_task(db.actor, "new", _task)
+				end
+			end
+		end
+		
+		task_manager.task_callback(_task, _state)
+		
+		if _task:is_silent_notify() and _state == _task:get_target_state() then
+			_task:set_silent_notify(false)
+		end
+	end
+end
+
+function mp_actor_binder:on_item_take(obj)
+
+	-- PORT (Misery_Coop_Port): dispatch the Misery actor_on_item_take intercept chain (axr_main),
+	-- which the coop binder never fired -> alun_riddle (axr_quest_master) + inventory_radiation
+	-- take-callbacks were dead. Fires server-side here; the riddle's alife():create spawns are valid.
+	if (axr_main and axr_main.actor_on_item_take) then axr_main.actor_on_item_take(obj) end
+	--printf_msg("on_item_take [%s]", obj:name())
+	if OnServer() then
+		treasure_manager.get_treasure_manager():on_item_take(obj:id())
+	end
+	
+	if isArtefact(obj) then
+		if OnServer() then
+			local anomal_zone = bind_anomaly_zone.parent_zones_by_artefact_id[obj:id()]
+			if anomal_zone ~= nil then
+				anomal_zone:on_artefact_take(obj)
+			else
+				bind_anomaly_zone.artefact_ways_by_id[obj:id()] = nil
+			end
+			local artefact = obj:get_artefact()
+			artefact:FollowByPath("NULL",0,vector():set(500,500,500))
+			xr_statistic.inc_founded_artefacts_counter(obj:id(), self.object:id())
+		elseif (getLocalActor() and self.object:id() == getLocalActor():id()) then -- Client
+			xr_statistic.inc_founded_artefacts_counter(obj:id(), self.object:id())
+		end
+	end
+end
+
+function mp_actor_binder:use_gesture(gesture_id)
+	db.storage[self.object:id()].last_gesture = gesture_id
+	db.storage[self.object:id()].gesture_checked = false
+end
+
+-- PORT (Misery_Coop_Port): coop item-use feedback. base mp_actor_binder:reinit binds
+-- callback.use_object -> self.use_inventory_item but never DEFINED the method for the
+-- coop binder, so item use fired a nil callback ("items vanish on use"). Fire the Misery
+-- item-use chain the SP bind_stalker drives: actor_on_item_use handlers, the actor_effects
+-- camera/sound FX, and the postproces_mod screen post-process. All guarded; client-side.
+function mp_actor_binder:use_inventory_item(obj)
+	if (obj == nil) then return end
+	local la = getLocalActor()
+	if mc_core then mc_core.mc_log("[itms] use_inv srv=%s cli_local=%s sec=%s", tostring(OnServer()), tostring(la ~= nil and self.object:id() == la:id()), tostring(obj:section())) end
+	if not (la and self.object:id() == la:id()) then
+		-- coop: use_object fires SERVER-side for a remote client's actor. Don't run the
+		-- client handlers here (getLocalActor nil -> crash); RPC that client so they run there.
+		if OnServer() and mc_cooking and mc_cooking.notify_use then mc_cooking.notify_use(self.object:id(), obj) end
+		return
+	end
+	-- pcall each handler: a ported Misery handler that indexes a coop-nil (e.g. a stale
+	-- .object) must DEGRADE+log, not FATAL the client (bind_stalker:215 index-nil class).
+	local function _pc(fn, arg)
+		local ok, err = pcall(fn, arg)
+		if not ok and mc_core then mc_core.mc_log("[itms] use handler fail: %s", tostring(err)) end
+	end
+	if (axr_main and axr_main.actor_on_item_use) then _pc(axr_main.actor_on_item_use, obj) end
+	-- COOP ANIM FIX: skip the Misery use-FX cinematic for items XRMPE/AGWP already animates
+	-- (real consumable hud) -- else the engine eat anim + the Misery one DOUBLE (bread 'eat
+	-- twice + fade + ~15s cam lockout'). eat_* satiety is engine-applied. See mc_cooking.
+	if (not (mc_cooking and mc_cooking.has_agwp_use_anim and mc_cooking.has_agwp_use_anim(obj:section())) and actor_effects and actor_effects.use_item) then _pc(actor_effects.use_item, obj:section()) end
+	if (not (mc_cooking and mc_cooking.has_agwp_use_anim and mc_cooking.has_agwp_use_anim(obj:section())) and postproces_mod and postproces_mod.use_obj) then _pc(postproces_mod.use_obj, obj) end
+end
+
+-- PORT (Misery_Coop_Port) [POWER_LIVE]: the coop mp_actor_binder:reinit binds
+-- callback.inventory_info -> self.info_callback but never DEFINED the method, so the
+-- info-callback chain was orphaned (axr_main.actor_on_info_callback never fired) -> the
+-- axr_battery PDA open/close + battery-drain path was dead. Fire the Misery dispatcher.
+function mp_actor_binder:info_callback(npc, info_id)
+	if (axr_main and axr_main.actor_on_info_callback) then axr_main.actor_on_info_callback(npc, info_id) end
+end
+
+function actor_have_items()
+	local n=3 -- ����������
+	local count=0
+	
+	db.storage[LocalActor()].object:iterate_inventory(function (dummy, item) if item:section()=="kolbasa" then count=count+1 end end, nil)
+	
+	if count>=n then
+		return true
+	else
+		return false
+	end
+end
+
+function check_rps_win(our_gesture, other_gesture)
+	if other_gesture == nil then
+		return false
+	end
+	
+	if our_gesture == 0 then -- eGstRock
+		return other_gesture == 2
+	elseif our_gesture == 1 then -- eGstPaper
+		return other_gesture == 0
+	elseif our_gesture == 2 then -- eGstScissors
+		return other_gesture == 1
+	end
+	
+	return false
+end
+
+function mp_actor_binder:update_rps_game()
+	if self.object:id() ~= LocalActor() and not OnServer() then
+		return
+	end
+	
+	local last_gesture = db.storage[self.object:id()].last_gesture
+	if last_gesture == nil or last_gesture < 0 then
+		return
+	end
+	
+	for k,v in pairs(db.mp_actors) do
+		if v:id() ~= self.object:id() and v:position():distance_to_sqr(self.object:position()) <= 5 * 5 then
+			local st = db.storage[v:id()]
+			local other_gesture = st.last_gesture
+			if not st.gesture_checked and check_rps_win(last_gesture, other_gesture) then
+				xr_statistic.inc_rps_games_won(self.object:id())			
+			end	
+			st.gesture_checked = true
+		end
+	end
+end
+
+function mp_actor_binder:update(delta)
+	self:update_rps_game()
+	
+	if LocalActor() ~= self.object:id() or (IsServerClient() and LocalActor() == self.object:id()) then
+		if OnServer() then
+			-- ������ �������� ������ ������ � ���� sr_no_weapon
+			if check_for_weapon_hide_by_zones(self.object:id()) == true then
+				if self.weapon_hide == false then
+					self.object:hide_weapon_except_safe_items()
+					self.weapon_hide = true
+				end
+			else
+				if self.weapon_hide == true then
+					self.object:restore_weapon_except_safe_items()
+					self.weapon_hide = false
+				end
+			end
+			
+			xr_sound.update(self.object:id())
+		end
+		
+		if not IsServerClient() then
+			return
+		end
+		
+	end
+		
+	object_binder.update(self, delta)
+	
+	--ui_dbg_info.print_debug()
+	
+	local time = time_global()
+	game_stats.update (delta, self.object)
+
+	--' ������ ��������������
+	xr_sound.update(self.object:id())
+	
+	-- ���������� ���������� ����� � ����������.
+	self.st.disable_input_time = nil
+	
+	-- ������ �������� ������ ������ �� ����� �������
+	if self.object:is_talking() then
+		if self.weapon_hide_in_dialog == false then
+			self.object:hide_weapon()
+			printf("hiding weapon!!!")
+			self.weapon_hide_in_dialog = true
+		end
+	else
+		if self.weapon_hide_in_dialog == true then
+			printf("restoring weapon!!!")
+			self.object:restore_weapon()
+			self.weapon_hide_in_dialog = false
+		end
+	end
+	
+	if device().frame > self.spawn_frame+100 then
+		self:update_gameover_screen()
+	end
+	
+	-- ���������� ���-�������
+	if sr_psy_antenna.psy_antenna then
+		sr_psy_antenna.psy_antenna:update(delta)
+	end
+	
+	if self.bCheckStart then
+		printf("SET DEFAULT INFOS")
+		if not has_alife_info("global_dialogs") then
+			self.object:give_info_portion("global_dialogs")
+		end
+		if not has_alife_info("level_changer_icons") then
+			self.object:give_info_portion("level_changer_icons")
+		end
+		self.bCheckStart = false
+		-- PORT delta 1
+		if mc_player_loop and LocalActor() == self.object:id() then
+			mc_player_loop.on_local_spawn(self)
+		end
+	end
+
+	if self.surge_manager then
+		if self.f_surge_manager_loaded ~= true and not self.start_from_load then
+			self.surge_manager:initialize()
+			self.f_surge_manager_loaded = true
+		end
+		self.surge_manager:update()
+	end
+	
+	if not self.loaded_slot_applied then
+		self.object:activate_slot(self.loaded_active_slot)
+		self.loaded_slot_applied = true
+	end
+	
+	xr_s.on_actor_update(delta)
+	
+	if not(self.primary_objects_filled) then
+		pda.fill_primary_objects()
+		self.primary_objects_filled = true
+	end
+	pda.fill_sleep_zones()
+	
+	self:update_delayed_functions()									   
+	
+	sim_squad_scripted_cl_manager.get_squad_manager():update()
+	
+	for k, v in pairs(game_relations.temp_goodwill_table) do
+		SetGoodwillForce(k, self.object:id(), v)
+	end
+	game_relations.temp_goodwill_table = { }
+
+	-- PORT delta 2
+	if mc_player_loop and LocalActor() == self.object:id() then
+		mc_player_loop.update(self, delta)
+	end
+end
+
+function mp_actor_binder:net_destroy()
+	-- PORT delta 3
+	if mc_player_loop and LocalActor() == self.object:id() then
+		mc_player_loop.on_destroy(self)
+	end
+	xr_sound.stop_sounds_by_id(self.object:id())
+	local board_factions = sim_board.get_sim_board().players
+	if(board_factions) then
+			for k,v in pairs (board_factions) do
+					xr_sound.stop_sounds_by_id(v.id)
+			end
+	end
+	if(actor_stats.remove_from_ranking~=nil)then
+		actor_stats.remove_from_ranking(self.object:id())
+	end
+	level.show_weapon(true)
+	db.del_obj(self.object)
+	db.del_mp_actor(self.object)
+
+	if sr_psy_antenna.psy_antenna then
+		sr_psy_antenna.psy_antenna:destroy()
+		sr_psy_antenna.psy_antenna = false
+	end
+	
+	xrs_dyn_music.finish_theme()
+	
+	self.object:set_callback(callback.inventory_info, nil)
+	self.object:set_callback(callback.article_info, nil)
+	self.object:set_callback(callback.on_item_take, nil)
+	self.object:set_callback(callback.on_item_drop, nil)
+	self.object:set_callback(callback.task_state, nil)
+	self.object:set_callback(callback.level_border_enter, nil)
+	self.object:set_callback(callback.level_border_exit, nil)
+	self.object:set_callback(callback.take_item_from_box, nil)
+	self.object:set_callback(callback.use_object, nil)
+	
+	object_binder.net_destroy(self)
+end
+----------------------------------------------------------------------------------------------------------------------
+class "actor_binder" (object_binder)
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:__init (obj) super(obj)
+	self.bCheckStart = false
+	self.weather_manager = level_weathers.get_weather_manager()
+	self.surge_manager = surge_manager.get_surge_manager()
+	--self.actor_detector = xr_detector.actor_detector()
+	self.last_level_name = nil
+	self.deimos_intensity = nil
+--	self.actor_weapon_on_start = true
+	self.loaded_active_slot = 3
+	self.loaded_slot_applied = false
+	self.last_detective_achievement_spawn_time 	= nil
+	self.last_mutant_hunter_achievement_spawn_time	= nil
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:net_spawn(data)
+--	printf("actor net spawn")
+	level.show_indicators()
+	self.bCheckStart = true
+	self.weapon_hide = false -- �������� ��� ��� ������ ��� ���������.
+	self.weapon_hide_in_dialog = false
+	weapon_hide = {} -- ������������� ���������� ���������� ����.
+	if object_binder.net_spawn(self,data) == false then
+		return false
+	end
+	db.add_actor(self.object)
+	db.actor.deimos_intensity = self.deimos_intensity
+	self.deimos_intensity = nil
+	if self.st.disable_input_time == nil then
+		level.enable_input()
+	end
+	xr_s.on_game_load()                                    --' Distemper 03.2008 --
+	self.weather_manager:reset()
+	--' ��������� ��������� �����
+	death_manager.init_drop_settings()
+	--'������������� ������ �� ������������
+	self.task_manager = task_manager.get_task_manager()
+	self.spawn_frame = device().frame
+	self.already_jumped = false
+	self.loaded = false
+	benchmark.main()							          --' Distemper 06.2008 --
+	
+	return true
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:net_destroy()
+	xr_sound.stop_sounds_by_id(self.object:id())
+	local board_factions = sim_board.get_sim_board().players
+	if(board_factions) then
+			for k,v in pairs (board_factions) do
+					xr_sound.stop_sounds_by_id(v.id)
+			end
+	end
+	if(actor_stats.remove_from_ranking~=nil)then
+		actor_stats.remove_from_ranking(self.object:id())
+	end
+	level.show_weapon(true)
+	db.del_actor(self.object)
+
+	self.object:set_callback(callback.inventory_info, nil)
+	self.object:set_callback(callback.article_info, nil)
+	self.object:set_callback(callback.on_item_take, nil)
+	self.object:set_callback(callback.on_item_drop, nil)
+	self.object:set_callback(callback.task_state, nil)
+	self.object:set_callback(callback.level_border_enter, nil)
+	self.object:set_callback(callback.level_border_exit, nil)
+	self.object:set_callback(callback.take_item_from_box, nil)
+	self.object:set_callback(callback.use_object, nil)
+
+	log("--------->"..tostring(_G.amb_vol))
+	log("--------->"..tostring(_G.mus_vol))
+	if(_G.amb_vol~=0) then
+		get_console():execute("snd_volume_eff "..tostring(_G.amb_vol))
+		_G.amb_vol = 0
+	end
+	if(_G.mus_vol~=0) then
+	    get_console():execute("snd_volume_music "..tostring(_G.mus_vol))
+		_G.mus_vol = 0
+	end
+	if sr_psy_antenna.psy_antenna then
+		sr_psy_antenna.psy_antenna:destroy()
+		sr_psy_antenna.psy_antenna = false
+	end
+	xrs_dyn_music.finish_theme()
+	xr_s.on_actor_destroy()
+	object_binder.net_destroy(self)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:reinit()
+	object_binder.reinit(self)
+	local npc_id = self.object:id()
+	db.storage[npc_id] = { }
+	self.st = db.storage[npc_id]
+	self.st.pstor = nil
+
+	self.object:set_callback(callback.inventory_info, self.info_callback, self)
+	self.object:set_callback(callback.on_item_take, self.on_item_take, self)
+	self.object:set_callback(callback.on_item_drop, self.on_item_drop, self)
+	self.object:set_callback(callback.trade_sell_buy_item, self.on_trade, self) -- for game stats
+	self.object:set_callback(callback.task_state, self.task_callback, self)
+	self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
+	self.object:set_callback(callback.use_object, self.use_inventory_item, self)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:take_item_from_box(box, item)
+	local box_name = box:name()
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:info_callback(npc, info_id)
+	printf("*INFO*: npc='%s' id='%s'", npc:name(), info_id)
+	--' �����
+	-- ������� �� �����
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_trade (item, sell_bye, money)
+	if sell_bye == true then
+		 game_stats.money_trade_update (money)
+	else
+		 game_stats.money_trade_update (-money)
+	end
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:article_callback(npc, group, name)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_item_take (obj)
+	printf("on_item_take [%s]", obj:name())
+	if isArtefact(obj) then
+		local anomal_zone = bind_anomaly_zone.parent_zones_by_artefact_id[obj:id()]
+		if anomal_zone ~= nil then
+			anomal_zone:on_artefact_take(obj)
+		else
+			bind_anomaly_zone.artefact_ways_by_id[obj:id()] = nil
+		end
+		local artefact = obj:get_artefact()
+		artefact:FollowByPath("NULL",0,vector():set(500,500,500))
+		xr_statistic.inc_founded_artefacts_counter(obj:id())
+--[[
+		local s_art = alife():object(obj:id())
+		if(s_art) then
+			xr_statistic.inc_founded_artefacts_counter(s_art:section_name())
+		else
+			xr_statistic.inc_founded_artefacts_counter()
+		end
+]]
+	end
+	treasure_manager.get_treasure_manager():on_item_take(obj:id())
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_item_drop (obj)
+end
+
+function actor_binder:use_inventory_item(obj)
+	if(obj) then
+		local s_obj = alife():object(obj:id())
+		if(s_obj) and (s_obj:section_name()=="drug_anabiotic") then
+			xr_effects.disable_ui_only(db.actor, nil)
+			level.add_cam_effector("camera_effects\\surge_02.anm", 10, false, "bind_stalker.anabiotic_callback")
+			level.add_pp_effector("surge_fade.ppe", 11, false)
+			give_info("anabiotic_in_process")
+			_G.mus_vol = get_console():get_float("snd_volume_music")
+			_G.amb_vol = get_console():get_float("snd_volume_eff")
+			get_console():execute("snd_volume_music 0")
+			get_console():execute("snd_volume_eff 0")
+		end
+	end
+end
+
+function anabiotic_callback()
+	level.add_cam_effector("camera_effects\\surge_01.anm", 10, false, "bind_stalker.anabiotic_callback2")
+	local rnd = math.random(35,45)
+	local m = surge_manager.get_surge_manager()
+	if(m.started) then
+		local tf = level.get_time_factor()
+		local diff_sec = math.ceil(game.get_game_time():diffSec(m.inited_time)/tf)
+			if(rnd>(m.surge_time-diff_sec)*tf/60) then
+			m.time_forwarded = true
+			m.ui_disabled = true
+			m:kill_all_unhided()
+			m:end_surge()
+		end
+	end
+	--level.change_game_time(0,0,rnd)
+	--level_weathers.get_weather_manager():forced_weather_change()
+	printf("anabiotic_callback: time forwarded on [%d]", rnd)
+end
+
+function anabiotic_callback2()
+	xr_effects.enable_ui(db.actor, nil)
+    get_console():execute("snd_volume_music "..tostring(_G.mus_vol))
+	get_console():execute("snd_volume_eff "..tostring(_G.amb_vol))
+	_G.amb_vol = 0
+	_G.mus_vol = 0
+	disable_info("anabiotic_in_process")
+end
+----------------------------------------------------------------------------------------------------------------------
+
+function actor_binder:task_callback(_task, _state, _silent)
+	if _state ~= task.fail then
+		if _state == task.completed then
+			news_manager.send_task(db.actor, "complete", _task)
+		else
+			news_manager.send_task(db.actor, "new", _task)
+		end
+	end
+	task_manager.task_callback(_task, _state)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+
+function actor_binder:try_start_game()
+	if not story_flags.has_flag("GAME_STARTED") then
+		local num = 0
+		for k,v in pairs(db.mp_actors) do
+			num = num + 1
+		end
+		
+		local num_players = get_players_count()
+		if IsDedicatedServer() then
+			num_players = num_players - 1
+		end
+		
+		if num > 0 and num_players == num then
+			story_flags.give_flag("GAME_STARTED")
+		end
+	end
+end
+
+function actor_binder:update(delta)
+	object_binder.update(self, delta)
+	
+	if string.find(command_line(), "-designer") then
+		return
+	end
+	
+	if OnServer() then
+		self.weather_manager:update()
+
+		local time = time_global()
+		game_stats.update (delta, self.object)
+	
+		self:check_detective_achievement()
+		self:check_mutant_hunter_achievement()
+	
+		-- ������ ��������������								  
+		xr_sound.update(self.object:id())
+	
+		-- ���������� ���-�������
+		if sr_psy_antenna.psy_antenna then
+			sr_psy_antenna.psy_antenna:update(delta)
+		end
+		
+		if self.bCheckStart then
+			printf("SET DEFAULT INFOS")
+			if not has_alife_info("global_dialogs") then
+				self.object:give_info_portion("global_dialogs")
+			end
+			if not has_alife_info("level_changer_icons") then
+				self.object:give_info_portion("level_changer_icons")
+			end
+			self.bCheckStart = false
+		end
+	
+		if not self.loaded_slot_applied then
+			self.object:activate_slot(self.loaded_active_slot)
+			self.loaded_slot_applied = true
+		end
+		
+		xr_s.on_actor_update(delta)
+		
+		if(self.surge_manager) then
+			if(self.f_surge_manager_loaded ~= true) then
+				self.surge_manager:initialize()
+				self.f_surge_manager_loaded = true
+			end
+			if(self.surge_manager.levels_respawn[level.name()]) then
+				self.surge_manager:respawn_artefacts_and_replace_anomaly_zone()
+			end
+			self.surge_manager:update()
+		end
+		-- ������ ����������� ��� ���������.
+		-- PORT (Misery_Coop_Port): MP actors are not ALife simulation targets.
+		treasure_manager.get_treasure_manager():update()
+	
+		if not self.loaded then
+			--get_console():execute("dump_infos")
+			self.loaded = true
+		end
+	
+		pda.fill_sleep_zones()
+		
+		self:try_start_game()
+		task_manager.get_task_manager():send_server_objects_target_pos()
+		client_tasks.update_delayed_tasks()
+	end
+	
+	if self.already_jumped==false and jump_level.need_jump==true and (device().frame > self.spawn_frame+2000) then
+		jump_level.try_to_jump()
+		self.already_jumped = true
+		return
+	end
+
+	-- ����� ������� �������� ������ �����������
+	if travel_func ~= nil then
+		travel_func()
+	end
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:save(packet)
+	set_save_marker(packet, "save", false, "actor_binder")
+	object_binder.save(self, packet)
+	self.weather_manager:save(packet)
+	release_body_manager.get_release_body_manager():save(packet)
+	self.surge_manager:save(packet)
+	treasure_manager.get_treasure_manager():save(packet)
+	xr_statistic.save(packet)
+	client_tasks.save_delayed_tasks(packet)
+	set_save_marker(packet, "save", true, "actor_binder")
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:load(reader)
+	set_save_marker(reader, "load", false, "actor_binder")
+	object_binder.load(self, reader)
+	self.weather_manager:load(reader)
+	release_body_manager.get_release_body_manager():load(reader)
+	self.surge_manager:load(reader)
+	treasure_manager.get_treasure_manager():load(reader)
+	xr_statistic.load(reader)
+	client_tasks.load_delayed_tasks(reader)
+	set_save_marker(reader, "load", true, "actor_binder")
+end
+
+--*************************************************************
+--*					�������� ����� � �����					  *
+--*************************************************************
+local detective_achievement_items 		= {	"medkit",
+											"antirad",
+											"bandage"}
+
+local mutant_hunter_achievement_items	= {	"ammo_5.45x39_ap",
+											"ammo_5.56x45_ap",
+											"ammo_9x39_ap",
+											"ammo_5.56x45_ap",
+											"ammo_12x76_zhekan"}
+
+local function spawn_achivement_items(items_table, count, inv_box_story_id)
+	local inv_box = alife():object(get_story_object_id(inv_box_story_id))
+	for i = 1,count do
+		alife():create(items_table[math.random(#items_table)],
+						inv_box.position,
+						inv_box.m_level_vertex_id,
+						inv_box.m_game_vertex_id,
+						inv_box.id)
+	end
+end
+
+function actor_binder:check_detective_achievement()
+	if not story_flags.has_flag("DETECTIVE_ACHIEVEMENT_GAINED") then
+		return
+	end
+	if self.last_detective_achievement_spawn_time == nil then
+		self.last_detective_achievement_spawn_time = game.get_game_time()
+	end
+	if game.get_game_time():diffSec(self.last_detective_achievement_spawn_time) > 43200 then
+		spawn_achivement_items(detective_achievement_items, 4, "zat_a2_actor_treasure")
+		xr_effects.send_tip(db.actor, nil, {"st_detective_news","got_medicine"})
+		self.last_detective_achievement_spawn_time = game.get_game_time()
+	end
+end
+
+function actor_binder:check_mutant_hunter_achievement()
+	if not story_flags.has_flag("MUTANT_HUNTER_ACHIEVEMENT_GAINED") then
+		return
+	end
+	if self.last_mutant_hunter_achievement_spawn_time == nil then
+		self.last_mutant_hunter_achievement_spawn_time = game.get_game_time()
+	end
+	if game.get_game_time():diffSec(self.last_mutant_hunter_achievement_spawn_time) > 43200 then
+		spawn_achivement_items(mutant_hunter_achievement_items, 5, "jup_b202_actor_treasure")
+		xr_effects.send_tip(db.actor, nil, {"st_mutant_hunter_news","got_ammo"})
+		self.last_mutant_hunter_achievement_spawn_time = game.get_game_time()
+	end
+
+end
+
+----------------------------------------------------------------------------------------------------------------------
+
+function check_for_weapon_hide_by_zones(actor_id)
+	for k,v in pairs(weapon_hide) do
+		if v[actor_id] == true then
+			return true
+		end
+	end
+	return false
+end
+
+-- Weapon functions
+function hide_weapon(zone_id, actor_id)
+	if weapon_hide[zone_id] == nil then
+		weapon_hide[zone_id] = { }
+	end
+	
+	printf("[WEAPON_CONTROL]:hiding weapon from zone [%s] in section [%s]!!!", zone_id, db.storage[zone_id].active_section)
+	weapon_hide[zone_id][actor_id] = true	
+end
+
+function restore_weapon(zone_id, actor_id)
+	if weapon_hide[zone_id] == nil then
+		weapon_hide[zone_id] = { }
+	end
+	
+	printf("[WEAPON_CONTROL]:restoring weapon from zone [%s] in section [%s]!!!", zone_id, db.storage[zone_id].active_section)
+	weapon_hide[zone_id][actor_id] = false
+end
+
+class "bind_stalker_cl" (object_binder)
+function bind_stalker_cl:__init (obj) super(obj)
+end
+
+function bind_stalker_cl:net_spawn(data)
+	if not object_binder.net_spawn(self, data) then
+		return false
+	end
+	db.add_obj(self.object)
+	
+	xrs_dyn_music.npc_table[self.object:id()] = self.object:id()
+	
+	self.object:set_callback(callback.death, bind_stalker_cl.death_callback, self)
+	self.object:set_callback(callback.hit, bind_stalker_cl.hit_callback, self)
+
+	if character_community(self.object) ~= "monster" then
+		sound_theme.init_npc_sound(self.object)
+		set_level_spot(self.object:id(), data.level_spot_id)
+		trade_manager.trade_init(self.object, data.trade_ini)
+	end
+	
+	if data.goodwill ~= 127 then
+		local goodwill = data.goodwill
+		if getLocalActor() then
+			SetGoodwillForce(self.object:id(), getLocalActor():id(), goodwill)
+		else
+			game_relations.temp_goodwill_table[self.object:id()] = goodwill
+		end
+	end
+	
+	return true
+end
+
+function bind_stalker_cl:reinit()
+	object_binder.reinit(self)
+	local npc_id = self.object:id()
+	db.storage[npc_id] = { }   
+	self.st = db.storage[npc_id]
+	self.st.pstor = nil
+end	
+
+function bind_stalker_cl:update(delta)
+	object_binder.update(self, delta)
+	if self.object:alive() then
+		trade_manager.update(self.object)
+	end
+end
+
+function bind_stalker_cl:net_destroy()
+	xrs_dyn_music.npc_table[self.object:id()] = nil
+	db.del_obj(self.object)
+	db.storage[self.object:id()] = nil
+	object_binder.net_destroy(self)
+end
+
+function bind_stalker_cl:death_callback(victim, who)
+	xrs_dyn_music.npc_table[self.object:id()] = nil
+	
+	if who and getLocalActor() and getLocalActor():id() == who:id() then
+		xr_statistic.inc_killed_stalkers_counter(who:id())
+	end
+end
+
+function bind_stalker_cl:hit_callback(obj, amount, local_direction, who, bone_index)
+	if who and getLocalActor() and getLocalActor():id() == who:id() then
+		xr_statistic.set_best_weapon(amount, who)
+	end
+end
+
+function set_level_spot(npc_id, map_spot)
+	if map_spot ~= nil and map_spot ~= 0 then
+		local map_location = ""
+		local hint = ""
+		local profession = 0 --eNone
+		if map_spot == 1 then
+				map_location = "ui_pda2_trader_location"
+				hint = "st_ui_pda_legend_trader"
+				profession = 1 --eTrader
+		elseif map_spot == 2 then
+				map_location = "ui_pda2_mechanic_location"
+				hint = "st_ui_pda_legend_mechanic"
+				profession = 2 --eMechanic
+		elseif map_spot == 3 then
+				map_location = "ui_pda2_scout_location"
+				hint = "st_ui_pda_legend_scout"
+				profession = 3 --eGuider
+		elseif map_spot == 4 then
+				map_location = "ui_pda2_quest_npc_location"
+				hint = "st_ui_pda_legend_vip"
+		elseif map_spot == 5 then
+				map_location = "ui_pda2_medic_location"
+				hint = "st_ui_pda_legend_medic"
+				profession = 4 --eMedic
+		end
+		
+		if level.map_has_object_spot(npc_id, map_location) ~= 0 then
+			level.map_remove_object_spot(npc_id, map_location)
+		end
+		
+		level.map_add_object_spot(npc_id, map_location, hint)
+		
+		local npc = db.storage[npc_id].object
+		if npc ~= nil then
+			npc:set_quest_npc(true)
+			npc:set_profession(profession)
+		end
+	end
+end

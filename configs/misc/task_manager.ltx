@@ -1,0 +1,16 @@
+; Выдача заданий: =give_task(тип_задания:ид_задания:группировка)
+
+#include "tm_zaton.ltx"
+#include "tm_jupiter.ltx"
+#include "tm_pripyat.ltx"
+
+[hide_from_surge]
+icon = ui_inGame2_Vibros
+prior = 200
+title_functor = surge_task_title
+descr_functor = surge_task_descr
+target_functor = surge_task_target
+;dont_send_update_news = true
+condlist_0 = {=surge_complete()} complete
+condlist_1 = {!actor_alive()} fail
+#include "tm_alun.ltx"

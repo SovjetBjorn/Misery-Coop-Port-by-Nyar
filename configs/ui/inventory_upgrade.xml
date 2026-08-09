@@ -1,0 +1,1364 @@
+<w>
+	<main x="0" y="0" width="703.5" height="1080">
+	    <auto_static x="0" y="0" width="703.5" height="1080" stretch="1">
+		    <texture>ui_gunsl_tech_16</texture>
+	    </auto_static>
+	</main>
+	<back x="0" y="0" width="703.5" height="1080"/>
+	<scheme x="132" y="409" width="438" height="637" />
+	<item_static x="351" y="301" width="470" height="190" stretch="1" align="c" alignment="c"/>
+	<repair_button x="544" y="156" width="128" height="41" hint="ui_repair_button_hint" stretch="1">
+		<window_name>repair_button</window_name>
+		<texture>ui_inGame2_repair_button</texture>
+		<text align="c" font="letterica18" r="200" g="200" b="200">ui_st_inv_repair</text>
+	</repair_button>
+	<cell_states>
+	    <state>
+	        <type>enabled</type>
+	        <back_texture></back_texture>
+	        <point_texture>ui_inGame2_upgrade_on_weapon_lamp_empty_highlighted</point_texture>
+	    </state>
+	    <state>
+	        <type>highlight</type>
+	        <back_texture>ui_inGame2_upgrade_on_icon_lamp_yellow_highlighted</back_texture>
+	        <point_texture>ui_inGame2_upgrade_on_weapon_lamp_yellow_highlighted</point_texture>
+	    </state>
+	    <state>
+	        <type>touched</type>
+	        <back_texture>ui_inGame2_upgrade_on_icon_lamp_yellow_highlighted</back_texture>
+	        <point_texture>ui_inGame2_upgrade_on_weapon_lamp_yellow_highlighted</point_texture>
+	    </state>
+	    <state>
+	        <type>selected</type>
+	        <back_texture>ui_inGame2_upgrade_on_icon_lamp_green_upgraded</back_texture>
+	        <point_texture>ui_inGame2_upgrade_on_weapon_lamp_green_upgraded</point_texture>
+	    </state>
+	    <state>
+	        <type>unknown</type>
+	        <back_texture>ui_inGame2_upgrade_on_icon_lamp_red_disabled</back_texture>
+	        <point_texture>ui_inGame2_upgrade_on_weapon_lamp_red_disabled</point_texture>
+	    </state>
+	    <state>
+	        <type>disabled_parent</type>
+	        <back_texture></back_texture>
+	        <point_texture>ui_inGame2_upgrade_on_weapon_lamp_empty_highlighted</point_texture>
+	    </state>
+	    <state>
+	        <type>disabled_group</type>
+	        <back_texture>ui_inGame2_upgrade_on_icon_lamp_red_disabled</back_texture>
+	        <point_texture>ui_inGame2_upgrade_on_weapon_lamp_red_disabled</point_texture>
+	    </state>
+	    <state>
+	        <type>disabled_money</type>
+	        <back_texture></back_texture>
+	        <point_texture>ui_inGame2_upgrade_on_weapon_lamp_empty_highlighted</point_texture>
+	    </state>
+	    <state>
+	        <type>disabled_quest</type>
+	        <back_texture></back_texture>
+	        <point_texture>ui_inGame2_upgrade_on_weapon_lamp_empty_highlighted</point_texture>
+	    </state>
+	    <state>
+	        <type>disabled_highlight</type>
+	        <back_texture></back_texture>
+	        <point_texture>ui_inGame2_upgrade_on_weapon_lamp_empty_highlighted</point_texture>
+	    </state>
+	</cell_states>
+
+	<templates>
+		<cell_item x="0" y="0" width="127" height="62" stretch="1"/>
+<!-- outfit upgrade schemes -->
+	    <template name="upgrade_scheme_novice_outfit">
+	        <column>
+	            <cell x="0" y="34" point_x="264" point_y="316"/>
+	            <cell x="0" y="177" point_x="302" point_y="352"/>
+	            <cell x="0" y="321" point_x="302" point_y="316"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="34" point_x="283" point_y="260"/>
+	            <cell x="151" y="143" point_x="321" point_y="274"/>
+	            <cell x="151" y="212" point_x="377" point_y="274"/>
+	        </column>
+	        <column>
+		        <cell x="302" y="34" point_x="330" point_y="323"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_stalker_outfit">
+	        <column>
+	            <cell x="0" y="34" point_x="308" point_y="338"/>
+	            <cell x="0" y="177" point_x="368" point_y="338"/>
+	            <cell x="0" y="321" point_x="308" point_y="211"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="349" point_y="281"/>
+	            <cell x="151" y="69" point_x="245" point_y="267"/>
+	            <cell x="151" y="143" point_x="264" point_y="281"/>
+	            <cell x="151" y="212" point_x="340" point_y="239"/>
+	            <cell x="151" y="287" point_x="255" point_y="366"/>
+	            <cell x="151" y="356" point_x="308" point_y="373"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="34" point_x="308" point_y="288"/>
+	            <cell x="302" y="143" point_x="368" point_y="338"/>
+	            <cell x="302" y="212" point_x="396" point_y="260"/>
+	            <cell x="302" y="321" point_x="358" point_y="366"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_svoboda_light_outfit">
+	        <column>
+	            <cell x="0" y="34" point_x="274" point_y="267"/>
+	            <cell x="0" y="177" point_x="396" point_y="253"/>
+	            <cell x="0" y="321" point_x="283" point_y="218"/>
+	        </column>
+	        <column>
+		        <cell x="151" y="34" point_x="349" point_y="239"/>
+	            <cell x="151" y="143" point_x="283" point_y="239"/>
+	            <cell x="151" y="212" point_x="308" point_y="246"/>
+	            <cell x="151" y="287" point_x="340" point_y="302"/>
+	            <cell x="151" y="356" point_x="368" point_y="309"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="0" point_x="308" point_y="288"/>
+	            <cell x="302" y="69" point_x="308" point_y="323"/>
+	            <cell x="302" y="143" point_x="368" point_y="225"/>
+	            <cell x="302" y="212" point_x="198" point_y="239"/>
+	            <cell x="302" y="321" point_x="274" point_y="302"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_dolg_outfit">
+	        <column>
+		        <cell x="0" y="34" point_x="260" point_y="295"/>
+		        <cell x="0" y="177" point_x="415" point_y="267"/>
+		        <cell x="0" y="321" point_x="368" point_y="239"/>
+	        </column>
+	        <column>
+		        <cell x="151" y="34" point_x="349" point_y="295"/>
+	            <cell x="151" y="143" point_x="500" point_y="281"/>
+	            <cell x="151" y="212" point_x="160" point_y="274"/>
+	            <cell x="151" y="321" point_x="255" point_y="366"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="0" point_x="283" point_y="239"/>
+	            <cell x="302" y="69" point_x="321" point_y="274"/>
+	            <cell x="302" y="177" point_x="304" point_y="295"/>
+	            <cell x="302" y="321" point_x="353" point_y="366"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_specops">
+	        <column>
+	            <cell x="0" y="34" point_x="308" point_y="260"/>
+	            <cell x="0" y="177" point_x="434" point_y="239"/>
+	            <cell x="0" y="321" point_x="345" point_y="366"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="236" point_y="232"/>
+	            <cell x="151" y="69" point_x="372" point_y="229"/>
+	            <cell x="151" y="143" point_x="123" point_y="277"/>
+	            <cell x="151" y="212" point_x="308" point_y="323"/>
+	            <cell x="151" y="321" point_x="358" point_y="271"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="0" point_x="308" point_y="288"/>
+	            <cell x="302" y="69" point_x="283" point_y="239"/>
+	            <cell x="302" y="177" point_x="308" point_y="225"/>
+	            <cell x="302" y="321" point_x="330" point_y="302"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_svoboda_heavy_outfit">
+	        <column>
+	            <cell x="0" y="34" point_x="264" point_y="253"/>
+	            <cell x="0" y="177" point_x="308" point_y="226"/>
+	            <cell x="0" y="321" point_x="347" point_y="366"/>
+	        </column>
+	        <column>
+		        <cell x="151" y="34" point_x="377" point_y="225"/>
+	            <cell x="151" y="143" point_x="340" point_y="267"/>
+	            <cell x="151" y="212" point_x="343" point_y="218"/>
+	            <cell x="151" y="287" point_x="240" point_y="295"/>
+	            <cell x="151" y="356" point_x="372" point_y="295"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="0" point_x="308" point_y="260"/>
+	            <cell x="302" y="69" point_x="340" point_y="246"/>
+	            <cell x="302" y="143" point_x="308" point_y="288"/>
+	            <cell x="302" y="212" point_x="308" point_y="288"/>
+	            <cell x="302" y="321" point_x="332" point_y="305"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_cs_heavy_outfit">
+	        <column>
+	            <cell x="0" y="34" point_x="387" point_y="253"/>
+	            <cell x="0" y="177" point_x="270" point_y="281"/>
+	            <cell x="0" y="321" point_x="368" point_y="274"/>
+	            <cell x="0" y="464" point_x="379" point_y="309"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="270" point_y="246"/>
+	            <cell x="151" y="69" point_x="270" point_y="246"/>
+	            <cell x="151" y="143" point_x="306" point_y="229"/>
+	            <cell x="151" y="212" point_x="306" point_y="229"/>
+	            <cell x="151" y="287" point_x="245" point_y="274"/>
+	            <cell x="151" y="356" point_x="358" point_y="316"/>
+	            <cell x="151" y="464" point_x="226" point_y="311"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="0" point_x="362" point_y="222"/>
+	            <cell x="302" y="69" point_x="306" point_y="274"/>
+	            <cell x="302" y="143" point_x="306" point_y="312"/>
+	            <cell x="302" y="212" point_x="306" point_y="312"/>
+	            <cell x="302" y="321" point_x="255" point_y="316"/>
+	            <cell x="302" y="464" point_x="368" point_y="274"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_dolg_heavy_outfit">
+	        <column>
+	            <cell x="0" y="34" point_x="217" point_y="211"/>
+	            <cell x="0" y="177" point_x="406" point_y="240"/>
+	            <cell x="0" y="321" point_x="387" point_y="391"/>
+	            <cell x="0" y="464" point_x="351" point_y="349"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="306" point_y="248"/>
+	            <cell x="151" y="69" point_x="343" point_y="267"/>
+	            <cell x="151" y="143" point_x="262" point_y="214"/>
+	            <cell x="151" y="212" point_x="142" point_y="253"/>
+	            <cell x="151" y="287" point_x="387" point_y="371"/>
+	            <cell x="151" y="356" point_x="283" point_y="345"/>
+	            <cell x="151" y="464" point_x="351" point_y="349"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="0" point_x="306" point_y="285"/>
+	            <cell x="302" y="69" point_x="334" point_y="224"/>
+	            <cell x="302" y="177" point_x="306" point_y="197"/>
+	            <cell x="302" y="321" point_x="234" point_y="370"/>
+	            <cell x="302" y="464" point_x="351" point_y="349"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_military_outfit">
+	        <column>
+	            <cell x="0" y="34" point_x="226" point_y="221"/>
+	            <cell x="0" y="177" point_x="408" point_y="243"/>
+	            <cell x="0" y="321" point_x="385" point_y="384"/>
+	            <cell x="0" y="464" point_x="349" point_y="343"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="306" point_y="260"/>
+	            <cell x="151" y="69" point_x="336" point_y="277"/>
+	            <cell x="151" y="143" point_x="292" point_y="217"/>
+	            <cell x="151" y="212" point_x="292" point_y="217"/>
+	            <cell x="151" y="287" point_x="383" point_y="363"/>
+	            <cell x="151" y="356" point_x="264" point_y="263"/>
+	            <cell x="151" y="464" point_x="349" point_y="343"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="0" point_x="306" point_y="285"/>
+	            <cell x="302" y="69" point_x="345" point_y="228"/>
+	            <cell x="302" y="143" point_x="306" point_y="204"/>
+	            <cell x="302" y="212" point_x="306" point_y="204"/>
+	            <cell x="302" y="321" point_x="240" point_y="359"/>
+	            <cell x="302" y="464" point_x="349" point_y="343"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_scientific_outfit">
+	        <column>
+	            <cell x="0" y="34" point_x="266" point_y="316"/>
+	            <cell x="0" y="177" point_x="196" point_y="293"/>
+	            <cell x="0" y="321" point_x="255" point_y="269"/>
+				<cell x="0" y="437" point_x="372" point_y="302"/>
+	            <cell x="0" y="548" point_x="362" point_y="243"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="289" point_y="301"/>
+	            <cell x="151" y="69" point_x="326" point_y="301"/>
+	            <cell x="151" y="143" point_x="326" point_y="349"/>
+	            <cell x="151" y="212" point_x="326" point_y="349"/>
+	            <cell x="151" y="287" point_x="353" point_y="278"/>
+	            <cell x="151" y="356" point_x="247" point_y="388"/>
+				<cell x="151" y="437" point_x="362" point_y="388"/>
+	            <cell x="151" y="548" point_x="306" point_y="222"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="0" point_x="347" point_y="316"/>
+	            <cell x="302" y="69" point_x="336" point_y="371"/>
+	            <cell x="302" y="143" point_x="306" point_y="319"/>
+	            <cell x="302" y="212" point_x="306" point_y="319"/>
+	            <cell x="302" y="321" point_x="247" point_y="388"/>
+				<cell x="302" y="437" point_x="360" point_y="388"/>
+	            <cell x="302" y="515" point_x="306" point_y="184"/>
+	            <cell x="302" y="584" point_x="251" point_y="243"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_exo_outfit">
+	        <column>
+	            <cell x="0" y="34" point_x="177" point_y="288"/>
+	            <cell x="0" y="177" point_x="402" point_y="283"/>
+	            <cell x="0" y="285" point_x="243" point_y="304"/>
+	            <cell x="0" y="404" point_x="219" point_y="243"/>
+	            <cell x="0" y="551" point_x="334" point_y="252"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="370" point_y="270"/>
+	            <cell x="151" y="69" point_x="306" point_y="311"/>
+	            <cell x="151" y="143" point_x="279" point_y="267"/>
+	            <cell x="151" y="212" point_x="279" point_y="267"/>
+	            <cell x="151" y="285" point_x="245" point_y="390"/>
+	            <cell x="151" y="361" point_x="94" point_y="293"/>
+	            <cell x="151" y="435" point_x="134" point_y="283"/>
+	            <cell x="151" y="518" point_x="304" point_y="191"/>
+	            <cell x="151" y="586" point_x="291" point_y="221"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="0" point_x="306" point_y="311"/>
+	            <cell x="302" y="69" point_x="349" point_y="291"/>
+	            <cell x="302" y="143" point_x="304" point_y="270"/>
+	            <cell x="302" y="212" point_x="304" point_y="270"/>
+	            <cell x="302" y="285" point_x="245" point_y="390"/>
+	            <cell x="302" y="361" point_x="385" point_y="243"/>
+	            <cell x="302" y="435" point_x="504" point_y="281"/>
+	            <cell x="302" y="551"  point_x="304" point_y="208"/>
+	        </column>
+	    </template>
+<!-- helm upgrade schemes -->
+	    <template name="upgrade_scheme_helm_respirator">
+	        <column>
+	            <cell x="0" y="34" point_x="306" point_y="267"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="308" point_y="373"/>
+	            <cell x="151" y="69" point_x="358" point_y="315"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_helm_hardhat">
+	        <column>
+	            <cell x="0" y="34" point_x="400" point_y="332"/>
+	            <cell x="0" y="177" point_x="323" point_y="302"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="317" point_y="215"/>
+	            <cell x="151" y="69" point_x="400" point_y="332"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_helm_protective">
+	        <column>
+	            <cell x="0" y="34" point_x="306" point_y="195"/>
+	            <cell x="0" y="177" point_x="306" point_y="338"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="398" point_y="368"/>
+	            <cell x="151" y="69" point_x="411" point_y="277"/>
+	            <cell x="151" y="177" point_x="223" point_y="224"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="0" point_x="392" point_y="222"/>
+	            <cell x="302" y="69" point_x="306" point_y="278"/>
+	            <cell x="302" y="177" point_x="306" point_y="338"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_helm_tactic">
+	        <column>
+	            <cell x="0" y="34" point_x="326" point_y="360"/>
+	            <cell x="0" y="177" point_x="402" point_y="322"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="342" point_y="218"/>
+	            <cell x="151" y="69" point_x="381" point_y="285"/>
+	            <cell x="151" y="177" point_x="313" point_y="293"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="0" point_x="249" point_y="278"/>
+	            <cell x="302" y="69" point_x="411" point_y="363"/>
+	            <cell x="302" y="177" point_x="391" point_y="211"/>
+	        </column>
+	    </template>
+	    <template name="upgrade_scheme_helm_battle">
+	        <column>
+	            <cell x="0" y="34" point_x="419" point_y="329"/>
+	            <cell x="0" y="177" point_x="375" point_y="357"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="328" point_y="245"/>
+	            <cell x="151" y="69" point_x="419" point_y="329"/>
+	            <cell x="151" y="143" point_x="225" point_y="236"/>
+	            <cell x="151" y="212" point_x="302" point_y="210"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="34" point_x="296" point_y="354"/>
+	            <cell x="302" y="177" point_x="302" point_y="210"/>
+	        </column>
+	    </template>
+<!-- weapon upgrade schemes -->
+		<template name="upgrade_scheme_abakan">
+			<column>
+				<cell x="0" y="62" point_x="379" point_y="276" /> <!-- barrel_otkat -->
+				<cell x="0" y="242" point_x="209" point_y="266" /> <!-- podacha -->
+				<cell x="0" y="349" point_x="223" point_y="329" /> <!-- mag45_black -->	
+				<cell x="0" y="411" point_x="196" point_y="280" /> <!-- mag45_brown -->
+				<cell x="0" y="489" point_x="68" point_y="256" /> <!-- stock_weight -->
+				<cell x="0" y="574" point_x="145" point_y="281" /> <!-- grip -->
+			</column>
+			<column>
+				<cell x="151" y="31" point_x="160" point_y="260" /> <!-- usm_rpm -->
+				<cell x="151" y="93" point_x="175" point_y="260" /> <!-- usm_accuracy -->
+				<cell x="151" y="208" point_x="181" point_y="255" /> <!-- usilenie_korobki -->
+				<cell x="151" y="270" point_x="234" point_y="250" /> <!-- zatvor_balancer -->
+				<cell x="151" y="380" point_x="209" point_y="309" /> <!-- mag60 -->
+				<cell x="151" y="489" point_x="28" point_y="256" /> <!-- tilnik -->
+				<cell x="151" y="574" point_x="489" point_y="253" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="545" point_y="284" /> <!-- barrel_compensator -->
+				<cell x="302" y="62" point_x="577" point_y="293" /> <!-- barrel_bullet_speed -->
+				<cell x="302" y="124" point_x="447" point_y="273" /> <!-- barrel_accuracy -->
+				<cell x="302" y="208" point_x="260" point_y="266" /> <!-- body_reliability -->
+				<cell x="302" y="270" point_x="219" point_y="260" /> <!-- lightdetails -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_ak74">
+			<column>
+				<cell x="0" y="65" point_x="557" point_y="276" /> <!-- barrel -->
+				<cell x="0" y="240" point_x="294" point_y="259" /> <!-- light_tsevie -->
+				<cell x="0" y="328" point_x="228" point_y="318" /> <!-- mag45_black -->
+				<cell x="0" y="391" point_x="209" point_y="281" /> <!-- mag45_brown -->
+				<cell x="0" y="477" point_x="62" point_y="252" /> <!-- weight_priklad -->
+				<cell x="0" y="560" point_x="491" point_y="235" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="0" point_x="164" point_y="270" /> <!-- usm_rpm -->
+				<cell x="151" y="65" point_x="209" point_y="242" /> <!-- usm_accuracy -->
+				<cell x="151" y="129" point_x="174" point_y="263" /> <!-- usm_rpm_down -->
+				<cell x="151" y="240" point_x="309" point_y="239" /> <!-- foregrip_rail -->
+				<cell x="151" y="360" point_x="213" point_y="298" /> <!-- mag60 -->
+				<cell x="151" y="477" point_x="32" point_y="253" /> <!-- nakladka_priklad -->
+				<cell x="151" y="560" point_x="140" point_y="290" /> <!-- handle -->
+			</column>
+			<column>
+				<cell x="302" y="32" point_x="191" point_y="259" /> <!-- lightdetails -->
+				<cell x="302" y="97" point_x="145" point_y="250" /> <!-- reliability -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_ak74u">
+			<column>
+				<cell x="0" y="39" point_x="534" point_y="273" /> <!-- barrel -->
+				<cell x="0" y="200" point_x="379" point_y="260" /> <!-- tsevie -->
+				<cell x="0" y="326" point_x="291" point_y="307" /> <!-- mag45_black -->
+				<cell x="0" y="394" point_x="291" point_y="304" /> <!-- mag45_brown -->
+				<cell x="0" y="484" point_x="285" point_y="219" /> <!-- sights -->
+				<cell x="0" y="571" point_x="221" point_y="256" /> <!-- lastochka -->
+			</column>
+			<column>
+				<cell x="151" y="3" point_x="292" point_y="245" /> <!-- usm_accuracy -->
+				<cell x="151" y="68" point_x="228" point_y="269" /> <!-- usm_rpm -->
+				<cell x="151" y="357" point_x="298" point_y="312" /> <!-- mag60 -->
+				<cell x="151" y="484" point_x="74" point_y="256" /> <!-- nakladka_priklad -->
+			</column>
+			<column>
+				<cell x="302" y="3" point_x="289" point_y="264" /> <!-- lightdetails -->
+				<cell x="302" y="68" point_x="228" point_y="249" /> <!-- reliability -->
+				<cell x="302" y="484" point_x="200" point_y="287" /> <!-- handle -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_beretta">
+			<column>
+				<cell x="0" y="70" point_x="274" point_y="269" /> <!-- pokritie -->
+				<cell x="0" y="340" point_x="353" point_y="276" /> <!-- kompensator -->
+				<cell x="0" y="560" point_x="432" point_y="235" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="39" point_x="232" point_y="249" /> <!-- zapiratel -->
+				<cell x="151" y="107" point_x="247" point_y="229" /> <!-- shell_ejector -->
+				<cell x="151" y="304" point_x="255" point_y="281" /> <!-- spusk_rpm -->
+				<cell x="151" y="371" point_x="225" point_y="262" /> <!-- spusk_recoil -->
+				<cell x="151" y="560" point_x="175" point_y="360" /> <!-- light_mag -->
+			</column>
+			<column>
+				<cell x="302" y="3" point_x="387" point_y="252" /> <!-- barrel_accuracy -->
+				<cell x="302" y="70" point_x="436" point_y="257" /> <!-- barrel_bullet_speed -->
+				<cell x="302" y="138" point_x="462" point_y="257" /> <!-- barrel_silencer -->
+				<cell x="302" y="236" point_x="157" point_y="217" /> <!-- forced_details -->
+				<cell x="302" y="304" point_x="198" point_y="236" /> <!-- titan_details -->
+				<cell x="302" y="371" point_x="255" point_y="256" /> <!-- light_details -->
+				<cell x="302" y="442" point_x="255" point_y="231" /> <!-- calibration -->
+				<cell x="302" y="560" point_x="175" point_y="307" /> <!-- anatomic_handle -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_bm16">
+			<column>
+				<cell x="0" y="0" point_x="411" point_y="297" /> <!-- short_barrel -->
+				<cell x="0" y="76" point_x="574" point_y="314" /> <!-- sights -->
+				<cell x="0" y="186" point_x="91" point_y="280" /> <!-- short_stock -->
+				<cell x="0" y="267" point_x="34" point_y="285" /> <!-- accurate_stock -->
+				<cell x="0" y="388" point_x="132" point_y="255" /> <!-- kurki -->
+			</column>
+			<column>
+				<cell x="151" y="37" point_x="192" point_y="263" /> <!-- barrel_dovodka -->
+				<cell x="151" y="225" point_x="204" point_y="283" /> <!-- light_tsevie -->
+				<cell x="151" y="388" point_x="162" point_y="277" /> <!-- sharnir -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="291" point_y="281" /> <!-- barrel_narezka -->
+				<cell x="302" y="76" point_x="206" point_y="269" /> <!-- barrel_break_speed -->
+				<cell x="302" y="225" point_x="140" point_y="277" /> <!-- calibration -->
+				<cell x="302" y="388" point_x="177" point_y="263" /> <!-- korobka -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_colt1911">
+			<column>
+				<cell x="0" y="31" point_x="242" point_y="225" /> <!-- shell_ejector -->
+				<cell x="0" y="94" point_x="274" point_y="231" /> <!-- patronnik_accuracy -->
+				<cell x="0" y="221" point_x="215" point_y="250" /> <!-- titan_details -->
+				<cell x="0" y="284" point_x="300" point_y="280" /> <!-- light_details -->
+				<cell x="0" y="411" point_x="136" point_y="353" /> <!-- big_mag -->
+				<cell x="0" y="474" point_x="160" point_y="314" /> <!-- light_mag_handle -->
+				<cell x="0" y="577" point_x="470" point_y="239" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="0" point_x="492" point_y="260" /> <!-- barrel_sil -->
+				<cell x="151" y="63" point_x="432" point_y="255" /> <!-- barrel_speed -->
+				<cell x="151" y="127" point_x="347" point_y="250" /> <!-- barrel_accuracy -->
+				<cell x="151" y="190" point_x="228" point_y="285" /> <!-- usm_rpm -->
+				<cell x="151" y="253" point_x="142" point_y="236" /> <!-- usm_recoil -->
+				<cell x="151" y="316" point_x="208" point_y="231" /> <!-- usm_accuracy -->
+				<cell x="151" y="380" point_x="208" point_y="250" /> <!-- zatvor_rpm -->
+				<cell x="151" y="443" point_x="213" point_y="226" /> <!-- zatvor_recoil -->
+				<cell x="151" y="506" point_x="374" point_y="245" /> <!-- zatvor_reliability -->
+			</column>
+			<column>
+				<cell x="302" y="158" point_x="294" point_y="246" /> <!-- bullet_hit_power -->
+				<cell x="302" y="347" point_x="253" point_y="260" /> <!-- recoil_compensation_system -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_desert_eagle">
+			<column>
+				<cell x="0" y="68" point_x="289" point_y="270" /> <!-- polymer_details -->
+				<cell x="0" y="132" point_x="432" point_y="270" /> <!-- gazootvod -->
+				<cell x="0" y="346" point_x="147" point_y="315" /> <!-- light_mag -->
+				<cell x="0" y="495" point_x="325" point_y="273" /> <!-- rail -->
+				<cell x="0" y="574" point_x="164" point_y="323" /> <!-- handle -->
+			</column>
+			<column>
+				<cell x="151" y="34" point_x="357" point_y="233" /> <!-- barrel_hp -->
+				<cell x="151" y="96" point_x="255" point_y="225" /> <!-- barrel_accuracy -->
+				<cell x="151" y="160" point_x="491" point_y="242" /> <!-- barrel_compensator -->
+				<cell x="151" y="309" point_x="166" point_y="371" /> <!-- mag_uderzhatel -->
+				<cell x="151" y="377" point_x="177" point_y="270" /> <!-- mag_balance -->
+				<cell x="151" y="574" point_x="477" point_y="211" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="302" y="3" point_x="208" point_y="222" /> <!-- usm_accuracy -->
+				<cell x="302" y="68" point_x="232" point_y="270" /> <!-- usm_rpm -->
+				<cell x="302" y="132" point_x="145" point_y="225" /> <!-- usm_recoil -->
+				<cell x="302" y="197" point_x="164" point_y="253" /> <!-- usm_reliability -->
+				<cell x="302" y="281" point_x="419" point_y="239" /> <!-- pokritie -->
+				<cell x="302" y="346" point_x="281" point_y="231" /> <!-- patronnik -->
+				<cell x="302" y="408" point_x="213" point_y="228" /> <!-- zapiratel -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_fn2000">
+			<column>
+				<cell x="0" y="34" point_x="179" point_y="288"/>
+				<cell x="0" y="177" point_x="208" point_y="274"/>
+				<cell x="0" y="321" point_x="151" point_y="267"/>
+				<cell x="0" y="471" point_x="208" point_y="225"/>
+			</column>
+			<column>
+				<cell x="151" y="0" point_x="226" point_y="281"/>
+				<cell x="151" y="69" point_x="396" point_y="288"/>
+				<cell x="151" y="143" point_x="349" point_y="281"/>
+				<cell x="151" y="212" point_x="349" point_y="281"/>
+				<cell x="151" y="287" point_x="255" point_y="274"/>
+				<cell x="151" y="356" point_x="113" point_y="260"/>
+				<cell x="151" y="471" point_x="330" point_y="225"/>
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="179" point_y="260"/>
+				<cell x="302" y="69" point_x="472" point_y="288"/>
+				<cell x="302" y="143" point_x="236" point_y="267"/>
+				<cell x="302" y="212" point_x="236" point_y="267"/>
+				<cell x="302" y="287" point_x="302" point_y="281"/>
+				<cell x="302" y="356" point_x="274" point_y="239"/>
+				<cell x="302" y="436" point_x="274" point_y="239"/>
+				<cell x="302" y="506" point_x="208" point_y="225"/>
+			</column>
+		</template>
+		<template name="upgrade_scheme_fort">
+			<column>
+				<cell x="0" y="63" point_x="206" point_y="229" /> <!-- light_details -->
+				<cell x="0" y="281" point_x="226" point_y="263" /> <!-- podacha -->
+				<cell x="0" y="484" point_x="438" point_y="219" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="31" point_x="457" point_y="243" /> <!-- barrel_sil -->
+				<cell x="151" y="94" point_x="391" point_y="238" /> <!-- barrel_speed -->
+				<cell x="151" y="245" point_x="181" point_y="218" /> <!-- usm_recoil -->
+				<cell x="151" y="308" point_x="287" point_y="262" /> <!-- usm_rpm -->
+				<cell x="151" y="484" point_x="192" point_y="308" /> <!-- handle -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="258" point_y="224" /> <!-- ejector -->
+				<cell x="302" y="63" point_x="285" point_y="229" /> <!-- zatvor_balancer -->
+				<cell x="302" y="127" point_x="311" point_y="229" /> <!-- patronnik_accuracy -->
+				<cell x="302" y="281" point_x="242" point_y="248" /> <!-- body -->
+				<cell x="302" y="484" point_x="187" point_y="361" /> <!-- light_mag -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_g36">
+			<column>
+				<cell x="0" y="34" point_x="208" point_y="295"/>
+				<cell x="0" y="177" point_x="151" point_y="274"/>
+				<cell x="0" y="321" point_x="509" point_y="302"/>
+				<cell x="0" y="464" point_x="255" point_y="246"/>
+			</column>
+			<column>
+				<cell x="151" y="34" point_x="255" point_y="288"/>
+				<cell x="151" y="143" point_x="47" point_y="281"/>
+				<cell x="151" y="212" point_x="47" point_y="281"/>
+				<cell x="151" y="321" point_x="566" point_y="309"/>
+				<cell x="151" y="464" point_x="236" point_y="225"/>
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="406" point_y="288"/>
+				<cell x="302" y="69" point_x="226" point_y="267"/>
+				<cell x="302" y="177" point_x="189" point_y="267"/>
+				<cell x="302" y="287" point_x="453" point_y="295"/>
+				<cell x="302" y="356" point_x="453" point_y="295"/>
+				<cell x="302" y="430" point_x="208" point_y="232"/>
+				<cell x="302" y="499" point_x="208" point_y="232"/>
+			</column>
+		</template>
+		<template name="upgrade_scheme_groza">
+			<column>
+				<cell x="0" y="31" point_x="200" point_y="290" /> <!-- mag_fixator -->
+				<cell x="0" y="93" point_x="242" point_y="335" /> <!-- mag_size -->
+				<cell x="0" y="222" point_x="202" point_y="255" /> <!-- shell_ejector -->
+				<cell x="0" y="312" point_x="113" point_y="262" /> <!-- light_stock -->
+				<cell x="0" y="374" point_x="100" point_y="253" /> <!-- stock_inertion -->
+				<cell x="0" y="468" point_x="349" point_y="262" /> <!-- tactical_rail -->
+				<cell x="0" y="568" point_x="428" point_y="218" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="0" point_x="406" point_y="305" /> <!-- usm_accuracy -->
+				<cell x="151" y="62" point_x="372" point_y="300" /> <!-- usm_rpm -->
+				<cell x="151" y="124" point_x="392" point_y="305" /> <!-- usm_rpm_down -->
+				<cell x="151" y="191" point_x="247" point_y="270" /> <!-- zatvor_balancer -->
+				<cell x="151" y="253" point_x="266" point_y="266" /> <!-- patronnik_accuracy -->
+				<cell x="151" y="343" point_x="309" point_y="267" /> <!-- gascam -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="511" point_y="304" /> <!-- barrel_speed -->
+				<cell x="302" y="62" point_x="472" point_y="300" /> <!-- barrel_accuracy -->
+				<cell x="302" y="124" point_x="440" point_y="295" /> <!-- barrel_recoil -->
+				<cell x="302" y="222" point_x="274" point_y="281" /> <!-- body -->
+				<cell x="302" y="312" point_x="177" point_y="252" /> <!-- light_details -->
+				<cell x="302" y="375" point_x="170" point_y="271" /> <!-- usilenie_korobki -->
+				<cell x="302" y="568" point_x="336" point_y="335" /> <!-- handle -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_hpsa">
+			<column>
+				<cell x="0" y="62" point_x="274" point_y="249" /> <!-- shell_ejector -->
+				<cell x="0" y="266" point_x="208" point_y="253" /> <!-- polymer_buffer -->
+				<cell x="0" y="439" point_x="313" point_y="239" /> <!-- zatvor_balancer -->
+				<cell x="0" y="571" point_x="451" point_y="228" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="30" point_x="234" point_y="232" /> <!-- zapiratel -->
+				<cell x="151" y="93" point_x="274" point_y="233" /> <!-- patronnik -->
+				<cell x="151" y="235" point_x="147" point_y="224" /> <!-- usm_recoil -->
+				<cell x="151" y="297" point_x="247" point_y="269" /> <!-- usm_rpm -->
+				<cell x="151" y="408" point_x="189" point_y="224" /> <!-- light_details -->
+				<cell x="151" y="470" point_x="234" point_y="238" /> <!-- titan_details -->
+				<cell x="151" y="571" point_x="155" point_y="371" /> <!-- mag_prujina -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="406" point_y="243" /> <!-- barrel_speed -->
+				<cell x="302" y="62" point_x="485" point_y="248" /> <!-- barrel_sil -->
+				<cell x="302" y="124" point_x="458" point_y="248" /> <!-- barrel_dispersion -->
+				<cell x="302" y="266" point_x="226" point_y="253" /> <!-- body -->
+				<cell x="302" y="571" point_x="164" point_y="322" /> <!-- plastic_handle -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_l85">
+			<column>
+				<cell x="0" y="70" point_x="102" point_y="284" /> <!-- mag_fixator -->
+				<cell x="0" y="250" point_x="94" point_y="278" /> <!-- firemode -->
+				<cell x="0" y="402" point_x="143" point_y="314" /> <!-- mag40 -->
+				<cell x="0" y="546" point_x="392" point_y="240" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="34" point_x="136" point_y="262" /> <!-- usm_accuracy -->
+				<cell x="151" y="98" point_x="253" point_y="297" /> <!-- usm_rpm -->
+				<cell x="151" y="217" point_x="234" point_y="267" /> <!-- body_reliability -->
+				<cell x="151" y="281" point_x="189" point_y="293" /> <!-- body_weight -->
+				<cell x="151" y="363" point_x="374" point_y="323" /> <!-- tac_handle -->
+				<cell x="151" y="428" point_x="158" point_y="354" /> <!-- mag60 -->
+				<cell x="151" y="509" point_x="38" point_y="273" /> <!-- priklad -->
+				<cell x="151" y="574" point_x="219" point_y="328" /> <!-- grip -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="457" point_y="300" /> <!-- barrel_accuracy -->
+				<cell x="302" y="70" point_x="566" point_y="311" /> <!-- barrel_kompensator -->
+				<cell x="302" y="141" point_x="491" point_y="302" /> <!-- barrel_bullet_speed -->
+				<cell x="302" y="250" point_x="132" point_y="264" /> <!-- zatvor_balancer -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_lr300">
+			<column>
+				<cell x="0" y="34" point_x="215" point_y="276"/>
+				<cell x="0" y="177" point_x="151" point_y="269"/>
+				<cell x="0" y="321" point_x="240" point_y="278"/>
+				<cell x="0" y="464" point_x="187" point_y="281"/>
+				<cell x="0" y="575" point_x="228" point_y="336"/>
+			</column>
+			<column>
+				<cell x="151" y="0" point_x="364" point_y="291"/>
+				<cell x="151" y="69" point_x="321" point_y="271"/>
+				<cell x="151" y="177" point_x="343" point_y="288"/>
+				<cell x="151" y="287" point_x="196" point_y="260"/>
+				<cell x="151" y="356" point_x="194" point_y="276"/>
+				<cell x="151" y="464" point_x="177" point_y="297"/>
+			</column>
+			<column>
+				<cell x="302" y="34" point_x="262" point_y="280"/>
+				<cell x="302" y="143" point_x="170" point_y="267"/>
+				<cell x="302" y="212" point_x="162" point_y="283"/>
+				<cell x="302" y="321" point_x="226" point_y="293"/>
+				<cell x="302" y="430" point_x="162" point_y="316"/>
+				<cell x="302" y="499" point_x="206" point_y="291"/>
+			</column>
+		</template>
+		<template name="upgrade_scheme_mp5">
+			<column>
+				<cell x="0" y="45" point_x="325" point_y="267" /> <!-- mag_fixator -->
+				<cell x="0" y="218" point_x="411" point_y="232" /> <!-- zatvor_balancer -->
+				<cell x="0" y="380" point_x="292" point_y="215" /> <!-- rail -->
+				<cell x="0" y="530" point_x="498" point_y="219" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="14" point_x="530" point_y="256" /> <!-- barrel_compensator -->
+				<cell x="151" y="84" point_x="491" point_y="256" /> <!-- barrel_speed -->
+				<cell x="151" y="218" point_x="313" point_y="226" /> <!-- extractor -->
+				<cell x="151" y="380" point_x="430" point_y="266" /> <!-- handle -->
+				<cell x="151" y="530" point_x="353" point_y="322" /> <!-- mag40 -->
+			</column>
+			<column>
+				<cell x="302" y="14" point_x="277" point_y="239" /> <!-- body_weight -->
+				<cell x="302" y="84" point_x="285" point_y="269" /> <!-- body_coating -->
+				<cell x="302" y="180" point_x="285" point_y="235" /> <!-- usm_accuracy -->
+				<cell x="302" y="248" point_x="272" point_y="273" /> <!-- usm_rpm -->
+				<cell x="302" y="530" point_x="142" point_y="228" /> <!-- plastic_stock -->
+			</column>
+		</template>
+			<template name="upgrade_scheme_mp5_nimble">
+			<column>
+				<cell x="0" y="34" point_x="153" point_y="233"/>
+				<cell x="0" y="177" point_x="245" point_y="239"/>
+				<cell x="0" y="321" point_x="151" point_y="253"/>
+				<cell x="0" y="464" point_x="211" point_y="260"/>
+				<cell x="0" y="575" point_x="274" point_y="326"/>
+			</column>
+			<column>
+				<cell x="151" y="0" point_x="185" point_y="246"/>
+				<cell x="151" y="69" point_x="262" point_y="253"/>
+				<cell x="151" y="177" point_x="236" point_y="262"/>
+				<cell x="151" y="287" point_x="209" point_y="291"/>
+				<cell x="151" y="356" point_x="192" point_y="269"/>
+				<cell x="151" y="464" point_x="355" point_y="260"/>
+			</column>
+			<column>
+				<cell x="302" y="34" point_x="225" point_y="228"/>
+				<cell x="302" y="143" point_x="204" point_y="239"/>
+				<cell x="302" y="212" point_x="281" point_y="240"/>
+				<cell x="302" y="321" point_x="172" point_y="269"/>
+				<cell x="302" y="430" point_x="168" point_y="309"/>
+				<cell x="302" y="499" point_x="404" point_y="259"/>
+	        </column>
+	    </template>
+		<template name="upgrade_scheme_pb">
+				<column>
+				<cell x="0" y="32" point_x="192" point_y="248" /> <!-- barrel_speed -->
+				<cell x="0" y="229" point_x="121" point_y="222" /> <!-- shell_ejector -->
+				<cell x="0" y="399" point_x="87" point_y="240" /> <!-- light_details -->
+				<cell x="0" y="464" point_x="126" point_y="266" /> <!-- hard_details -->
+				<cell x="0" y="571" point_x="87" point_y="218" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="0" point_x="253" point_y="271" /> <!-- barrel_compensation -->
+				<cell x="151" y="65" point_x="253" point_y="238" /> <!-- sil_reliability -->
+				<cell x="151" y="198" point_x="153" point_y="242" /> <!-- patronnik_zapiratel -->
+				<cell x="151" y="263" point_x="126" point_y="238" /> <!-- patronnik_accuracy -->
+				<cell x="151" y="430" point_x="200" point_y="271" /> <!-- ramka -->
+				<cell x="151" y="571" point_x="100" point_y="316" /> <!-- handle -->
+			</column>
+			<column>
+				<cell x="302" y="32" point_x="279" point_y="257" /> <!-- barrel_accuracy -->
+				<cell x="302" y="165" point_x="158" point_y="277" /> <!-- usm_rpm -->
+				<cell x="302" y="229" point_x="81" point_y="238" /> <!-- usm_recoil -->
+				<cell x="302" y="294" point_x="113" point_y="252" /> <!-- usm_accuracy -->
+				<cell x="302" y="430" point_x="140" point_y="277" /> <!-- body_reliability -->
+				<cell x="302" y="571" point_x="108" point_y="356" /> <!-- plastic_mag -->
+			</column>
+		</template>
+	    <template name="upgrade_scheme_pkm">
+	        <column>
+	            <cell x="0" y="34" point_x="104" point_y="260"/>
+	            <cell x="0" y="177" point_x="170" point_y="267"/>
+	            <cell x="0" y="321" point_x="132" point_y="260"/>
+	            <cell x="0" y="464" point_x="38" point_y="260"/>
+	            <cell x="0" y="575" point_x="189" point_y="316"/>
+	        </column>
+	        <column>
+	            <cell x="151" y="0" point_x="189" point_y="253"/>
+	            <cell x="151" y="69" point_x="170" point_y="253"/>
+	            <cell x="151" y="177" point_x="132" point_y="239"/>
+	            <cell x="151" y="287" point_x="406" point_y="295"/>
+	            <cell x="151" y="356" point_x="368" point_y="295"/>
+	            <cell x="151" y="464" point_x="94" point_y="253"/>
+	        </column>
+	        <column>
+	            <cell x="302" y="34" point_x="274" point_y="274"/>
+	            <cell x="302" y="143" point_x="151" point_y="246"/>
+	            <cell x="302" y="212" point_x="151" point_y="260"/>
+	            <cell x="302" y="321" point_x="566" point_y="316"/>
+	            <cell x="302" y="464" point_x="85" point_y="253"/>
+	        </column>
+	    </template>
+		<template name="upgrade_scheme_pm">
+			<column>
+				<cell x="0" y="34" point_x="368" point_y="245" /> <!-- barrel_hp -->
+				<cell x="0" y="110" point_x="442" point_y="246" /> <!-- barrel_sil -->
+				<cell x="0" y="245" point_x="223" point_y="360" /> <!-- plastic_mag -->
+				<cell x="0" y="346" point_x="191" point_y="210" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="70" point_x="253" point_y="278" /> <!-- reliability -->
+				<cell x="151" y="245" point_x="223" point_y="321" /> <!-- handle_recoil -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="275" point_y="229" /> <!-- usm_accuracy -->
+				<cell x="302" y="70" point_x="215" point_y="250" /> <!-- recoil -->
+				<cell x="302" y="141" point_x="302" point_y="269" /> <!-- usm_rpm -->
+				<cell x="302" y="245" point_x="347" point_y="276" /> <!-- plastic_details -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_protecta">
+			<column>
+				<cell x="0" y="127" point_x="540" point_y="305" /> <!-- barrel_voronenie -->
+				<cell x="0" y="363" point_x="302" point_y="297" /> <!-- plastic_mag -->
+				<cell x="0" y="537" point_x="275" point_y="242" /> <!-- rail -->
+			</column>
+			<column>
+				<cell x="151" y="96" point_x="200" point_y="280" /> <!-- usm_rpm -->
+				<cell x="151" y="158" point_x="211" point_y="255" /> <!-- usm_recoil -->
+				<cell x="151" y="332" point_x="200" point_y="266" /> <!-- ejector -->
+				<cell x="151" y="394" point_x="226" point_y="294" /> <!-- light_details -->
+				<cell x="151" y="537" point_x="521" point_y="276" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="302" y="127" point_x="566" point_y="308" /> <!-- barrel_silencer -->
+				<cell x="302" y="188" point_x="377" point_y="283" /> <!-- barrel_narezka -->
+				<cell x="302" y="363" point_x="317" point_y="271" /> <!-- body_reliability -->
+				<cell x="302" y="537" point_x="143" point_y="250" /> <!-- stock -->
+			</column>
+		</template>		
+		<template name="upgrade_scheme_sig220">
+			<column>
+				<cell x="0" y="66" point_x="272" point_y="256" /> <!-- body_reliability -->
+				<cell x="0" y="276" point_x="351" point_y="267" /> <!-- polymer_ramka -->
+				<cell x="0" y="436" point_x="277" point_y="240" /> <!-- shell_ejector -->
+				<cell x="0" y="571" point_x="443" point_y="221" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="31" point_x="204" point_y="232" /> <!-- usm_recoil -->
+				<cell x="151" y="94" point_x="264" point_y="271" /> <!-- usm_rpm -->
+				<cell x="151" y="239" point_x="232" point_y="248" /> <!-- light_details -->
+				<cell x="151" y="307" point_x="211" point_y="228" /> <!-- titan_details -->
+				<cell x="151" y="436" point_x="238" point_y="225" /> <!-- zatvor_zapiratel -->
+				<cell x="151" y="571" point_x="374" point_y="283" /> <!-- flashlaser -->
+			</column>
+			<column>
+				<cell x="302" y="1" point_x="462" point_y="242" /> <!-- barrel_sil -->
+				<cell x="302" y="65" point_x="436" point_y="238" /> <!-- barrel_accuracy -->
+				<cell x="302" y="128" point_x="409" point_y="238" /> <!-- barrel_speed -->
+				<cell x="302" y="274" point_x="311" point_y="243" /> <!-- polymer_buffer -->
+				<cell x="302" y="436" point_x="291" point_y="231" /> <!-- patronnik -->
+				<cell x="302" y="571" point_x="175" point_y="329" /> <!-- handle -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_sig550">
+			<column>
+				<cell x="0" y="63" point_x="174" point_y="281" /> <!-- mag_lock -->
+				<cell x="0" y="235" point_x="181" point_y="252" /> <!-- shell_ejector -->
+				<cell x="0" y="377" point_x="128" point_y="290" /> <!-- handle -->
+				<cell x="0" y="494" point_x="274" point_y="301" /> <!-- tac_foregrip -->
+				<cell x="0" y="571" point_x="419" point_y="281" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="31" point_x="142" point_y="262" /> <!-- zatvor_accuracy -->
+				<cell x="151" y="94" point_x="175" point_y="256" /> <!-- zatvor_balancer -->
+				<cell x="151" y="201" point_x="136" point_y="266" /> <!-- usm_recoil -->
+				<cell x="151" y="264" point_x="147" point_y="276" /> <!-- usm_rpm_up -->
+				<cell x="151" y="346" point_x="83" point_y="250" /> <!-- light_stock -->
+				<cell x="151" y="411" point_x="36" point_y="262" /> <!-- stock_nakladka -->
+				<cell x="151" y="571" point_x="189" point_y="309" /> <!-- mag -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="557" point_y="345" /> <!-- barrel_recoil -->
+				<cell x="302" y="63" point_x="525" point_y="335" /> <!-- barrel_accuracy -->
+				<cell x="302" y="127" point_x="485" point_y="329" /> <!-- barrel_speed -->
+				<cell x="302" y="238" point_x="134" point_y="256" /> <!-- korobka -->
+				<cell x="302" y="377" point_x="181" point_y="271" /> <!-- body_reliability -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_spas12">
+			<column>
+				<cell x="0" y="34" point_x="462" point_y="295"/>
+				<cell x="0" y="177" point_x="66" point_y="281"/>
+				<cell x="0" y="321" point_x="104" point_y="274"/>
+				<cell x="0" y="464" point_x="142" point_y="281"/>
+			</column>
+			<column>
+				<cell x="151" y="0" point_x="500" point_y="302"/>
+				<cell x="151" y="69" point_x="566" point_y="309"/>
+				<cell x="151" y="143" point_x="66" point_y="309"/>
+				<cell x="151" y="212" point_x="57" point_y="295"/>
+				<cell x="151" y="287" point_x="311" point_y="302"/>
+				<cell x="151" y="356" point_x="208" point_y="288"/>
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="396" point_y="295"/>
+				<cell x="302" y="69" point_x="547" point_y="302"/>
+				<cell x="302" y="287" point_x="123" point_y="281"/>
+				<cell x="302" y="356" point_x="132" point_y="267"/>
+			</column>
+		</template>
+		<template name="upgrade_scheme_svd">
+			<column>
+				<cell x="0" y="65" point_x="347" point_y="312" /> <!-- podavatel -->
+				<cell x="0" y="281" point_x="558" point_y="287" /> <!-- kompensator -->
+				<cell x="0" y="458" point_x="45" point_y="326" /> <!-- tilnik -->
+				<cell x="0" y="574" point_x="543" point_y="270" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="31" point_x="404" point_y="273" /> <!-- zatvor_balanser -->
+				<cell x="151" y="96" point_x="385" point_y="273" /> <!-- zatvor_reliability -->
+				<cell x="151" y="245" point_x="464" point_y="281" /> <!-- light_tsevie -->
+				<cell x="151" y="312" point_x="498" point_y="276" /> <!-- gascam -->
+				<cell x="151" y="422" point_x="151" point_y="280" /> <!-- sheka -->
+				<cell x="151" y="489" point_x="132" point_y="318" /> <!-- light_priklad -->
+				<cell x="151" y="574" point_x="374" point_y="332" /> <!-- plastic_mag -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="313" point_y="315" /> <!-- usm_rpm -->
+				<cell x="302" y="65" point_x="321" point_y="293" /> <!-- usm_accuracy -->
+				<cell x="302" y="129" point_x="328" point_y="307" /> <!-- usm_reliability -->
+				<cell x="302" y="214" point_x="542" point_y="284" /> <!-- barrel_reliability -->
+				<cell x="302" y="281" point_x="526" point_y="285" /> <!-- barrel_accuracy -->
+				<cell x="302" y="349" point_x="519" point_y="283" /> <!-- barrel_bullet_speed -->
+				<cell x="302" y="458" point_x="325" point_y="267" /> <!-- pokritie -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_svu">
+			<column>
+				<cell x="0" y="34" point_x="115" point_y="281" /> <!-- prujina -->
+				<cell x="0" y="98" point_x="143" point_y="295" /> <!-- titan_details -->
+				<cell x="0" y="267" point_x="321" point_y="312" /> <!-- anatomic_pokritie_tsevie -->
+				<cell x="0" y="413" point_x="102" point_y="276" /> <!-- sheka -->
+				<cell x="0" y="548" point_x="223" point_y="318" /> <!-- handle_anatomic -->
+			</column>
+			<column>
+				<cell x="151" y="34" point_x="247" point_y="315" /> <!-- usm_rpm -->
+				<cell x="151" y="98" point_x="232" point_y="295" /> <!-- usm_reliability -->
+				<cell x="151" y="231" point_x="415" point_y="309" /> <!-- gascam -->
+				<cell x="151" y="293" point_x="257" point_y="293" /> <!-- light_tsevie -->
+				<cell x="151" y="380" point_x="147" point_y="323" /> <!-- mag -->
+				<cell x="151" y="447" point_x="123" point_y="309" /> <!-- mag_lock -->
+				<cell x="151" y="548" point_x="496" point_y="307" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="111" point_y="278" /> <!-- zatvor_balancer_recoil -->
+				<cell x="302" y="62" point_x="191" point_y="293" /> <!-- zatvor_accuracy -->
+				<cell x="302" y="124" point_x="153" point_y="295" /> <!-- zatvor_reliability -->
+				<cell x="302" y="191" point_x="568" point_y="332" /> <!-- barrel_bullet_speed -->
+				<cell x="302" y="256" point_x="440" point_y="321" /> <!-- barrel_accuracy -->
+				<cell x="302" y="318" point_x="511" point_y="326" /> <!-- barrel_recoil -->
+				<cell x="302" y="413" point_x="208" point_y="290" /> <!-- pokritie -->		
+				<cell x="302" y="509" point_x="34" point_y="304" /> <!-- priclad_rezina -->
+				<cell x="302" y="574" point_x="49" point_y="284" /> <!-- priklad_weight -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_toz34">
+			<column>
+				<cell x="0" y="-3" point_x="81" point_y="245" /> <!-- stock -->
+				<cell x="0" y="65" point_x="47" point_y="245" /> <!-- plate -->
+				<cell x="0" y="214" point_x="508" point_y="321" /> <!-- barrel -->
+				<cell x="0" y="284" point_x="575" point_y="323" /> <!-- sights -->
+				<cell x="0" y="425" point_x="236" point_y="242" /> <!-- weaver -->
+			</column>
+			<column>
+				<cell x="151" y="31" point_x="164" point_y="256" /> <!-- usm -->
+				<cell x="151" y="214" point_x="340" point_y="281" /> <!-- barrel_narezka -->
+				<cell x="151" y="284" point_x="255" point_y="264" /> <!-- reliability -->
+			</column>
+			<column>
+				<cell x="302" y="135" point_x="202" point_y="248" /> <!-- calibration -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_usp">
+			<column>
+				<cell x="0" y="65" point_x="108" point_y="264" /> <!-- pokritie -->
+				<cell x="0" y="290" point_x="92" point_y="262" /> <!-- light_details -->
+				<cell x="0" y="453" point_x="217" point_y="270" /> <!-- ramka -->
+				<cell x="0" y="565" point_x="262" point_y="228" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="31" point_x="28" point_y="250" /> <!-- usm_recoil -->
+				<cell x="151" y="96" point_x="134" point_y="267" /> <!-- usm_rpm -->
+				<cell x="151" y="253" point_x="142" point_y="236" /> <!-- patronnik -->
+				<cell x="151" y="315" point_x="77" point_y="236" /> <!-- polymer_buffer -->
+				<cell x="151" y="565" point_x="58" point_y="360" /> <!-- light_mag -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="194" point_y="239" /> <!-- barrel_recoil -->
+				<cell x="302" y="65" point_x="274" point_y="245" /> <!-- barrel_bullet_speed -->
+				<cell x="302" y="129" point_x="221" point_y="242" /> <!-- barrel_accuracy -->
+				<cell x="302" y="225" point_x="111" point_y="219" /> <!-- zatvor_ejector -->
+				<cell x="302" y="290" point_x="89" point_y="236" /> <!-- zatvor_zapiratel -->
+				<cell x="302" y="354" point_x="77" point_y="253" /> <!-- zatvor_rpm -->
+				<cell x="302" y="565" point_x="70" point_y="318" /> <!-- anatomic_handle -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_val">
+			<column>
+				<cell x="0" y="42" point_x="185" point_y="264" /> <!-- body_reliability -->
+				<cell x="0" y="366" point_x="381" point_y="267" /> <!-- rail2 -->
+				<cell x="0" y="495" point_x="38" point_y="276" /> <!-- tilnik -->
+			</column>
+			<column>
+				<cell x="151" y="6" point_x="234" point_y="259" /> <!-- accuracy_usm -->
+				<cell x="151" y="68" point_x="185" point_y="273" /> <!-- rpm_usm -->
+				<cell x="151" y="366" point_x="381" point_y="287" /> <!-- handle -->
+				<cell x="151" y="492" point_x="317" point_y="250" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="302" y="6" point_x="532" point_y="276" /> <!-- barrel_speed -->
+				<cell x="302" y="70" point_x="442" point_y="273" /> <!-- reliability_barrel -->
+				<cell x="302" y="492" point_x="242" point_y="307" /> <!-- light_mag -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_vintorez">
+			<column>
+				<cell x="0" y="39" point_x="270" point_y="285" /> <!-- lightdetails -->
+				<cell x="0" y="366" point_x="413" point_y="278" /> <!-- rail2 -->
+				<cell x="0" y="495" point_x="108" point_y="270" /> <!-- recoil -->
+			</column>
+			<column>
+				<cell x="151" y="6" point_x="266" point_y="267" /> <!-- usm_accuracy -->
+				<cell x="151" y="68" point_x="228" point_y="281" /> <!-- usm_rpm -->
+				<cell x="151" y="366" point_x="421" point_y="301" /> <!-- handle -->
+				<cell x="151" y="492" point_x="572" point_y="276" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="302" y="6" point_x="568" point_y="288" /> <!-- barrel_accuracy -->
+				<cell x="302" y="68" point_x="370" point_y="277" /> <!-- barrel -->
+				<cell x="302" y="492" point_x="277" point_y="309" /> <!-- mag20 -->
+		</column>
+		</template>
+		<template name="upgrade_scheme_walther">
+			<column>
+				<cell x="0" y="65" point_x="211" point_y="248" /> <!-- titan_details -->
+				<cell x="0" y="276" point_x="277" point_y="242" /> <!-- patronnik -->
+				<cell x="0" y="442" point_x="343" point_y="273" /> <!-- usilinie_ramki -->
+				<cell x="0" y="561" point_x="425" point_y="224" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="31" point_x="292" point_y="271" /> <!-- usm_rpm -->
+				<cell x="151" y="98" point_x="232" point_y="276" /> <!-- usm_recoil -->
+				<cell x="151" y="276" point_x="291" point_y="222" /> <!-- shell_ejector -->
+				<cell x="151" y="440" point_x="225" point_y="281" /> <!-- body -->
+				<cell x="151" y="561" point_x="213" point_y="366" /> <!-- light_mag -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="338" point_y="242" /> <!-- barrel_bullet_speed -->
+				<cell x="302" y="65" point_x="404" point_y="246" /> <!-- barrel_accuracy -->
+				<cell x="302" y="129" point_x="455" point_y="248" /> <!-- barrel_sil -->
+				<cell x="302" y="238" point_x="225" point_y="222" /> <!-- zatvor_zapiratel -->
+				<cell x="302" y="302" point_x="338" point_y="240" /> <!-- zatvor_recoil -->
+				<cell x="302" y="561" point_x="219" point_y="316" /> <!-- handle -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_wincheaster1300">
+			<column>
+				<cell x="0" y="84" point_x="408" point_y="287" /> <!-- barrel_voronenie -->
+				<cell x="0" y="318" point_x="198" point_y="256" /> <!-- shell_ejector -->
+				<cell x="0" y="492" point_x="340" point_y="298" /> <!-- pompa_kompensator -->
+				<cell x="0" y="574" point_x="155" point_y="255" /> <!-- rail -->
+			</column>
+			<column>
+				<cell x="151" y="53" point_x="426" point_y="288" /> <!-- barrel_speed -->
+				<cell x="151" y="115" point_x="309" point_y="274" /> <!-- barrel_dispersion -->
+				<cell x="151" y="256" point_x="143" point_y="277" /> <!-- soft_trigger -->
+				<cell x="151" y="318" point_x="223" point_y="269" /> <!-- patronnik_accuracy -->
+				<cell x="151" y="380" point_x="202" point_y="284" /> <!-- body_reliability -->
+				<cell x="151" y="492" point_x="317" point_y="304" /> <!-- tactical_handle -->
+				<cell x="151" y="574" point_x="521" point_y="293" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="302" y="53" point_x="430" point_y="304" /> <!-- mag -->
+				<cell x="302" y="115" point_x="464" point_y="293" /> <!-- barrel_short -->
+				<cell x="302" y="225" point_x="196" point_y="267" /> <!-- usm_accuracy -->
+				<cell x="302" y="287" point_x="174" point_y="276" /> <!-- usm_recoil -->
+				<cell x="302" y="349" point_x="155" point_y="270" /> <!-- usm_light_details -->
+				<cell x="302" y="411" point_x="155" point_y="276" /> <!-- usm_reliability_details -->
+				<cell x="302" y="574" point_x="83" point_y="267" /> <!-- stock -->
+			</column>
+		</template>
+<!-- new weapons -->
+		<template name="upgrade_scheme_bizon">
+			<column>
+				<cell x="0" y="62" point_x="279" point_y="297" /> <!-- mag_lock -->
+				<cell x="0" y="260" point_x="464" point_y="316" /> <!-- mag_shnek -->
+				<cell x="0" y="451" point_x="411" point_y="271" /> <!-- light_tsevie -->
+				<cell x="0" y="561" point_x="496" point_y="253" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="31" point_x="240" point_y="267" /> <!-- usm_recoil -->
+				<cell x="151" y="93" point_x="234" point_y="287" /> <!-- usm_rpm -->
+				<cell x="151" y="226" point_x="225" point_y="269" /> <!-- light_details -->
+				<cell x="151" y="297" point_x="238" point_y="249" /> <!-- pokritie_reliability -->
+				<cell x="151" y="451" point_x="438" point_y="285" /> <!-- rail -->
+				<cell x="151" y="561" point_x="60" point_y="278" /> <!-- nakladka -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="485" point_y="283" /> <!-- barrel_bullet_speed -->
+				<cell x="302" y="62" point_x="536" point_y="293" /> <!-- barrel_dispersion -->
+				<cell x="302" y="124" point_x="313" point_y="273" /> <!-- barrel_9x19 -->
+				<cell x="302" y="203" point_x="289" point_y="259" /> <!-- zatvor_balancer -->
+				<cell x="302" y="264" point_x="257" point_y="259" /> <!-- shell_ejector -->
+				<cell x="302" y="329" point_x="225" point_y="259" /> <!-- zatvor_prujina -->
+				<cell x="302" y="561" point_x="198" point_y="315" /> <!-- handle -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_fiveseven">
+			<column>
+				<cell x="0" y="0" point_x="251" point_y="270"/>	<!-- fiveseven_reliability -->
+				<cell x="0" y="141" point_x="440" point_y="233"/>	<!-- fiveseven_sights -->
+			</column>
+			<column>
+				<cell x="151" y="0" point_x="474" point_y="259"/> 	<!-- fiveseven_barrel_sil -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="225" point_y="242"/>	<!-- fiveseven_usm_accuracy -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_glock17">
+			<column>
+				<cell x="0" y="70" point_x="264" point_y="262"/>	<!-- glock17_reliability -->
+				<cell x="0" y="245" point_x="192" point_y="374"/>	<!-- glock17_mag19 -->
+				<cell x="0" y="349" point_x="157" point_y="201"/>	<!-- glock17_sights -->
+			</column>
+			<column>
+				<cell x="151" y="35" point_x="477" point_y="277"/> 	<!-- glock17_barrel_sil -->
+				<cell x="151" y="105" point_x="508" point_y="278"/> <!-- glock17_barrel_kompensator -->
+				<cell x="151" y="245" point_x="140" point_y="394"/> <!-- glock17_mag33 -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="262" point_y="248"/>	<!-- glock17_usm_accuracy -->
+				<cell x="302" y="70" point_x="162" point_y="226"/>	<!-- glock17_usm_fullautofire -->
+				<cell x="302" y="141" point_x="162" point_y="226"/>	<!-- glock17_usm_x3fire -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_grach">
+			<column>
+				<cell x="0" y="0" point_x="266" point_y="270" /> <!-- usm_rpm -->
+				<cell x="0" y="62" point_x="128" point_y="211" /> <!-- usm_recoil -->
+				<cell x="0" y="124" point_x="258" point_y="246" /> <!-- body_reliability -->
+				<cell x="0" y="186" point_x="187" point_y="276" /> <!-- light_details -->
+				<cell x="0" y="248" point_x="219" point_y="280" /> <!-- titan_details -->
+				<cell x="0" y="345" point_x="419" point_y="242" /> <!-- barrel_recoil -->
+				<cell x="0" y="442" point_x="326" point_y="270" /> <!-- light_ramka -->
+				<cell x="0" y="503" point_x="353" point_y="269" /> <!-- hard_ramka -->
+				<cell x="0" y="570" point_x="451" point_y="219" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="93" point_x="185" point_y="246" /> <!-- int_recoil -->
+				<cell x="151" y="155" point_x="217" point_y="240" /> <!-- int_bulletspeed -->
+				<cell x="151" y="314" point_x="432" point_y="252" /> <!-- barrel_speed -->
+				<cell x="151" y="375" point_x="419" point_y="232" /> <!-- barrel_accuracy -->
+				<cell x="151" y="473" point_x="379" point_y="280" /> <!-- rail -->
+				<cell x="151" y="570" point_x="160" point_y="377" /> <!-- light_mag -->
+			</column>
+			<column>
+				<cell x="302" y="31" point_x="357" point_y="236" /> <!-- zatvor_rpm -->
+				<cell x="302" y="93" point_x="225" point_y="211" /> <!-- zatvor_recoil -->
+				<cell x="302" y="155" point_x="272" point_y="214" /> <!-- patronnik_accuracy -->
+				<cell x="302" y="217" point_x="330" point_y="229" /> <!-- zatvor_zapiratel -->
+				<cell x="302" y="345" point_x="485" point_y="246" /> <!-- barrel_sil -->
+				<cell x="302" y="570" point_x="160" point_y="333" /> <!-- handle -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_gsh18">
+			<column>
+				<cell x="0" y="128" point_x="274" point_y="242" /> <!-- shell_ejector -->
+				<cell x="0" y="364" point_x="268" point_y="248" /> <!-- body_reliability -->
+				<cell x="0" y="570" point_x="438" point_y="233" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="97" point_x="255" point_y="224" /> <!-- patronnik_obturation -->
+				<cell x="151" y="159" point_x="287" point_y="228" /> <!-- patronnik_dispersion -->
+				<cell x="151" y="333" point_x="208" point_y="283" /> <!-- polymer_buffer -->
+				<cell x="151" y="395" point_x="340" point_y="277" /> <!-- ramka -->
+				<cell x="151" y="570" point_x="181" point_y="332" /> <!-- handle -->
+			</column>
+			<column>
+				<cell x="302" y="66" point_x="387" point_y="248" /> <!-- barrel_speed -->
+				<cell x="302" y="128" point_x="419" point_y="253" /> <!-- barrel_recoil -->
+				<cell x="302" y="190" point_x="466" point_y="257" /> <!-- barrel_accuracy -->
+				<cell x="302" y="302" point_x="287" point_y="269" /> <!-- usm_rpm -->
+				<cell x="302" y="364" point_x="189" point_y="233" /> <!-- usm_recoil -->
+				<cell x="302" y="426" point_x="228" point_y="259" /> <!-- usm_reliability -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_p90">
+			<column>
+				<cell x="0" y="0" point_x="434" point_y="316"/>		<!-- p90_reliability -->
+			</column>
+			<column>
+				<cell x="151" y="0" point_x="351" point_y="325"/> 	<!-- p90_usm -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_rgm40">
+			<column>
+				<cell x="0" y="31" point_x="308" point_y="328" /> <!-- trigger -->
+				<cell x="0" y="285" point_x="391" point_y="335" /> <!-- polymer_details -->
+				<cell x="0" y="495" point_x="266" point_y="349" /> <!-- handle -->
+			</column>
+			<column>
+				<cell x="151" y="0" point_x="304" point_y="305" /> <!-- light_details -->
+				<cell x="151" y="63" point_x="345" point_y="323" /> <!-- titan_details -->
+				<cell x="151" y="255" point_x="77" point_y="285" /> <!-- recoil_stock -->
+				<cell x="151" y="318" point_x="266" point_y="300" /> <!-- light_stock -->
+			</column>
+			<column>
+				<cell x="302" y="31" point_x="345" point_y="307" /> <!-- body -->
+				<cell x="302" y="285" point_x="453" point_y="356" /> <!-- narezka_gren_speed -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_saiga12">
+			<column>
+				<cell x="0" y="97" point_x="185" point_y="262" /> <!-- mag_fix -->
+				<cell x="0" y="353" point_x="309" point_y="270" /> <!-- light_foregrip -->
+				<cell x="0" y="558" point_x="404" point_y="249" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="62" point_x="513" point_y="315" /> <!-- barrel_narezka -->
+				<cell x="151" y="131" point_x="566" point_y="329" /> <!-- barrel_dtk -->
+				<cell x="151" y="319" point_x="34" point_y="219" /> <!-- stock_nakladka -->
+				<cell x="151" y="388" point_x="72" point_y="228" /> <!-- light_stock -->
+				<cell x="151" y="558" point_x="189" point_y="314" /> <!-- mag10 -->
+			</column>
+			<column>
+				<cell x="302" y="30" point_x="200" point_y="222" /> <!-- patronnik -->
+				<cell x="302" y="97" point_x="151" point_y="245" /> <!-- usm_rpm -->
+				<cell x="302" y="166" point_x="234" point_y="236" /> <!-- usm_recoil -->
+				<cell x="302" y="283" point_x="185" point_y="242" /> <!-- accurate_details -->
+				<cell x="302" y="353" point_x="204" point_y="239" /> <!-- titan_details -->
+				<cell x="302" y="419" point_x="166" point_y="214" /> <!-- lightdetails -->
+				<cell x="302" y="558" point_x="125" point_y="280" /> <!-- handle -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_sr1m">
+			<column>
+				<cell x="0" y="63" point_x="183" point_y="242" /> <!-- zatvor_balancer -->
+				<cell x="0" y="224" point_x="202" point_y="294" /> <!-- mag_reliability -->
+				<cell x="0" y="335" point_x="247" point_y="277" /> <!-- usm_rpm -->
+				<cell x="0" y="398" point_x="136" point_y="218" /> <!-- usm_recoil_kurok_myagkii_spusk -->
+				<cell x="0" y="481" point_x="311" point_y="277" /> <!-- light_ramka -->
+				<cell x="0" y="574" point_x="451" point_y="238" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="32" point_x="223" point_y="226" /> <!-- ejector -->
+				<cell x="151" y="100" point_x="268" point_y="238" /> <!-- patronnik_obturation -->
+				<cell x="151" y="193" point_x="160" point_y="326" /> <!-- handle_weight -->
+				<cell x="151" y="256" point_x="134" point_y="297" /> <!-- handle_inertion -->
+				<cell x="151" y="366" point_x="189" point_y="263" /> <!-- light_details -->
+				<cell x="151" y="481" point_x="353" point_y="281" /> <!-- rail -->
+				<cell x="151" y="574" point_x="153" point_y="371" /> <!-- mag -->
+			</column>
+			<column>
+				<cell x="302" y="0" point_x="458" point_y="260" /> <!-- barrel_accuracy -->
+				<cell x="302" y="63" point_x="387" point_y="256" /> <!-- barrel_speed -->
+				<cell x="302" y="127" point_x="479" point_y="266" /> <!-- barrel_sil -->
+				<cell x="302" y="224" point_x="247" point_y="262" /> <!-- body -->
+				<cell x="302" y="366" point_x="183" point_y="239" /> <!-- recoil_compensation_system -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_stechkin">
+			<column>
+				<cell x="0" y="65" point_x="232" point_y="218" /> <!-- shell_ejector -->
+				<cell x="0" y="253" point_x="219" point_y="245" /> <!-- zapiratel -->
+				<cell x="0" y="422" point_x="151" point_y="370" /> <!-- zaschelka -->
+				<cell x="0" y="485" point_x="145" point_y="330" /> <!-- prujina -->
+				<cell x="0" y="570" point_x="462" point_y="232" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="32" point_x="151" point_y="285" /> <!-- usm_rpm -->
+				<cell x="151" y="96" point_x="132" point_y="226" /> <!-- usm_recoil -->
+				<cell x="151" y="235" point_x="323" point_y="276" /> <!-- light_details -->
+				<cell x="151" y="298" point_x="204" point_y="245" /> <!-- titan_details -->
+				<cell x="151" y="457" point_x="257" point_y="273" /> <!-- pokritie -->
+				<cell x="151" y="570" point_x="179" point_y="375" /> <!-- light_mag -->
+			</column>
+			<column>
+				<cell x="302" y="32" point_x="396" point_y="252" /> <!-- barrel_speed -->
+				<cell x="302" y="96" point_x="457" point_y="256" /> <!-- barrel_accuracy -->
+				<cell x="302" y="190" point_x="258" point_y="229" /> <!-- zatvor_balancer -->
+				<cell x="302" y="253" point_x="204" point_y="240" /> <!-- zatvor_dispersion -->
+				<cell x="302" y="316" point_x="153" point_y="231" /> <!-- perevodchik -->
+				<cell x="302" y="570" point_x="166" point_y="330" /> <!-- handle -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_tt33">
+			<column>
+				<cell x="0" y="141" point_x="213" point_y="297" /> <!-- podacha -->
+				<cell x="0" y="370" point_x="226" point_y="277" /> <!-- light_details -->
+				<cell x="0" y="546" point_x="440" point_y="260" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="110" point_x="143" point_y="236" /> <!-- kurok -->
+				<cell x="151" y="173" point_x="228" point_y="290" /> <!-- usm_rpm -->
+				<cell x="151" y="339" point_x="457" point_y="287" /> <!-- barrel_accuracy -->
+				<cell x="151" y="402" point_x="409" point_y="283" /> <!-- barrel_speed -->
+				<cell x="151" y="546" point_x="174" point_y="366" /> <!-- light_mag -->
+			</column>
+			<column>
+				<cell x="302" y="77" point_x="266" point_y="248" /> <!-- patronnik -->
+				<cell x="302" y="141" point_x="223" point_y="231" /> <!-- ejector -->
+				<cell x="302" y="204" point_x="181" point_y="238" /> <!-- zatvor -->
+				<cell x="302" y="370" point_x="225" point_y="281" /> <!-- body_reliability -->
+				<cell x="302" y="546" point_x="174" point_y="321" /> <!-- plastic_handle -->
+			</column>
+		</template>
+		<template name="upgrade_scheme_ump45">
+			<column>
+				<cell x="0" y="45" point_x="308" point_y="283" /> <!-- mag_fixator -->
+				<cell x="0" y="218" point_x="406" point_y="238" /> <!-- zatvor_balancer -->
+				<cell x="0" y="380" point_x="249" point_y="218" /> <!-- rail -->
+				<cell x="0" y="530" point_x="445" point_y="228" /> <!-- sights -->
+			</column>
+			<column>
+				<cell x="151" y="14" point_x="509" point_y="273" /> <!-- barrel_compensator -->
+				<cell x="151" y="84" point_x="466" point_y="271" /> <!-- barrel_speed -->
+				<cell x="151" y="218" point_x="308" point_y="248" /> <!-- extractor -->
+				<cell x="151" y="380" point_x="408" point_y="277" /> <!-- handle -->
+				<cell x="151" y="530" point_x="523" point_y="277" /> <!-- sil -->
+			</column>
+			<column>
+				<cell x="302" y="14" point_x="242" point_y="267" /> <!-- body_weight -->
+				<cell x="302" y="84" point_x="260" point_y="233" /> <!-- body_coating -->
+				<cell x="302" y="180" point_x="255" point_y="233" /> <!-- usm_accuracy -->
+				<cell x="302" y="248" point_x="272" point_y="273" /> <!-- usm_rpm -->
+				<cell x="302" y="530" point_x="94" point_y="228" /> <!-- stock -->
+			</column>
+		</template>
+	</templates>
+</w>

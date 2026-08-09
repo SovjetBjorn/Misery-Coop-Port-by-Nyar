@@ -1,0 +1,161 @@
+	<tab_client>
+		<main anchor="bot-right" x="470" y="100" width="1038" height="480"/>
+		<server_list x="32" y="61" width="808" height="340">
+			<sizes icon="40" server="240" map="210" game="90" players="70" ping="60" version="100"/>
+			<frame x="0" y="21" width="808" height="370">
+				<texture>ui_inGame2_servers_list_frame</texture>
+			</frame>
+			<list x="2" y="23" width="803" height="340" height2="172" item_height="25" always_show_scroll="1" can_select="1">
+				<font font="din_next17"/>
+			</list>
+			<list_item>
+				<text font="din_next17" complex_mode="0"/>
+			</list_item>
+			<header x="0" y="0" width="15" height="21">
+				<text font="din_next14_bold" x="0" y="1" align="c" vert_align="c" complex_mode="0"/>
+			</header>
+
+			<header_frames x="0" y="0" width="30" height="21">
+				<texture>ui_inGame2_servers_list_button</texture>
+			</header_frames>
+			<separator x="0" y="4" width="2" height="41" vertical="1">
+				<texture>ui_inGame2_servers_list_button_devider</texture>
+			</separator>
+
+			<filter max_symb_count="32">
+				<text font="din_next17" vert_align="c" complex_mode="0"/>
+			</filter>
+			<edit_gs_filter x="87" y2="211" y="378" width="721" height="31" max_symb_count="48">
+				<text x="6" font="din_next17" complex_mode="0"/>
+				<texture>ui_inGame2_edit_box</texture>
+				<auto_static x="-91" y="0" width="75" height="31">
+					<text font="din_next17_bold" vert_align="c" align="r" complex_mode="0">st_mp_gsfilter</text>
+				</auto_static>
+			</edit_gs_filter>
+
+			<cap_server_properties x="0" y="258" width="496" height="21">
+				<text font="din_next14" x="4" y="1" vert_align="c" complex_mode="0">mm_mp_server_prop</text>
+				<texture>ui_inGame2_servers_list_button</texture>
+			</cap_server_properties>
+			<cap_players_list x="508" y="258" width="141" height="21">
+				<text font="din_next14" x="4" y="1" vert_align="c" complex_mode="0">mm_mp_players</text>
+				<texture>ui_inGame2_servers_list_button</texture>
+			</cap_players_list>
+			<cap_frags x="649" y="258" width="60" height="21">
+				<text font="din_next14" x="4" y="1" vert_align="c" complex_mode="0">mm_mp_frags</text>
+				<texture>ui_inGame2_servers_list_button</texture>
+			</cap_frags>
+			<cap_death x="709" y="258" width="99" height="21">
+				<text font="din_next14" x="4" y="1" vert_align="c" complex_mode="0">mm_mp_deaths</text>
+				<texture>ui_inGame2_servers_list_button</texture>
+			</cap_death>
+
+			<list_server_properties x="3" y="280" width="490" height="128" item_height="25" always_show_scroll="1" can_select="1">
+				<font r="131" g="131" b="131" font="din_next16"/>
+				<frame x="0" y="279" width="495" height="132">
+					<texture>ui_inGame2_servers_list_frame</texture>
+				</frame>
+			</list_server_properties>
+			<list_players_list x="511" y="280" width="293" height="128" item_height="25" always_show_scroll="1" can_select="1">
+				<font r="131" g="131" b="131" font="din_next16"/>
+				<frame x="508" y="279" width="299" height="132">
+					<texture>ui_inGame2_servers_list_frame</texture>
+				</frame>
+			</list_players_list>
+		</server_list>
+<!-- 
+		<cap_network_connection x="32" y="0" width="264" height="31" stretch="1">
+			<texture>ui_inGame2_text_leyer_1</texture>
+			<auto_static x="60" y="0" width="740" height="31">
+				<text font="din_next17_bold" vert_align="c">mm_mp_network_connection</text>
+			</auto_static>
+		</cap_network_connection>
+ -->
+		<cap_server_list x="32" y="13" width="808" height="31" stretch="1">
+			<texture>ui_inGame2_text_leyer</texture>
+			<auto_static x="12" y="0" width="792" height="31">
+				<text font="din_next17_bold" vert_align="c">mm_mp_server_list</text>
+			</auto_static>
+		</cap_server_list>
+
+		<cap_filters x="869" y="13" width="189" height="31" stretch="1">
+			<texture>ui_inGame2_text_leyer_2</texture>
+			<auto_static x="12" y="0" width="189" height="31">
+				<text font="din_next17_bold" vert_align="c">mm_mp_filters</text>
+			</auto_static>
+		</cap_filters>
+
+		<check_current_version anchor="bot-right" x="147" y="179" width="22" height="22" stretch="1">
+			<texture>ui_mainmenu_checkbox_bg</texture>
+			<check_mark anchor="mid-center" width="30" height="22">
+				<texture>ui_mainmenu_checkbox_mark</texture>
+			</check_mark>
+			<text x="15" font="din_next17">mm_mp_current_version</text>
+			<options_item entry="mm_net_filter_current_version" group="mm_mp_srv_filter"/>
+		</check_current_version>
+		<check_empty anchor="bot-right" x="147" y="215" width="22" height="22" stretch="1">
+			<texture>ui_mainmenu_checkbox_bg</texture>
+			<check_mark anchor="mid-center" width="30" height="22">
+				<texture>ui_mainmenu_checkbox_mark</texture>
+			</check_mark>
+			<text x="15" font="din_next17">mm_mp_empty</text>
+			<options_item entry="mm_net_filter_empty" group="mm_mp_srv_filter"/>
+		</check_empty>
+		<check_full anchor="bot-right" x="147" y="251" width="22" height="22" stretch="1">
+			<texture>ui_mainmenu_checkbox_bg</texture>
+			<check_mark anchor="mid-center" width="30" height="22">
+				<texture>ui_mainmenu_checkbox_mark</texture>
+			</check_mark>
+			<text x="15" font="din_next17">mm_mp_full</text>
+			<options_item entry="mm_net_filter_full" group="mm_mp_srv_filter"/>
+		</check_full>
+		<check_with_pass anchor="bot-right" x="147" y="288" width="22" height="22" stretch="1">
+			<texture>ui_mainmenu_checkbox_bg</texture>
+			<check_mark anchor="mid-center" width="30" height="22">
+				<texture>ui_mainmenu_checkbox_mark</texture>
+			</check_mark>
+			<text x="15" font="din_next17">mm_mp_withpassword</text>
+			<options_item entry="mm_net_filter_pass" group="mm_mp_srv_filter"/>
+		</check_with_pass>
+		<check_without_pass anchor="bot-right" x="147" y="324" width="22" height="22" stretch="1">
+			<texture>ui_mainmenu_checkbox_bg</texture>
+			<check_mark anchor="mid-center" width="30" height="22">
+				<texture>ui_mainmenu_checkbox_mark</texture>
+			</check_mark>
+			<text x="15" font="din_next17">mm_mp_withoutpassword</text>
+			<options_item entry="mm_net_filter_wo_pass" group="mm_mp_srv_filter"/>
+		</check_without_pass>
+		<check_without_ff anchor="bot-right" x="147" y="361" width="22" height="22" stretch="1">
+			<texture>ui_mainmenu_checkbox_bg</texture>
+			<check_mark anchor="mid-center" width="30" height="22">
+				<texture>ui_mainmenu_checkbox_mark</texture>
+			</check_mark>
+			<text x="15" font="din_next17">mm_mp_withoutfriendlyfire</text>
+			<options_item entry="mm_net_filter_wo_ff" group="mm_mp_srv_filter"/>
+		</check_without_ff>
+		<check_listen_servers anchor="bot-right" x="147" y="397" width="22" height="22" stretch="1">
+			<texture>ui_mainmenu_checkbox_bg</texture>
+			<check_mark anchor="mid-center" width="30" height="22">
+				<texture>ui_mainmenu_checkbox_mark</texture>
+			</check_mark>
+			<text x="15" font="din_next17">mm_mp_listenservers</text>
+			<options_item entry="mm_net_filter_listen" group="mm_mp_srv_filter"/>
+		</check_listen_servers>
+
+		<btn_direct_ip anchor="bot-right" x="-20" y="9" width="189" height="34" stretch="1">
+			<text align="c" font="din_next17_bold" complex_mode="0">st_mp_direct_ip</text>
+			<texture>ui_ingame_default_button</texture>
+		</btn_direct_ip>
+		<btn_refresh anchor="bot-right" x="-20" y="49" width="189" height="34" stretch="1">
+			<text align="c" font="din_next17_bold" complex_mode="0">mm_mp_refresh</text>
+			<texture>ui_ingame_default_button</texture>
+		</btn_refresh>
+		<btn_quick_refresh anchor="bot-right" x="-20" y="88" width="189" height="34" stretch="1">
+			<text align="c" font="din_next17_bold" complex_mode="0">mm_mp_quickrefresh</text>
+			<texture>ui_ingame_default_button</texture>
+		</btn_quick_refresh>
+		<btn_server_info anchor="bot-right" x="-20" y="128" width="189" height="34" stretch="1">
+			<text align="c" font="din_next17_bold" complex_mode="0">mm_mp_serverinfo</text>
+			<texture>ui_ingame_default_button</texture>
+		</btn_server_info>
+	</tab_client>

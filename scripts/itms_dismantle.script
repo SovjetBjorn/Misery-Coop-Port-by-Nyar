@@ -1,0 +1,2562 @@
+-- PORT_NOTES (Misery_Coop_Port, tools/build_cooking.py) -- coop-adapted
+-- Misery dismantle UI (2544 lines), coop. Parses the deployed ui_itm_main.xml;
+-- runs client-side off the local player's inventory + item conditions. The
+-- dismantle itself reads conditions and spawns the recovered parts. set_condition
+-- is CLIENT-side and PERSISTS in coop. The server ops -- the local give()/give_const
+-- (give_const funnels through give()), the 4 direct part/gauss/tool alife:create,
+-- and the source-item alife:release -- route through the mc_cooking item-wear RPC
+-- (itemop_give/itemop_release). The 3 ammo-unload alife:create_ammo (recover loaded
+-- rounds on dismantle) are coop-stubbed (do end) for v1: itemop_give would spawn a
+-- full box, not the loaded count -- proper ammo-stack recovery is a bughunt-pass
+-- refinement. blanket: db.actor->getLocalActor, alife():object->level.object_by_id,
+-- :section_name->:section. Dispatch (itms_manager) already active: DismantleModEnable
+-- is the items_refunct_mod/dismantle_enable sub-flag (true, not flipped by ship).
+-- STATE_Write guard: the 3 get_weapon_data reads are pcall'd + fall back to a safe
+-- table -- STATE_Write is nil on client objects in the fork -> CTD on weapon-select.
+
+--#####################################################################################
+--## Dismantle feature, Items Refunct Mod for MISERY mod  ##  scripting by Plaargath ##
+--#####################################################################################
+---------------------------------------------------------------------------------------
+-- thx: kcs123, tt44, CrommCruac for support
+---------------------------------------------------------------------------------------
+
+local plugin, configltx = ini_file("plugins\\dismantle.ltx"), ini_file("plugins\\dismantle_configs.ltx")
+local plx, clx = "[dismantle.ltx] ", "[dismantle_configs.ltx] "
+local is_debug = alun_utils.read_from_ini(ini_file("debug\\xrs_debug_tools.ltx"),"plugin","enable","bool",true,"xrs_debug_tools")
+
+class "load_item" (CUIListBoxItem)
+function load_item:__init(height) super(height)
+	self.file_name = "filename"
+	self:SetTextColor(GetARGB(255, 170, 170, 170))
+	self.fn = self:GetTextItem()
+	self.fn:SetFont(GetFontLetterica18Russian())
+	self.fn:SetEllipsis(true)
+end
+function load_item:__finalize()
+end
+class "irm_dismantle" (CUIScriptWnd)
+
+
+---------------------------
+-- MAIN DISMANTLE WINDOW --
+---------------------------
+function irm_dismantle:__init(owner,section) super()
+	math.randomseed(device():time_global())
+	self.tool = section
+	self.trgt = nil
+	self.empty_kits_enabled = alun_utils.read_from_ini(ini_file("plugins\\itms_manager.ltx"),"items_refunct_mod","empty_kits_enable","bool",true)
+	self:InitControls()
+	self:InitCallBacks()
+end
+function irm_dismantle:__finalize()
+end
+
+function irm_dismantle:InitControls()
+	self:SetWndRect(Frect():set(0,0,1024,768))
+	self:SetAutoDelete(true)
+	self.xml = CScriptXmlInit()
+	local ctrl
+	self.xml:ParseFile("ui_itm_main.xml")
+	ctrl = CUIWindow()
+	self.xml:InitWindow("dismantle:file_item:main",0,ctrl)
+	self.file_item_main_sz = vector2():set(ctrl:GetWidth(),ctrl:GetHeight())
+	self.xml:InitWindow("dismantle:file_item:fn",0,ctrl)
+	self.file_item_fn_sz = vector2():set(ctrl:GetWidth(),ctrl:GetHeight())
+	self.xml:InitWindow("dismantle:file_item:fd",0,ctrl)
+	self.file_item_fd_sz = vector2():set(ctrl:GetWidth(),ctrl:GetHeight())
+	self.form = self.xml:InitStatic("dismantle:form",self)
+	self.form:SetWndPos(vector2():set(0, 0))
+
+	-- TARGET title
+	self.caption_trgts_title = self.xml:InitTextWnd("dismantle:form:caption_trgts_title",self.form)
+	self.caption_trgts_title:SetText(game.translate_string("st_dismantle_ui_caption_trgts_title"))
+	-- TARGET icon
+	self.icon_trgt = self.xml:InitStatic("dismantle:form:icon_trgt",self.form)
+	-- TOOL name
+	local tool_name = game.translate_string(system_ini():r_string(self.tool,"inv_name"))
+	self.caption_tool = self.xml:InitTextWnd("dismantle:form:caption_tool",self.form)
+	self.caption_tool:SetText(tool_name)
+	-- TOOL icon
+	self.uiic = self.xml:InitStatic("dismantle:form:icon_tool",self.form)
+	local inv_grid_width 	= system_ini():r_float(self.tool,"inv_grid_width")
+	local inv_grid_height 	= system_ini():r_float(self.tool,"inv_grid_height")
+	local inv_grid_x 		= system_ini():r_float(self.tool,"inv_grid_x")
+	local inv_grid_y 		= system_ini():r_float(self.tool,"inv_grid_y")
+	local x1 = inv_grid_x*50
+	local y1 = inv_grid_y*50
+	local w = inv_grid_width*50
+	local h = inv_grid_height*50
+	local x2 = x1 + w
+	local y2 = y1 + h
+	local w,h = w,h
+	if (utils.is_widescreen()) then
+		w,h = w/1.2,h/1
+	else
+		w,h = w/1,h/1
+	end
+	self.uiic:InitTexture("ui\\ui_icon_equipment")
+	self.uiic:SetTextureRect(Frect():set(x1,y1,x2,y2))
+	self.uiic:SetWndSize(vector2():set(w,h))
+	if not (self.uiic.x) then
+		local pos = self.uiic:GetWndPos()
+		local posform = self.form:GetWndPos()
+		self.uiic.x = pos.x + posform.x
+		self.uiic.y = pos.y + posform.y
+	end
+	self.uiic:SetWndPos(vector2():set(self.uiic.x-w/2, self.uiic.y-h/2))
+
+	-- CAPTIONS
+	-- target caption
+	self.caption_trgts = self.xml:InitTextWnd("dismantle:form:caption_trgts",self.form)
+	self.list_box_trgts = self.xml:InitListBox("dismantle:form:list_trgts",self.form)
+	local frame = self.xml:InitFrame("dismantle:form:list_frame_trgts",self.form)
+	self.list_box_trgts:ShowSelectedItem(true)
+	self:Register(self.list_box_trgts,"list_window_trgts")
+	-- secondary hint captions
+	self.caption_left_inner_title = self.xml:InitTextWnd("dismantle:form:caption_left_inner_title",self.form)
+	self.caption_warning = self.xml:InitTextWnd("dismantle:form:caption_warning",self.form)
+	self.caption_aux_title = self.xml:InitTextWnd("dismantle:form:caption_aux_title",self.form)
+	self.caption_aux = self.xml:InitTextWnd("dismantle:form:caption_aux",self.form)
+	-- main hint caption
+	self.slots_warning = self.xml:InitTextWnd("dismantle:form:slots_warning",self.form)
+	self.slots_warning:SetText("")
+
+	-- BUTTONS
+	ctrl = self.xml:Init3tButton("dismantle:form:btn_ok",self.form)
+	self:Register(ctrl,"button_ok")
+	ctrl = self.xml:Init3tButton("dismantle:form:btn_cancel",self.form)
+	self:Register(ctrl,"button_cancel")
+	ctrl = self.xml:Init3tButton("dismantle:form:btn_help",self.form)
+	self:Register(ctrl,"button_help")
+
+	-- HELP TABS
+	self.help_bg = self.xml:InitStatic("dismantle:form:help_bg",self.form)
+	self.help_bg:Show(false)
+	self.helptabs = {}
+	self.helptabs.row1col1 = self.xml:InitStatic("dismantle:form:tab_row1col1",self)
+	self.helptabs.row2col1 = self.xml:InitStatic("dismantle:form:tab_row2col1",self)
+	self.helptabs.row1col2 = self.xml:InitStatic("dismantle:form:tab_row1col2",self)
+	self.helptabs.row2col2 = self.xml:InitStatic("dismantle:form:tab_row2col2",self)
+	self.helptabs.row1col3 = self.xml:InitStatic("dismantle:form:tab_row1col3",self)
+	self.helptabs.row2col3 = self.xml:InitStatic("dismantle:form:tab_row2col3",self)
+	self.helptabs.row1col4 = self.xml:InitStatic("dismantle:form:tab_row1col4",self)
+	self.helptabs.row2col4 = self.xml:InitStatic("dismantle:form:tab_row2col4",self)
+	self.helptabs["row1col1"]:Show(false)
+	self.helptabs["row2col1"]:Show(false)
+	self.helptabs["row1col2"]:Show(false)
+	self.helptabs["row2col2"]:Show(false)
+	self.helptabs["row1col3"]:Show(false)
+	self.helptabs["row2col3"]:Show(false)
+	self.helptabs["row1col4"]:Show(false)
+	self.helptabs["row2col4"]:Show(false)
+	self.tabs = self.xml:InitTab("dismantle:form:tabs",self)
+	self:Register(self.tabs,"tabs")
+	self.tabs:Show(false)
+
+	-- Get equipped items' IDs
+	if getLocalActor():item_in_slot(2)  then self.slot2_id  = getLocalActor():item_in_slot(2):id()  end
+	if getLocalActor():item_in_slot(3)  then self.slot3_id  = getLocalActor():item_in_slot(3):id()  end
+	if getLocalActor():item_in_slot(7)  then self.slot7_id  = getLocalActor():item_in_slot(7):id()  end
+	if getLocalActor():item_in_slot(9)  then self.slot9_id  = getLocalActor():item_in_slot(9):id()  end
+	if getLocalActor():item_in_slot(12) then self.slot12_id = getLocalActor():item_in_slot(12):id() end
+
+end
+function irm_dismantle:InitCallBacks()
+	self:AddCallback("button_ok",			ui_events.BUTTON_CLICKED,			self.OnButtonOk,				self)
+	self:AddCallback("button_cancel",		ui_events.BUTTON_CLICKED,			self.OnButtonCancel,			self)
+	self:AddCallback("list_window",			ui_events.LIST_ITEM_CLICKED,		self.OnListItemClicked,			self)
+	self:AddCallback("list_window",			ui_events.WINDOW_LBUTTON_DB_CLICK,	self.OnListItemDbClicked,		self)
+	self:AddCallback("list_window_trgts",	ui_events.LIST_ITEM_CLICKED,		self.OnTargetsListItemClicked,	self)
+	self:AddCallback("list_window_trgts",	ui_events.WINDOW_LBUTTON_DB_CLICK,	self.OnTargetsListItemDbClicked,self)
+	self:AddCallback("button_help",			ui_events.BUTTON_CLICKED,			self.OnButtonHelp,				self)
+	self:AddCallback("tabs",				ui_events.TAB_CHANGED,				self.OnTabsClicked,				self)
+end
+
+function irm_dismantle:FillTargetsList()
+	self.list_box_trgts:RemoveAll()
+	local is_tool_error
+	local first_PDA_not_found = true
+
+	-- (LOCAL UTIL)
+	local function choose_targets(actor,obj)
+		if obj then
+			local con
+			if get_plugin("targets_with_condition")[obj:section()] then
+				con = obj:condition()
+			end
+
+			if self:tool_is_in("tools_outfit_dismantlers") then
+				if get_plugin("trgts_for_outfit_dismantlers")[obj:section()] then
+					self:AddItemToList(obj,self.list_box_trgts,con)
+				end
+			elseif self:tool_is_in("tools_weapon_dismantlers") then
+				if get_plugin("trgts_for_wpn_dismantlers")[obj:section()] then
+					self:AddItemToList(obj,self.list_box_trgts,con)
+				end
+			elseif self:tool_is_in("tools_all_makeshift") then
+				if get_plugin("trgts_for_"..self.tool)[obj:section()] then
+					if obj:section() ~= "device_pda" then
+						self:AddItemToList(obj,self.list_box_trgts,con)
+					else
+						if first_PDA_not_found then
+							first_PDA_not_found = nil
+						else
+							self:AddItemToList(obj,self.list_box_trgts,con)
+						end
+					end
+				end
+			else
+				is_tool_error = true
+			end
+		end
+	end
+
+	getLocalActor():iterate_inventory(choose_targets,getLocalActor())
+
+	if is_tool_error then
+		self:cast(plx.."Unknown dismantling tool.","FillTargetsList() -> choose_targets()",100)
+		self:OnButtonCancel()
+		return
+	end
+
+	if self.list_box_trgts:GetSize() == 0 then
+		self.caption_trgts:SetText(game.translate_string("st_dismantle_ui_no_trgts"))
+	end
+end
+function irm_dismantle:AddItemToList(item,listbox,condition)
+	local func = "AddItemToList()"
+	local _itm = load_item(self.file_item_main_sz.y)
+	local sec = item and item:section()
+	local inv_name = item and game.translate_string(system_ini():r_string(sec,"inv_name")) or "//cannot read inv_name//"
+	if inv_name == "//cannot read inv_name//" then
+		self:cast("Cannot read targets inv_name from target config.",func,101)
+	end
+
+	_itm:SetWndSize(self.file_item_main_sz)
+	_itm.fn:SetWndPos(vector2():set(0,0))
+	_itm.fn:SetWndSize(self.file_item_fn_sz)
+	_itm.fn:SetText(inv_name)
+
+	if (item) then
+		_itm.item_id = item:id()
+		if condition then
+			condition = math.ceil(condition*100)
+			_itm.fage = _itm:AddTextField(condition.."%", self.file_item_fd_sz.x)
+			_itm.fage:SetWndPos	(vector2():set(self.file_item_fn_sz.x-14, 0))
+		end
+		local inv_grid_width 	= system_ini():r_float(sec,"inv_grid_width")
+		local inv_grid_height 	= system_ini():r_float(sec,"inv_grid_height")
+		local inv_grid_x 		= system_ini():r_float(sec,"inv_grid_x")
+		local inv_grid_y 		= system_ini():r_float(sec,"inv_grid_y")
+		_itm.x1 = inv_grid_x*50
+		_itm.y1 = inv_grid_y*50
+		_itm.width = inv_grid_width*50
+		_itm.height = inv_grid_height*50
+		_itm.x2 = _itm.x1 + _itm.width
+		_itm.y2 = _itm.y1 + _itm.height
+	end
+
+	listbox:AddExistingItem(_itm)
+end
+
+function irm_dismantle:OnTargetsListItemClicked()
+	local func = "OnTargetsListItemClicked()"
+	self.slots_warning:SetText("")
+	-- Checks
+	if self.list_box_trgts:GetSize()==0 then return end
+
+	local item = self.list_box_trgts:GetSelectedItem()
+	if not item then
+		self.icon_trgt:SetTextureRect(Frect():set(0,0,0,0))
+		self.caption_trgts:SetText("")
+		return
+	end
+
+	local se_item = item.item_id and level.object_by_id(item.item_id)
+	if se_item == nil or not getLocalActor():object(se_item:section()) then
+		self.list_box_trgts:RemoveItem(item)
+		return
+	end
+
+	-- Say hello to my little friend
+	self.trgt = se_item:section()
+
+	-- Show UI Icon
+	local w,h = item.width,item.height
+	if (utils.is_widescreen()) then
+		w,h = item.width/1.2,item.height/1
+	else
+		w,h = item.width/1,item.height/1
+	end
+	if item.width > 299 then
+		w,h = w*0.66,h*0.66
+	elseif item.width > 199 then
+		w,h = w*0.85,h*0.85
+	end
+	if item.height > 149 then
+		w,h = w*0.66,h*0.66
+	end
+	self.icon_trgt:InitTexture("ui\\ui_icon_equipment")
+	self.icon_trgt:SetTextureRect(Frect():set(item.x1,item.y1,item.x2,item.y2))
+	self.icon_trgt:SetWndSize(vector2():set(w,h))
+
+	if not (self.icon_trgt.x) then
+		local pos = self.icon_trgt:GetWndPos()
+		self.icon_trgt.x = pos.x
+		self.icon_trgt.y = pos.y
+	end
+	self.icon_trgt:SetWndPos(vector2():set(self.icon_trgt.x-w/2, self.icon_trgt.y-h/2))
+
+	-- Sanity checks
+	if not self:trgt_is_in("all_targets") then
+		self:cast(plx.."Target not included in plugin lists.",func,102)
+		return
+	end
+	if not self:tool_is_in("all_tools") then
+		self:cast(plx.."Tool not included in plugin lists.",func,103)
+		return
+	end
+
+	-- Handle UI Captions
+	self.caption_trgts:SetText(game.translate_string("st_dismantle_ui_hint1"))
+	self.caption_left_inner_title:SetText("")
+	self.caption_warning:SetText("")
+	self.caption_aux:SetText("")
+	-- Dynamic wpn warning and info
+	if self:trgt_is_in("all_wpn_firearms_lists") then
+		local item_by_id = level.object_by_id(item.item_id)
+		local trgt = level.object_by_id(item_by_id:id())
+		local wpn_data = (function() local ok, d = pcall(stpk_utils.get_weapon_data, trgt); return ok and d or {addon_flags = 0, ammo_elapsed = 0, ammo_type = 0, upgrades = {}} end)()  -- coop: STATE_Write nil client-side; fall back so dismantle proceeds
+		local addon_flags = wpn_data.addon_flags
+		-- Warning about wpn scopes not being handled
+		for i = 1,7,2 do
+			if addon_flags == i then
+				self.caption_left_inner_title:SetText(game.translate_string("st_dismantle_ui_warning_title"))
+			end
+		end
+		-- Clue about all wpn addons handling
+		for i = 1,7 do
+			if addon_flags == i then
+				self.caption_warning:SetText(game.translate_string("st_dismantle_ui_addon_"..i))
+			end
+		end
+	end
+
+	-- Handle auxiliary tool
+	self:IncludeAuxTool()
+
+	-- Display warning for equipped items
+	if item.item_id == self.slot2_id then
+		self.slots_warning:SetText(game.translate_string("st_dismantle_ui_warning_slot_2"))
+	elseif item.item_id == self.slot3_id then
+		self.slots_warning:SetText(game.translate_string("st_dismantle_ui_warning_slot_3"))
+	elseif item.item_id == self.slot7_id then
+		self.slots_warning:SetText(game.translate_string("st_dismantle_ui_warning_slot_7"))
+	elseif item.item_id == self.slot9_id then
+		self.slots_warning:SetText(game.translate_string("st_dismantle_ui_warning_slot_9"))
+	elseif item.item_id == self.slot12_id then
+		self.slots_warning:SetText(game.translate_string("st_dismantle_ui_warning_slot_12"))
+	end
+
+end
+function irm_dismantle:OnTargetsListItemDbClicked()
+	self:OnButtonOk()
+end
+
+function irm_dismantle:OnKeyboard(dik,keyboard_action)
+	local bind = dik_to_bind(dik)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik ~= nil
+		and bind ~= key_bindings.kUSE
+		and dik ~= DIK_keys.MOUSE_1
+		and dik ~= DIK_keys.DIK_H
+		and bind ~= key_bindings.kJUMP
+		then
+			self:OnButtonCancel()
+		elseif bind == key_bindings.kUSE then
+			self:OnButtonOk()
+		elseif bind == key_bindings.kJUMP then
+			self:OnButtonHelp()
+		elseif dik == DIK_keys.DIK_H then
+			self:OnButtonHelp()
+		end
+	end
+	return true
+end
+function irm_dismantle:OnButtonCancel()
+	give(self.tool)
+	self:ClearMemory()
+	if self:IsShown() then self:HideDialog() end
+end
+function irm_dismantle:OnButtonOk()
+	local func = "OnButtonOk()"
+	if self.list_box_trgts:GetSize() == 0 then
+		self:FinishWith("UI_cancel_override","override_no_trgt")
+		return
+	end
+
+	self.caption_trgts:SetText(game.translate_string("st_dismantle_ui_hint2"))
+	if (self.list_box_trgts) then
+		index = self.list_box_trgts:GetSelectedIndex()
+		if (index ~= -1) then
+			item = self.list_box_trgts:GetItemByIndex(index)
+			local se_trgt = item and item.item_id and level.object_by_id(item.item_id)
+			if (se_trgt) then
+				-- Sanity check
+				if self.trgt ~= se_trgt:section() then
+					self:cast("Unfortunately shit have just hit the fan.",func,104)
+					return
+				end
+
+				-- CLASS BONUS
+				local class_suffix = system_ini():r_string("actor","actor_class")
+				self.actor_class_main_bonus = get_float("class_bonus","cb_main_class_bonus_"..class_suffix)
+				self.actor_class_fail_bonus = get_float("class_bonus","cb_fail_class_bonus_"..class_suffix)
+				self.actor_class_cdec_bonus = get_float("class_bonus","cb_cdec_class_bonus_"..class_suffix)
+				self.actor_class_blnt_bonus = get_float("class_bonus","cb_blnt_class_bonus_"..class_suffix)
+
+				-- SWITCHGEAR
+				if self:trgt_is_in("all_wpn_firearms_lists") then
+					self:DismantleFirearm(se_trgt,"wpn")
+				elseif self:trgt_is_in("all_outfits_lists") then
+					self:DismantleOutfit(se_trgt,"outfit")
+				elseif self:trgt_is_in("all_helmets_list") then
+					self:DismantleHelm(se_trgt)
+				elseif self:trgt_is_in("weapon_gauss") then
+					self:DismantleGauss(se_trgt)
+				elseif self:trgt_is_in("all_wpn_related_targets") then
+					self:DismantleWpnRelated(se_trgt)
+				elseif self:trgt_is_in("all_outftit_related_targets") then
+					self:DismantleOutfitRelated(se_trgt)
+				elseif self:trgt_is_in("all_electric_items") then
+					self:DismantleAllElectr(se_trgt)
+				else
+					self:cast(plx.."No target qualified for dismantling.",func,105)
+				end
+
+			else
+				return
+			end
+		else
+			return
+		end
+	end
+end
+
+
+--------------------------
+-- HELP WINDOW AND TABS --
+--------------------------
+local HelpTabState
+function irm_dismantle:OnButtonHelp()
+	if self.help_bg:IsShown() then
+		for k,v in pairs(self.helptabs) do
+			v:Show(false)
+		end
+		self.tabs:Show(false)
+		self.help_bg:Show(false)
+	else
+		self.help_bg:Show(true)
+		self.tabs:Show(true)
+		self.tabs:SetActiveTab(HelpTabState or "row1col1")
+		self.helptabs[HelpTabState]:Show(true)
+	end
+end
+function irm_dismantle:OnTabsClicked()
+	local tab_selection = self.tabs:GetActiveId()
+	if not (self.helptabs[tab_selection]) then return end
+	for k,v in pairs(self.helptabs) do
+		v:Show(false)
+	end
+	self.helptabs[tab_selection]:Show(true)
+	HelpTabState = tab_selection
+end
+
+
+-----------------------------------
+-- DISMANTLE OPERATION ON TARGET --
+-----------------------------------
+function irm_dismantle:DismantleFirearm(se_trgt,trgt_genus)
+	local func = "DismantleFirearm()"
+	-- Recognize target species
+	local trgt_species
+	if     self:trgt_is_in("weapon_handgun") 	then trgt_species = "handgun"
+	elseif self:trgt_is_in("weapon_smg") 		then trgt_species = "smg"
+	elseif self:trgt_is_in("weapon_smgscope") 	then trgt_species = "smgscope"
+	elseif self:trgt_is_in("weapon_rifle") 		then trgt_species = "rifle"
+	elseif self:trgt_is_in("weapon_riflescope") then trgt_species = "riflescope"
+	elseif self:trgt_is_in("weapon_heavy") 		then trgt_species = "heavy"
+	elseif self:trgt_is_in("weapon_heavyscope") then trgt_species = "heavyscope"
+	else
+		self:cast(plx.."Target not included in plugin targets list.",func,210.1)
+		return
+	end
+
+	-- Tool behaviour: tool fail check
+	if self:TestToolFail(trgt_genus,trgt_species) then
+		self:ToolFailOverride(trgt_genus,trgt_species)
+		return
+	end
+	-- Tool behaviour: read tool behaviour from config and execute
+	self:ExecuteToolBehaviour(self:GetFromConfig("skip",trgt_genus.."_tool_bhv"))
+
+	-- Recognize weapon condition tier from config
+	local tier_amt = get_float("wpn_probabs","tier_amt")
+	local tier_tresholds = {}
+	for i = 1,tier_amt do
+		tier_tresholds[i] = get_float("wpn_probabs","tier_"..i.."_perc")
+	end
+	-- Get base dismantle probab from config
+	local trgt_con, probab = self:TargetCondition()
+	for i = tier_amt,1,-1 do
+		if trgt_con <= tier_tresholds[i] then
+			probab = get_float("wpn_probabs","tier_"..i.."_main_slot_probab")
+			break
+		end
+	end
+
+	-- Get adjusted probab form config, according to actor class and currently used dismantling tool
+	local cfg_line = self:tool_is_in("tools_all_dismantle_kits") and "dp_kit" or "dp_"..self.tool
+	probab = probab + get_float("wpn_probabs",cfg_line) + self.actor_class_main_bonus
+
+	-- Weapons with fixed addons : check target subspecies and read corresponding slot content from config
+	local wpn_slot_silencer_amt, wpn_slot_grndlnch_amt
+	local wpn_slot_grndlnch_succ, wpn_slot_silencer_succ, wpn_slot_scope_succ
+	-- -- Fixed silencers
+	if self:trgt_is_in("all_wpn_fixed_silencers") then
+		wpn_slot_silencer_amt = 1
+		if self:trgt_is_in("fixed_silencer_556x45") then
+			wpn_slot_silencer_succ = get_string("wpn_fixed_silencer_content","wpn_slot_sil55645_succ")
+		elseif self:trgt_is_in("fixed_silencer_9x18") then
+			wpn_slot_silencer_succ = get_string("wpn_fixed_silencer_content","wpn_slot_sil918_succ")
+		elseif self:trgt_is_in("fixed_silencer_9x39") then
+			wpn_slot_silencer_succ = get_string("wpn_fixed_silencer_content","wpn_slot_sil939_succ")
+		elseif self:trgt_is_in("fixed_silencer_svu") then
+			wpn_slot_silencer_succ = get_string("wpn_fixed_silencer_content","wpn_slot_silsvu_succ")
+		end
+	end
+	-- -- Fixed grenade launchers
+	if self:trgt_is_in("all_wpn_fixed_grndlnch") then
+		wpn_slot_grndlnch_amt = 1
+		if self:trgt_is_in("fixed_grndlnch_east") then
+			wpn_slot_grndlnch_succ = get_string("wpn_fixed_grndlnch_content","wpn_slot_grndlnch_east_succ")
+		elseif self:trgt_is_in("fixed_grndlnch_west") then
+			wpn_slot_grndlnch_succ = get_string("wpn_fixed_grndlnch_content","wpn_slot_grndlnch_west_succ")
+		end
+	end
+	-- -- Fixed scopes
+	if self:trgt_is_in("all_wpn_firearms_with_fixed_scopes") then
+		-- Additional plugin integrity check
+		if not self:trgt_is_in("all_wpn_fixed_scopes") then
+			self:cast(plx.."Plugin incomplete. Compare sections: [all_wpn_firearms_lists] and [all_wpn_fixed_scopes].",func,210.2)
+			return
+		end
+
+		-- Define current target scope tier from config
+		local scope_tier_tresholds, which_variety = {}
+		tier_amt = 3
+		
+		for i = 1,tier_amt do
+			scope_tier_tresholds[i] = get_float("wpn_probabs","fixed_scope_tier_"..i.."_perc")
+		end
+		
+		for i = tier_amt,1,-1 do
+			if trgt_con <= scope_tier_tresholds[i] then
+				which_variety = i
+				break
+			end
+		end
+
+		-- Read scope variety from config
+		if self:trgt_is_in("fixed_scope_wp") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_wp")
+		elseif self:trgt_is_in("fixed_scope_wp_special") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_wp_special")
+		elseif self:trgt_is_in("fixed_scope_zf") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_zf")
+		elseif self:trgt_is_in("fixed_scope_susat") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_susat")
+		elseif self:trgt_is_in("fixed_scope_susat_moist") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_susat_moist")
+		elseif self:trgt_is_in("fixed_scope_acog_trijicon") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_acog_trijicon")
+		elseif self:trgt_is_in("fixed_scope_snag") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_snag")
+		elseif self:trgt_is_in("fixed_scope_m16") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_m16")
+		elseif self:trgt_is_in("fixed_scope_m21") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_m21")
+		elseif self:trgt_is_in("fixed_scope_m24") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_m24")
+		elseif self:trgt_is_in("fixed_scope_ksvk") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_ksvk")
+		elseif self:trgt_is_in("fixed_scope_trg") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_trg")
+		elseif self:trgt_is_in("fixed_scope_sig_sniper") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_sig_sniper")
+		elseif self:trgt_is_in("fixed_scope_fnfalpara") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_fnfalpara")
+		elseif self:trgt_is_in("fixed_scope_rpg7") then
+			wpn_slot_scope_succ = get_string("wpn_fixed_scope_tier_"..which_variety.."_content","fixed_scope_rpg7")
+		end
+	end
+
+	-- Build slots content table from gathered data
+	local slot_def = "slot_definitions_"..trgt_genus.."_"..trgt_species
+	local t_slots = {
+			["light"] = {
+				["amt"] =  get_string(slot_def,"wpn_slot_light_amt") or 0,
+				["succ"] = get_string("wpn_slot_content","wpn_slot_light_succ"),
+				["fail"] = get_string("wpn_slot_content","wpn_slot_light_fail")
+				},
+			["heavy"] = {
+				["amt"] =  get_string(slot_def,"wpn_slot_heavy_amt") or 0,
+				["succ"] = get_string("wpn_slot_content","wpn_slot_heavy_succ"),
+				["fail"] = get_string("wpn_slot_content","wpn_slot_heavy_fail")
+				},
+			["scope"] = {
+				["amt"] =  get_string(slot_def,"wpn_slot_scope_amt") or 0,
+				["succ"] = wpn_slot_scope_succ,
+				["fail"] = get_string("wpn_slot_content","wpn_slot_scope_fail")
+				},
+			["silencer"] = {
+				["amt"] =  wpn_slot_silencer_amt or 0,
+				["succ"] = wpn_slot_silencer_succ,
+				["fail"] = get_string("wpn_slot_content","wpn_slot_silencer_fail")
+				},
+			["grndlnch"] = {
+				["amt"] =  wpn_slot_grndlnch_amt or 0,
+				["succ"] = wpn_slot_grndlnch_succ,
+				["fail"] = get_string("wpn_slot_content","wpn_slot_grndlnch_fail")
+				}
+		}
+	-- Execute content table
+	for k, v in pairs(t_slots) do
+		for i = 1, v.amt do
+			if test_on(probab) then
+				give(v.succ)
+			else
+				give(v.fail)
+			end
+		end
+	end
+
+	-- Execute const content
+	give_const("all_"..trgt_genus)
+
+	-- Basic operations: ammo unload , detach addon
+	if self:TargetCondition() >= get_float("wpn_probabs","weapon_critical_con_treshold") then
+		self:UnloadCurrentAmmo()
+		self:DetachCurrentAddons()
+	else
+		give(get_string("wpn_slot_content","wpn_unload_ammo_fail"))
+		give(get_string("wpn_slot_content","wpn_addon_detach_fail"))
+	end
+
+	self:KillTarget(se_trgt)
+
+	-- Finish with selected AV effect
+	local finish_content
+	if self:tool_is_in("tools_all_dismantle_kits") then
+		finish_content = "kit"
+	elseif self.tool == "cutlery_sharp" then
+		finish_content = "cutlery"
+	elseif self.tool == "swiss_sharp" then
+		finish_content = "cutlery"
+	elseif self.tool == "grooming_sharp" then
+		finish_content = "metalplastic"
+	else
+		finish_content = "hit"
+	end
+	self:FinishWith("weapon",finish_content)
+end
+	function irm_dismantle:UnloadCurrentAmmo()
+		local func = "UnloadCurrentAmmo()"
+		local item = self.list_box_trgts:GetSelectedItem()
+		local item_by_id = level.object_by_id(item.item_id)
+		local trgt = level.object_by_id(item_by_id:id())
+		local wpn_data = (function() local ok, d = pcall(stpk_utils.get_weapon_data, trgt); return ok and d or {addon_flags = 0, ammo_elapsed = 0, ammo_type = 0, upgrades = {}} end)()  -- coop: STATE_Write nil client-side; fall back so dismantle proceeds
+		local amount_loaded = wpn_data.ammo_elapsed
+		local type_number = wpn_data.ammo_type
+
+		local ammoline
+		if next(wpn_data.upgrades) then
+			for k,v in pairs (wpn_data.upgrades) do
+				if system_ini():line_exist(v,"property") then
+					if system_ini():r_string(v,"property") == "prop_calibre" then
+						if system_ini():line_exist(v,"section") then
+							local upg_sec = system_ini():r_string(v,"section")
+							if system_ini():line_exist(upg_sec,"ammo_class") then
+								ammoline = system_ini():r_string(upg_sec,"ammo_class")
+							end
+						end
+					end
+				end
+			end
+		end
+
+		local ammo_section = self:DismantleFirearm_RecognizeAmmo(type_number, ammoline)
+
+		if ammo_section then
+			if amount_loaded ~= 0 then
+				local box_size = system_ini():r_u32(ammo_section, "box_size")
+				if amount_loaded > box_size then
+					local boxes_in_elapsed, remainder
+					boxes_in_elapsed = math.floor(amount_loaded / box_size)
+					remainder = amount_loaded % box_size
+					for i = 1, boxes_in_elapsed do
+						do end
+					end
+					if remainder ~= 0 then
+						do end
+					end
+				else
+					do end
+				end
+			end
+		else
+			self:cast("Ammo recognized as nil.",func,211)
+		end
+	end
+	function irm_dismantle:DetachCurrentAddons()
+		-- scope detaching is not ready for this release, hence lines commented out
+		local item = self.list_box_trgts:GetSelectedItem()
+		local item_by_id = level.object_by_id(item.item_id)
+		local trgt = level.object_by_id(item_by_id:id())
+		local wpn_data = (function() local ok, d = pcall(stpk_utils.get_weapon_data, trgt); return ok and d or {addon_flags = 0, ammo_elapsed = 0, ammo_type = 0, upgrades = {}} end)()  -- coop: STATE_Write nil client-side; fall back so dismantle proceeds
+		local addon_flags = wpn_data.addon_flags
+		if addon_flags ~= 0 then
+			if addon_flags == 1 then
+				-- give(DismantleFirearm_RecognizeScope(trgt))
+			elseif addon_flags == 2 then
+				give(self:DismantleFirearm_RecognizeGrndlnchr())
+			elseif addon_flags == 3 then
+				give(self:DismantleFirearm_RecognizeGrndlnchr())
+				-- give(DismantleFirearm_RecognizeScope(trgt))
+			elseif addon_flags == 4 then
+				give(self:DismantleFirearm_RecognizeSilencer())
+			elseif addon_flags == 5 then
+				give(self:DismantleFirearm_RecognizeSilencer())
+				-- give(DismantleFirearm_RecognizeScope(trgt))
+			elseif addon_flags == 6 then
+				give(self:DismantleFirearm_RecognizeGrndlnchr())
+				give(self:DismantleFirearm_RecognizeSilencer())
+			elseif addon_flags == 7 then
+				give(self:DismantleFirearm_RecognizeGrndlnchr())
+				give(self:DismantleFirearm_RecognizeSilencer())
+				-- give(DismantleFirearm_RecognizeScope(trgt))
+			end
+		end
+	end
+		function irm_dismantle:DismantleFirearm_RecognizeAmmo(ammo_type_number, ammoline)
+			local func = "DismantleFirearm_RecognizeAmmo()"
+			if system_ini():line_exist(self.trgt,"ammo_class") then
+				ammoline = ammoline or system_ini():r_string(self.trgt,"ammo_class")
+				local i = 0
+				for ammo_section in string.gmatch(ammoline, '([^,]+)') do
+					if i == ammo_type_number then return ammo_section end
+					i = i + 1
+				end
+			else
+				self:cast("WEAPON CONFIG: ["..self.trgt.."] Missing 'ammo_class'.",func,212)
+			end
+		end
+		function irm_dismantle:DismantleFirearm_RecognizeSilencer()
+			local func = "DismantleFirearm_RecognizeSilencer()"
+			if system_ini():line_exist(self.trgt,"silencer_name") then
+				return system_ini():r_string(self.trgt,"silencer_name")
+			else
+				self:cast("WEAPON CONFIG: Silencer addon flagged but cannot find 'silencer_name' line in weapons config.",func,213)
+			end
+		end
+		function irm_dismantle:DismantleFirearm_RecognizeGrndlnchr()
+			local func = "DismantleFirearm_RecognizeGrndlnchr()"
+			if system_ini():line_exist(self.trgt,"grenade_launcher_name") then
+				return system_ini():r_string(self.trgt,"grenade_launcher_name")
+			else
+				self:cast("WEAPON CONFIG: Grenade launcher addon flagged but cannot find 'grenade_launcher_name' line in weapons config.",func,214)
+			end
+		end
+		function irm_dismantle:DismantleFirearm_RecognizeScope()
+			--// not called anywhere //--
+		end
+
+function irm_dismantle:DismantleOutfit(se_trgt,trgt_genus)
+	local func = "DismantleOutfit()"
+
+	-- HOTFIX for SSP and SEVA outfits helm_protective spawn balance
+	-- For details see 'how to' in dismantle_configs.ltx
+		-- Check config
+		if not configltx:section_exist("outfit_slot_definitions_ssp_helm") then
+			self:cast(clx.."Missing section [outfit_slot_definitions_ssp_helm]",func,220.21)
+			return
+		end
+		if not configltx:section_exist("outfit_slot_definitions_seva_helm") then
+			self:cast(clx.."Missing section [outfit_slot_definitions_seva_helm]",func,220.22)
+			return
+		end
+		if not configltx:line_exist("outfit_probabs","dp_ssp_helmet_scenario") then
+			self:cast(clx.."Missing 'dp_ssp_helmet_scenario' line in [outfit_probabs] section.",func,220.23)
+			return
+		end
+		if not configltx:line_exist("outfit_probabs","dp_ssp_helmet_condition_into_probab") then
+			self:cast(clx.."Missing 'dp_ssp_helmet_condition_into_probab' line in [outfit_probabs] section.",func,220.24)
+			return
+		end
+		-- Get probab
+		local dp_ssphelm
+		if get_bool("outfit_probabs","dp_ssp_helmet_condition_into_probab") then
+			dp_ssphelm = self:TargetCondition() * 100 + self.actor_class_main_bonus
+		else
+			dp_ssphelm = get_float("outfit_probabs","dp_ssp_helmet_scenario") + self.actor_class_main_bonus
+		end
+
+
+	-- Recognize target species
+	local trgt_species
+	if self:trgt_is_in("outfit_light") then
+		trgt_species = "light"
+	elseif self:trgt_is_in("outfit_medium") then
+		trgt_species = "medium"
+	elseif self:trgt_is_in("outfit_heavy") then
+		trgt_species = "heavy"
+	elseif self:trgt_is_in("outfit_ssp") then
+		if test_on(dp_ssphelm) then -- hotfix for balancing helm_protective
+			trgt_species = "ssp_helm" -- hotfix: added artificial species
+		else
+			trgt_species = "ssp"
+		end
+	elseif self:trgt_is_in("outfit_seva") then
+		if test_on(dp_ssphelm) then -- hotfix for balancing helm_protective
+			trgt_species = "seva_helm" -- hotfix: added artificial species for
+		else
+			trgt_species = "seva"
+		end
+	elseif self:trgt_is_in("outfit_exo") then
+		trgt_species = "exo"
+	else
+		self:cast(plx.."Target not included in plugin targets list.",func,220.1)
+		return
+	end
+
+	-- Aux tool: handle or interrupt
+	local aux_tool_dp_boost = self.aux_boost or 0
+	if self.aux_demanded then
+		if self.aux_obj then
+			BluntAuxTool(self.aux_obj,self.aux_condec)
+		else
+			self:FinishWith("UI_cancel_override","override_no_aux")
+			return
+		end
+	end
+
+	-- Execute tool behaviour
+	if get_bool(trgt_genus.."_tool_bhv","force_zerooneblunt") then
+		self:ExecuteToolBehaviour("force_blunt","give")
+	else
+		self:ExecuteToolBehaviour(self:GetFromConfig("skip",trgt_genus.."_tool_bhv"))
+	end
+
+	-- Define base probab & patch amount
+	local tier_amt = get_float(trgt_genus.."_probabs","tier_amt")
+	local tier_tresholds = {}
+	for i = 1,tier_amt do
+		tier_tresholds[i] = get_float(trgt_genus.."_probabs","tier_"..i.."_perc")
+	end
+	local trgt_con, probab, patch_amt = self:TargetCondition()
+	for i = tier_amt,1,-1 do
+		if trgt_con <= tier_tresholds[i] then
+			probab =    get_float(trgt_genus.."_probabs","tier_"..i.."_main_slot_probab")
+			patch_amt = get_float(trgt_genus.."_probabs","tier_"..i.."_patch_amt")
+			break
+		end
+	end
+	-- Adjust probab with: tool probab adjustment, aux tool probab boost, class bonus
+	local dp_suffix = self:tool_is_in("tools_all_dismantle_kits") and "kit" or self.tool
+	probab = probab + get_float(trgt_genus.."_probabs","dp_"..dp_suffix) + aux_tool_dp_boost + self.actor_class_main_bonus
+
+	-- Execute const content and patches
+	give_const("all_outfits")
+	if self:trgt_is_in("outfits_with_patches_list") then
+		give(get_string("outfit_patches","op_"..self.trgt),patch_amt)
+	end
+
+	-- Prepare reading slots content from config
+	local slot_def = trgt_genus.."_slot_definitions_"..trgt_species
+	-- Build slots content table from config
+	local t_slots = {
+		["fabric1"] = {
+			["amt"] = get_float(slot_def,"outfit_slot_fabric1_amt") or 0,
+			["succ"] = get_string("outfit_slot_content","outfit_slot_fabric1_succ"),
+			["fail"] = get_string("outfit_slot_content","outfit_slot_fabric1_fail")
+			},
+		["fabric2"] = {
+			["amt"] = get_float(slot_def,"outfit_slot_fabric2_amt") or 0,
+			["succ"] = get_string("outfit_slot_content","outfit_slot_fabric2_succ"),
+			["fail"] = get_string("outfit_slot_content","outfit_slot_fabric2_fail")
+			},
+		["fabric3"] = {
+			["amt"] = get_float(slot_def,"outfit_slot_fabric3_amt") or 0,
+			["succ"] = get_string("outfit_slot_content","outfit_slot_fabric3_succ"),
+			["fail"] = get_string("outfit_slot_content","outfit_slot_fabric3_fail")
+			},
+		["protect1"] = {
+			["amt"] = get_float(slot_def,"outfit_slot_protect1_amt") or 0,
+			["succ"] = get_string("outfit_slot_content","outfit_slot_protect1_succ"),
+			["fail"] = get_string("outfit_slot_content","outfit_slot_protect1_fail")
+			},
+		["protect2"] = {
+			["amt"] = get_float(slot_def,"outfit_slot_protect2_amt") or 0,
+			["succ"] = get_string("outfit_slot_content","outfit_slot_protect2_succ"),
+			["fail"] = get_string("outfit_slot_content","outfit_slot_protect2_fail")
+			},
+		["device1"] = {
+			["amt"] = get_float(slot_def,"outfit_subslot_device_amt") or 0,
+			["succ"] = get_string("outfit_slot_content","outfit_subslot_device1_succ"),
+			["fail"] = get_string("outfit_slot_content","outfit_subslot_device_fail")
+			},
+		["device2"] = {
+			["amt"] = get_float(slot_def,"outfit_subslot_device_amt") or 0,
+			["succ"] = get_string("outfit_slot_content","outfit_subslot_device2_succ"),
+			["fail"] = get_string("outfit_slot_content","outfit_subslot_device_fail")
+			},
+		["device3"] = {
+			["amt"] = get_float(slot_def,"outfit_subslot_device_amt") or 0,
+			["succ"] = get_string("outfit_slot_content","outfit_subslot_device3_succ"),
+			["fail"] = get_string("outfit_slot_content","outfit_subslot_device_fail")
+			},
+		["helm"] = {
+			["amt"] = get_float(slot_def,"outfit_slot_helmet_amt") or 0,
+			["succ"] = get_string("outfit_slot_content","outfit_slot_helmet_succ"),
+			["fail"] = get_string("outfit_slot_content","outfit_slot_helmet_fail")
+			},
+		}
+	-- Execute slots content
+	for k, v in pairs(t_slots) do
+		for i = 1, v.amt do
+			if test_on(probab) then
+				give(v.succ)
+			else
+				give(v.fail)
+			end
+		end
+	end
+	-- Execute randomized gear subslot content
+	local gear_amt = get_float(slot_def,"outfit_subslot_gear_amt")
+	if gear_amt >= 1 then
+		-- Build gear subslot content table
+		local t_subslot = {
+			["succ"] = {},
+			["fail"] = get_string("outfit_slot_content","outfit_subslot_gear_fail")
+			}
+		local rnd_succ
+		for i = 1, gear_amt do
+			local rnd = math.random(3)
+			if rnd == 1 then
+				rnd_succ = get_string("outfit_slot_content","outfit_subslot_gear1_succ")
+			elseif rnd == 2 then
+				rnd_succ = get_string("outfit_slot_content","outfit_subslot_gear2_succ")
+			elseif rnd == 3 then
+				rnd_succ = get_string("outfit_slot_content","outfit_subslot_gear3_succ")
+			end
+			table.insert(t_subslot.succ, rnd_succ)
+		end
+		-- Execute gear subslot content
+		for k, v in pairs(t_subslot.succ) do
+			if test_on(probab) then
+				give(v)
+			else
+				give(t_subslot.fail)
+			end
+		end
+	end
+
+	self:KillTarget(se_trgt)
+
+	-- Finish with selected AV effect
+	local finish_content
+	if self:tool_is_in("tools_all_dismantle_kits") then
+		finish_content = "kit"
+	else
+		finish_content = "hit"
+	end
+	self:FinishWith("outfit",finish_content)
+end
+
+function irm_dismantle:DismantleHelm(se_trgt)
+	local func = "DismantleHelm()"
+	if self:trgt_is_in("helmets_masks") then
+		self:DismantleHelmNotTough(se_trgt,"helm","mask","all_helmets")
+	elseif self:trgt_is_in("helmets_hardhats") then
+		self:DismantleHelmTough(se_trgt,"helm","hard","all_helmets")
+	elseif self:trgt_is_in("helmets_good") then
+		self:DismantleHelmTough(se_trgt,"helm","good","all_helmets")
+	else
+		self:cast(plx.."Target not included in plugin targets list.",func,230)
+	end
+end
+	function irm_dismantle:DismantleHelmNotTough(se_trgt,trgt_genus,trgt_species,const_give_inherit)
+		-- Aux tool: handle or interrupt
+		local aux_tool_dp_boost = self.aux_boost or 0
+		if self.aux_demanded then
+			if self.aux_obj then
+				BluntAuxTool(self.aux_obj,self.aux_condec)
+			else
+				self:FinishWith("UI_cancel_override","override_no_aux")
+				return
+			end
+		end
+
+		-- Tool behaviour: read tool behaviour from config and execute
+		self:ExecuteToolBehaviour(self:GetFromConfig("skip",trgt_genus.."_"..trgt_species.."_tool_bhv"))
+
+		-- Define base probab
+		local tier_amt = get_float(trgt_genus.."_"..trgt_species.."_probabs","tier_amt")
+		local tier_tresholds = {}
+		for i = 1,tier_amt do
+			tier_tresholds[i] = get_float(trgt_genus.."_"..trgt_species.."_probabs","tier_"..i.."_perc")
+		end
+		local trgt_con, probab = self:TargetCondition()
+		for i = tier_amt,1,-1 do
+			if trgt_con <= tier_tresholds[i] then
+				probab = get_float(trgt_genus.."_"..trgt_species.."_probabs","tier_"..i.."_main_slot_probab")
+				break
+			end
+		end
+
+		-- Adjust probab with: tool probab adjustment, aux tool probab boost, class bonus
+		local dp_suffix = self:tool_is_in("tools_all_dismantle_kits") and "kit" or self.tool
+		probab = probab + get_float(trgt_genus.."_"..trgt_species.."_probabs","dp_"..dp_suffix) + aux_tool_dp_boost + self.actor_class_main_bonus
+
+		-- Execute content
+		give_const(const_give_inherit)
+		give_const("all_"..trgt_genus.."_"..trgt_species)
+		self:ExecuteContentFromConfig(probab,trgt_genus.."_"..trgt_species)
+
+		self:KillTarget(se_trgt)
+		self:FinishWith("outfit","hit")
+	end
+	function irm_dismantle:DismantleHelmTough(se_trgt,trgt_genus,trgt_species,const_give_inherit)
+		-- Aux tool: handle or interrupt
+		local aux_tool_dp_boost = self.aux_boost or 0
+		local aux_blunt_later
+		if self.aux_demanded then
+			if self.aux_obj then
+				aux_blunt_later = true
+			else
+				self:FinishWith("UI_cancel_override","override_no_aux")
+				return
+			end
+		end
+
+		-- Tool behaviour: tool fail check
+		if self:TestToolFail(trgt_genus,trgt_species) then
+			self:ToolFailOverride(trgt_genus,trgt_species)
+			return
+		end
+
+		-- Blunt aux tool
+		if aux_blunt_later then 
+			BluntAuxTool(self.aux_obj,self.aux_condec)
+		end
+
+		-- Tool behaviour: read tool behaviour from config and execute
+		self:ExecuteToolBehaviour(self:GetFromConfig("skip",trgt_genus.."_"..trgt_species.."_tool_bhv"))
+
+		-- Define base probab
+		local tier_amt = get_float(trgt_genus.."_"..trgt_species.."_probabs","tier_amt")
+		local tier_tresholds = {}
+		for i = 1,tier_amt do
+			tier_tresholds[i] = get_float(trgt_genus.."_"..trgt_species.."_probabs","tier_"..i.."_perc")
+		end
+		local trgt_con, probab = self:TargetCondition()
+		for i = tier_amt,1,-1 do
+			if trgt_con <= tier_tresholds[i] then
+				probab = get_float(trgt_genus.."_"..trgt_species.."_probabs","tier_"..i.."_main_slot_probab")
+				break
+			end
+		end
+		-- Adjust probab with: tool probab adjustment, aux tool probab boost, class bonus
+		local dp_suffix = self:tool_is_in("tools_all_dismantle_kits") and "kit" or self.tool
+		probab = probab + get_float(trgt_genus.."_"..trgt_species.."_probabs","dp_"..dp_suffix) + aux_tool_dp_boost + self.actor_class_main_bonus
+
+		-- Execute content
+		give_const(const_give_inherit)
+		give_const("all_"..trgt_genus.."_"..trgt_species)
+		self:ExecuteContentFromConfig(probab,trgt_genus.."_"..trgt_species)
+
+		self:KillTarget(se_trgt)
+		self:FinishWith("outfit","hit")
+	end
+
+function irm_dismantle:DismantleGauss(se_trgt)
+	local func = "DismantleGauss()"
+	give_const("all_gauss_guns")
+	local is_storyline_gauss
+
+	--// Storyline gauss //--
+	if self.trgt == "pri_a17_gauss_rifle" then
+		local condec = get_float("gauss_rifles","storyline_gauss_con_decrease")
+		if condec < 0 then
+			condec = 0
+			self:cast(clx.."[gauss] 'storyline_gauss_con_decrease' is < 0. Assuming 0.",func,241)
+		elseif condec > 1 then
+			condec = 1
+			self:cast(clx.."[gauss] 'storyline_gauss_con_decrease' is > 1. Assuming 1.",func,242)
+		end
+		is_storyline_gauss = true
+		self:DecreaseTargetCondition(condec)
+		getLocalActor():drop_item(getLocalActor():object("pri_a17_gauss_rifle"))
+	else
+	--// Normal gauss //--
+		-- Config content structure check
+		local is_gauss_line = function(l) return configltx:line_exist("gauss_rifles",l) end
+		if not is_gauss_line("gauss_1") then
+			self:cast(clx.."Invalid [gauss_rifles] section structure.",func,243)
+			return
+		end
+		-- Execute content from config
+		if get_string("gauss_rifles","gauss_1") ~= "skip" then
+			local i = 1
+			repeat
+				-- itms_refunct.spawn_in_front_quadrant(get_string("gauss","gauss_"..i))
+				mc_cooking.itemop_give(get_string("gauss_rifles","gauss_"..i), 1)
+				i = i + 1
+			until is_gauss_line("gauss_"..i) ~= true
+		end
+		self:UnloadCurrentAmmo()
+		self:KillTarget(se_trgt)
+	end
+
+	--// Tool behaviour //--
+	if is_storyline_gauss then
+		self:DropToolIntact()
+	else
+		self:DropToolZerooneBlunted()
+	end
+
+	self:FinishWith("target_surprise","gauss")
+end
+
+function irm_dismantle:DismantleWpnRelated(se_trgt)
+	local func = "DismantleWpnRelated()"
+	if self:trgt_is_in("explo_targets") then
+		self:DismantleXplo(se_trgt,"xplo","all_wpn_related")
+	elseif self:trgt_is_in("all_wpn_addon_targets") then
+		self:DismantleWpnAddon(se_trgt,"wpn_addon","all_wpn_related")
+	else
+		self:cast(plx.."Target not included in plugin targets list.",func,250)
+	end
+end
+	function irm_dismantle:DismantleWpnAddon(se_trgt,trgt_species,const_give_inherit)
+		local func = "DismantleWpnAddon()"
+		-- Recognize target subspecies
+		local trgt_subspecies
+		if     self:trgt_is_in("wpn_addon_grndlnch_targets")   then trgt_subspecies = "grndlnch"
+		elseif self:trgt_is_in("wpn_addon_nightscope_targets") then trgt_subspecies = "nightscope"
+		else
+			self:cast(plx.."Target not included in plugin targets list.",func,251)
+			return
+		end
+
+		-- Tool behaviour: tool fail check
+		if self:TestToolFail(trgt_species,trgt_subspecies) then
+			self:ToolFailOverride(trgt_species,"")
+			return
+		end
+
+		local probab, tool_bhv = self:GetFromConfig(trgt_species.."_"..trgt_subspecies.."_probabs",trgt_species.."_"..trgt_subspecies.."_tool_bhv")
+		give_const(const_give_inherit)
+		give_const("all_"..trgt_species)
+		self:ExecuteContentFromConfig(probab,trgt_species.."_"..trgt_subspecies.."_for_all")
+		self:ExecuteToolBehaviour(tool_bhv)
+		self:KillTarget(se_trgt)
+
+		local finish_content
+		if self:tool_is_in("tools_all_dismantle_kits") then
+			finish_content = "kit"
+		elseif self.tool == "cutlery_sharp" then
+			finish_content = "cutlery"
+		elseif self.tool == "swiss_sharp" then
+			finish_content = "cutlery"
+		elseif self.tool == "grooming_sharp" then
+			finish_content = "metalplastic"
+		else
+			finish_content = "hit"
+		end
+		self:FinishWith("weapon",finish_content)
+	end
+	function irm_dismantle:DismantleXplo(se_trgt,trgt_species,const_give_inherit)
+		if test_on(get_float(trgt_species.."_probabs","dp_main_"..self.trgt) + self.actor_class_main_bonus) then
+			local probab, tool_bhv = self:GetFromConfig(trgt_species.."_probabs",trgt_species.."_tool_bhv",nil,nil,"dp_main_"..self.trgt)
+			self:ExecuteContentFromConfig(probab,trgt_species)
+			give_const(const_give_inherit)
+			give_const("all_xplo")
+			self:ExecuteToolBehaviour(tool_bhv)
+			self:FinishWith("standard","metalplastic")
+		else
+			if get_string(trgt_species.."_content_"..self.trgt,"fail") == "event" then
+				self:ExecuteToolBehaviour("force_blunt","drop")
+				self:FinishWith("target_surprise","xplo")
+			end
+		end
+		self:KillTarget(se_trgt)
+	end
+
+function irm_dismantle:DismantleOutfitRelated(se_trgt)
+	local func = "DismantleOutfitRelated()"
+	if self:trgt_is_in("outfitlike_targets") then
+		self:DismantleOutfitlike(se_trgt,"outfitlike","all_outfit_related")
+	elseif self:trgt_is_in("electric_belt_items") then
+		self:DismantleBeltElectricDevices(se_trgt,"electr_belt","all_outfit_related")
+	else
+		self:cast(plx.."Target not included in plugin targets list.",func,260)
+	end
+end
+	function irm_dismantle:DismantleOutfitlike(se_trgt,trgt_species,const_give_inherit)
+		local probab, tool_bhv = self:GetFromConfig(trgt_species.."_probabs",trgt_species.."_tool_bhv")
+		local aux_tool_dp_boost = self.aux_boost or 0
+		probab = probab + aux_tool_dp_boost
+		if self.aux_demanded then
+			if self.aux_obj then
+				BluntAuxTool(self.aux_obj,self.aux_condec)
+			else
+				self:FinishWith("UI_cancel_override","override_no_aux")
+				return
+			end
+		end
+		give_const("all_"..trgt_species)
+		give_const(const_give_inherit)
+		self:ExecuteContentFromConfig(probab,trgt_species)
+		self:ExecuteToolBehaviour(tool_bhv)
+		self:KillTarget(se_trgt)
+		self:FinishWith("standard","outfitlike")
+	end
+	function irm_dismantle:DismantleBeltElectricDevices(se_trgt,trgt_species,const_give_inherit)
+		give_const(const_give_inherit)
+		give_const("all_"..trgt_species)
+		local probab, tool_bhv = self:GetFromConfig(trgt_species.."_probabs",trgt_species.."_tool_bhv")
+		self:ExecuteContentFromConfig(probab,trgt_species)
+		self:ExecuteToolBehaviour(tool_bhv)
+		self:KillTarget(se_trgt)
+		self:FinishWith("standard","hammertime")
+	end
+
+function irm_dismantle:DismantleAllElectr(se_trgt)
+	local func = "DismantleAllElectr()"
+	if self:trgt_is_in("detectors") then
+		self:DismantleDetectors(se_trgt,"detectors","all_electric")
+	elseif self:trgt_is_in("electric_items_tier1") then
+		self:DismantleElectric1(se_trgt,"electric1","all_electric")
+	elseif self:trgt_is_in("electric_items_tier2") then
+		self:DismantleElectric2(se_trgt,"electric2","all_electric")
+	elseif self:trgt_is_in("electric_items_tier3") then
+		self:DismantleElectric3(se_trgt,"electric3","all_electric")
+	elseif self:trgt_is_in("electric_items_tier4") then
+		self:DismantleElectric4(se_trgt,"electric4","all_electric")
+	else
+		self:cast(plx.."Target not included in plugin targets list.",func,270)
+	end
+end
+	function irm_dismantle:DismantleDetectors(se_trgt,trgt_species,const_give_inherit)
+		local probab, tool_bhv
+		-- STEP ONE - COMMON (test for geiger_dead)
+		give_const(const_give_inherit)
+		give_const("all_"..trgt_species)
+		probab = self:GetFromConfig(trgt_species.."_probabs_geiger","skip","dp_geiger_",nil,"dp_geiger_main")
+		self:ExecuteContentFromConfig(probab,trgt_species.."_geiger_for_all")
+		-- STEP TWO - SPECIFIC (per detector)
+		probab, tool_bhv = self:GetFromConfig(trgt_species.."_probabs",trgt_species.."_tool_bhv")
+		self:ExecuteContentFromConfig(probab,trgt_species)
+		self:ExecuteToolBehaviour(tool_bhv)
+		self:KillTarget(se_trgt)
+		self:FinishWith("standard","short_hit")
+	end
+	function irm_dismantle:DismantleElectric1(se_trgt,trgt_subspecies,const_give_inherit)
+		give_const(const_give_inherit)
+		give_const("all_"..trgt_subspecies)
+		local probab, tool_bhv = self:GetFromConfig(trgt_subspecies.."_probabs",trgt_subspecies.."_tool_bhv")
+		if self.trgt ~= "wpn_binoc_inv" then
+			self:ExecuteContentFromConfig(probab,trgt_subspecies)
+		else
+			self:ExecuteContentFromConfig(probab,trgt_subspecies)
+			self:ExecuteBatteryTiersContentFromConfigs(trgt_subspecies)
+		end
+		self:ExecuteToolBehaviour(tool_bhv)
+		self:KillTarget(se_trgt)
+		self:FinishWith("standard","cutlery")
+	end
+	function irm_dismantle:DismantleElectric2(se_trgt,trgt_subspecies,const_give_inherit)
+		give_const(const_give_inherit)
+		give_const("all_"..trgt_subspecies)
+		local probab, tool_bhv = self:GetFromConfig(trgt_subspecies.."_probabs",trgt_subspecies.."_tool_bhv")
+		self:ExecuteContentFromConfig(probab,trgt_subspecies)
+		self:ExecuteToolBehaviour(tool_bhv)
+		self:KillTarget(se_trgt)
+		self:FinishWith("standard","hammertime")
+	end
+	function irm_dismantle:DismantleElectric3(se_trgt,trgt_subspecies,const_give_inherit)
+		give_const(const_give_inherit)
+		give_const("all_"..trgt_subspecies)
+		local probab, tool_bhv = self:GetFromConfig(trgt_subspecies.."_probabs",trgt_subspecies.."_tool_bhv")
+		self:ExecuteContentFromConfig(probab,trgt_subspecies)
+		self:ExecuteToolBehaviour(tool_bhv)
+		self:KillTarget(se_trgt)
+		self:FinishWith("standard","metalplastic")
+	end
+	function irm_dismantle:DismantleElectric4(se_trgt,trgt_subspecies,const_give_inherit)
+		give_const(const_give_inherit)
+		give_const("all_"..trgt_subspecies)
+		local probab, tool_bhv = self:GetFromConfig(trgt_subspecies.."_probabs",trgt_subspecies.."_tool_bhv")
+		if self.trgt ~= "wpn_upd" then
+			self:ExecuteContentFromConfig(probab,trgt_subspecies)
+		else
+			self:ExecuteContentFromConfig(probab,trgt_subspecies)
+			self:ExecuteBatteryTiersContentFromConfigs(trgt_subspecies)
+		end
+		self:ExecuteToolBehaviour(tool_bhv)
+		self:KillTarget(se_trgt)
+		self:FinishWith("standard","short_hit")
+	end
+
+
+-----------------------------
+-- TARGET BASIC OPERATIONS --
+-----------------------------
+function irm_dismantle:TargetCondition()
+	local func = "TargetCondition()"
+	local item = self.list_box_trgts:GetSelectedItem()
+	local trgt_obj = item and level.object_by_id(item.item_id)
+	if not trgt_obj then self:cast("Cannot recognize target object.",func,301.1) return end
+	if not trgt_obj:condition() then self:cast("Cannot read target :condition().",func,301.2) end
+	return trgt_obj:condition()
+end
+function irm_dismantle:DecreaseTargetCondition(trgt_condec_amt)
+	local func = "DecreaseTargetCondition()"
+	if not trgt_condec_amt then self:cast("Missing condition decrease value.",func,302) return end
+	trgt_condec_amt = trgt_condec_amt - self.actor_class_cdec_bonus
+	local item = self.list_box_trgts:GetSelectedItem()
+	local trgt_obj = item and level.object_by_id(item.item_id)
+	trgt_obj:set_condition(self:TargetCondition() - trgt_condec_amt)
+end
+function irm_dismantle:KillTarget(se_trgt)
+	mc_cooking.itemop_release(se_trgt and se_trgt:id() or 0)
+end
+
+
+--------------------
+-- TOOL BEHAVIOUR --
+--------------------
+function irm_dismantle:TestToolFail(trgt_genus,trgt_species)
+	-- Read tool failure probab from config
+	local cfg_sec = "tool_fail_probab_on_"..trgt_genus.."_"..trgt_species
+	local line = self:tool_is_in("tools_all_dismantle_kits") and "tfp_kit" or "tfp_"..self.tool
+	-- Test on probab
+	if test_on(get_float(cfg_sec,line)-self.actor_class_fail_bonus) then
+		return true
+	else
+		return false
+	end
+end
+function irm_dismantle:ToolFailOverride(trgt_genus,trgt_species)
+	local func = "ToolFailOverride()"
+	if not trgt_genus then
+		self:cast("Function called without specyfing target genus.",func,401.1)
+	return
+	end
+	if not trgt_species then
+		self:cast("Function called without specyfing target species.",func,401.2)
+		return
+	end
+
+	-- Decrease targets condition
+	if trgt_genus ~= "wpn_addon" then
+		self:DecreaseTargetCondition(get_float("tool_fail_con_decrease_on_"..trgt_genus.."_"..trgt_species,"tfcd_"..self.tool))
+	else
+		trgt_genus = "wpn" --// hack to trigger wpn finishing effectors //--
+	end
+
+	-- Tool behaviour: kill tool or drop blunted for swiss_sharp
+	if self.tool == "swiss_sharp" then
+		self:DropToolZerooneBlunted()
+	end
+
+	-- Define effector and finish with it
+	local tool_prefix = string.find(self.tool,"shovel") and "shovels" or self.tool
+	local effector = tool_prefix.."_on_"..trgt_genus.."_fail"
+	self:FinishWith("tool_fail_override",effector)
+end
+function irm_dismantle:ExecuteToolBehaviour(tool_bhv,force_destination)
+	local func = "ExecuteToolBehaviour()"
+	if tool_bhv == "keep" then
+		give(self.tool)
+	elseif tool_bhv == "blunt_on_probab" then
+		self:ZerooneBluntOnProbab()
+	elseif tool_bhv == "force_blunt" then
+		self:ForceZerooneBlunt(force_destination)
+	elseif tool_bhv == "decrease" then
+		if self:tool_is_in("tools_all_dismantle_kits") then
+			self:KeepForcedTool()
+		else
+			self:cast("Attempted to decrease wrong type of tool. Only dismantling kits can follow 'decrease' tool behaviour pattern.",func,402.1)
+		end
+	elseif tool_bhv == "drop_blunted" then
+		self:DropToolZerooneBlunted()
+	elseif tool_bhv == "drop_intact" then
+		self:DropToolIntact()
+	elseif tool_bhv == "kill" then
+		--// tool already killed by player on item use //--
+	else
+		self:cast("Unknown tool behaviour pattern: '"..tool_bhv.."'.",func,402.2)
+	end
+end
+	function irm_dismantle:ZerooneBluntOnProbab()
+		local cfg_sec, func = "tool_zeroone_blunt_probabs", "ZerooneBluntOnProbab()"
+
+		if not self:tool_is_in("tools_all_sharpened") then
+			self:cast("Attempted to blunt wrong type of tool. Only '*_sharp' tools can follow 'blunt' tool behaviour pattern.",func,403.1)
+			return
+		end
+		if not configltx:section_exist(cfg_sec) then
+			self:cast(clx.."Missing section ["..cfg_sec.."].",func,403.2)
+			return
+		end
+		local lines_amt = configltx:line_count(cfg_sec)
+		if lines_amt < 5 then
+			self:cast(clx.."Config section ["..cfg_sec.."] incomplete (missing lines for some tools).",func,403.3)
+			return
+		end
+		if not configltx:line_exist(cfg_sec,"tbp_"..self.tool) then
+			self:cast(clx.."Missing blunt probab for "..self.tool.." in section ["..cfg_sec.."]",func,403,4)
+			return
+		end
+
+		local probab = get_float(cfg_sec,"tbp_"..self.tool)
+		if not probab then
+			self:cast(clx.."Missing blunt probab for '"..self.tool.."'.",func,403.5)
+			return
+		elseif probab ~= math.floor(probab) then
+			self:cast(clx.."Given probab 'tbp_"..self.tool.."' is not an integer.",func,403.61)
+			return
+		elseif probab < 0 then
+			self:cast(clx.."Given probab 'tbp_"..self.tool.."' is < 0.",func,403.62)
+			return
+		elseif probab > 100 then
+			self:cast(clx.."Given probab 'tbp_"..self.tool.."' is > 100.",func,403.63)
+			return
+		end
+
+		probab = probab - self.actor_class_blnt_bonus
+
+		if test_on(probab) then
+			give(self.tool:gsub("_sharp",""))
+		else
+			give(self.tool)
+		end
+	end
+	function irm_dismantle:ForceZerooneBlunt(destination)
+		local func = "ForceZerooneBlunt()"
+		destination = destination and destination or "give"
+		if destination == "give" then
+			self:KeepForcedTool()
+		elseif destination == "drop" then
+			self:DropToolZerooneBlunted()
+		else
+			self:cast("Cannot recognize destination type.",func,404)
+		end
+	end
+		function irm_dismantle:DropToolZerooneBlunted()
+			local func = "DropToolZerooneBlunted()"
+			local drop_section
+			if self:tool_is_in("tools_all_makeshift") then
+				if self:tool_is_in("tools_group_1") then
+					drop_section = self.tool
+				else
+					drop_section = self.tool:gsub("_sharp","")
+				end
+			elseif self:tool_is_in("tools_all_dismantle_kits") then
+				local t_kit
+				if self:tool_is_in("tools_outfit_dismantlers") then
+					t_kit = get_kit_table("outfit")
+				elseif self:tool_is_in("tools_weapon_dismantlers") then
+					t_kit = get_kit_table("weapon")
+				end
+				for i = 1,#t_kit do
+					if self.tool == t_kit[i] then
+						drop_section = t_kit[i-1]
+					end
+				end
+			else
+				self:cast(plx.."Tool not included in plugin list.",func,405.1)
+			end
+			if drop_section then
+				-- itms_refunct.spawn_in_front_quadrant(drop_section)
+				if not string.find(drop_section,"_empty") then
+					mc_cooking.itemop_give(drop_section, 1)
+				else
+					if self.empty_kits_enabled then
+						mc_cooking.itemop_give(drop_section, 1)
+					end
+				end
+			else
+				self:cast("Missing drop_section.",func,405.2)
+			end
+		end
+		function irm_dismantle:DropToolIntact()
+			mc_cooking.itemop_give(self.tool, 1)
+		end
+		function irm_dismantle:KeepForcedTool()
+			local func = "KeepForcedTool()"
+			local give_section
+			if self:tool_is_in("tools_all_makeshift") then
+				if self:tool_is_in("tools_group_1") then
+					give_section = self.tool
+				else
+					give_section = self.tool:gsub("_sharp","")
+				end
+			elseif self:tool_is_in("tools_all_dismantle_kits") then
+				local t_kit
+				if self:tool_is_in("tools_outfit_dismantlers") then
+					t_kit = get_kit_table("outfit")
+				elseif self:tool_is_in("tools_weapon_dismantlers") then
+					t_kit = get_kit_table("weapon")
+				end
+				for i = 1,#t_kit do
+					if self.tool == t_kit[i] then
+						give_section = t_kit[i-1]
+					end
+				end
+			else
+				self:cast(plx.."Tool not included in plugin list.",func,406.1)
+			end
+			if give_section then
+				if not string.find(give_section,"_empty") then
+					give(give_section)
+				else
+					if self.empty_kits_enabled then
+						give(give_section)
+					end
+				end
+			else
+				self:cast("Missing give_section.",func,406.2)
+			end
+		end
+
+
+--------------
+-- AUX TOOL --
+--------------
+function irm_dismantle:IncludeAuxTool()
+	local func = "IncludeAuxTool()"
+	-- Ensure aux clean slate
+	self.aux_obj = nil
+	self.aux_demanded = nil
+	self.aux_boost = nil
+	self.aux_condec = nil
+	self.caption_aux_title:SetText("")
+	self.caption_aux:SetText("")
+
+	-- Set auxiliary tool demand
+	local demand_aux
+	if self:trgt_is_in("all_targets_for_aux") then
+		if self:trgt_is_in("all_outfits_lists") then
+			if not self:tool_is_in("tools_outfit_dismantlers") then
+				demand_aux = "knife_first"
+			end
+		elseif self:trgt_is_in("outfitlike_targets") then
+			if self:tool_is_in("tools_group_1") then
+				demand_aux = "knife_first"
+			elseif self:tool_is_in("tools_group_4") then
+				if self.trgt ~= "af_camelbak" then
+					demand_aux = "knife_first"
+				end
+			end
+		elseif self:trgt_is_in("helmets_not_tough") then
+			if self:tool_is_in("tools_group_1") then
+				demand_aux = "knife_first"
+			end
+		elseif self:trgt_is_in("helmets_tough") then
+			if self:tool_is_in("tools_group_1") then
+				demand_aux = "knife_only"
+			elseif self:tool_is_in("tools_group_2") then
+				demand_aux = "axe_only"
+			elseif self:tool_is_in("tools_group_4") then
+				demand_aux = "axe_only"
+			elseif self:tool_is_in("tools_outfit_dismantlers") then
+				demand_aux = "axe_only"
+			end
+		else
+			self:cast(plx.."Target from [all_targets_for_aux] not included in any subsequent plugin list.",func,500)
+		end
+	end
+
+	-- Load config aux data on demand or end
+	if demand_aux then
+		self.aux_obj, self.aux_demanded, self.aux_boost, self.aux_condec = self:GetAuxTool(demand_aux)
+	end
+
+	-- Handle UI Captions
+	if self.aux_obj then
+		local aux_con = tostring(math.ceil(self.aux_obj:condition()*100)).."%"
+		self.caption_left_inner_title:SetText(game.translate_string("st_dismantle_ui_is_aux_left"))
+		self.caption_aux_title:SetText(game.translate_string("st_dismantle_ui_is_aux_title"))
+		self.caption_aux:SetText(game.translate_string(system_ini():r_string(self.aux_obj:section(),"inv_name")).." ".."("..aux_con..")")
+	elseif demand_aux then
+		self.caption_trgts:SetText("")
+		self.caption_left_inner_title:SetText(game.translate_string("st_dismantle_ui_need_aux_left"))
+		self.caption_aux_title:SetText(game.translate_string("st_dismantle_ui_is_aux_title_no"))
+		if demand_aux == "knife_only" then
+			self.caption_aux:SetText(game.translate_string("st_dismantle_ui_caption_aux_knife"))
+		elseif demand_aux == "axe_only" then
+			self.caption_aux:SetText(game.translate_string("st_dismantle_ui_caption_aux_axe"))
+		else
+			self.caption_aux:SetText(game.translate_string("st_dismantle_ui_caption_aux_any"))
+		end
+	end
+end
+function irm_dismantle:GetAuxTool(aux_tool_demand)
+	local func = "GetAuxTool()"
+	if not self:trgt_is_in("all_targets_for_aux") then
+		self:cast(plx.."Target not included in plugin targets list.",func,501.1)
+		return
+	end
+
+	-- Determine target genus/species
+	local trgt_genus, trgt_species
+	if     self:trgt_is_in("outfit_light") 			then trgt_genus = "outfit" 		trgt_species = "light_"
+	elseif self:trgt_is_in("outfit_medium") 		then trgt_genus = "outfit" 		trgt_species = "medium_"
+	elseif self:trgt_is_in("outfit_heavy") 			then trgt_genus = "outfit" 		trgt_species = "heavy_"
+	elseif self:trgt_is_in("outfit_ssp") 			then trgt_genus = "outfit" 		trgt_species = "ssp_"
+	elseif self:trgt_is_in("outfit_seva") 			then trgt_genus = "outfit" 		trgt_species = "seva_"
+	elseif self:trgt_is_in("outfit_exo") 			then trgt_genus = "outfit" 		trgt_species = "exo_"
+	elseif self:trgt_is_in("outfitlike_targets") 	then trgt_genus = "outfitlike" 	trgt_species = ""
+	elseif self:trgt_is_in("helmets_masks") 		then trgt_genus = "helm_mask" 	trgt_species = ""
+	elseif self:trgt_is_in("helmets_hardhats") 		then trgt_genus = "helm_hard" 	trgt_species = ""
+	elseif self:trgt_is_in("helmets_good") 			then trgt_genus = "helm_good" 	trgt_species = ""
+	else
+		self:cast(plx.."Cannot recognize target included in [all_targets_for_aux] plugin targets list.",func,501.2)
+		return
+	end
+
+	-- Read and check aux tool blunt rate
+	local knife_atbr = get_float("aux_tool_blunt_rate_on_"..trgt_genus,"atbr_"..trgt_genus.."_"..trgt_species.."knife")
+	local axe_atbr   = get_float("aux_tool_blunt_rate_on_"..trgt_genus,"atbr_"..trgt_genus.."_"..trgt_species.."axe")
+	if knife_atbr < 0 then
+		self:cast(clx.."'atbr_"..trgt_genus.."_"..trgt_species.."knife' in [aux_tool_blunt_rate_on_"..trgt_genus.."] is < 0.",func,501.31)
+		return
+	elseif knife_atbr > 1 then
+		self:cast(clx.."'atbr_"..trgt_genus.."_"..trgt_species.."knife' in [aux_tool_blunt_rate_on_"..trgt_genus.."] is > 1.",func,501.32)
+		return
+	end
+	if axe_atbr < 0 then
+		self:cast(clx.."'atbr_"..trgt_genus.."_"..trgt_species.."axe' in [aux_tool_blunt_rate_on_"..trgt_genus.."] is < 0.",func,501.41)
+		return
+	elseif axe_atbr > 1 then
+		self:cast(clx.."'atbr_"..trgt_genus.."_"..trgt_species.."axe' in [aux_tool_blunt_rate_on_"..trgt_genus.."] is > 1.",func,501.42)
+		return
+	end
+
+	-- Select applicable aux objects
+	local aux_obj_knife = ChooseAuxKnife(knife_atbr)
+	local aux_obj_axe = ChooseAuxAxe(axe_atbr)
+
+	-- Read and check dismantle probab boost from aux tool
+	-- -- Knives
+	local dp_add_knife
+	if aux_obj_knife then
+		-- Read
+		dp_add_knife = get_float(trgt_genus.."_aux_tool_dp_boost","dp_aux_add_"..aux_obj_knife:section())
+		-- Check
+		if dp_add_knife ~= math.floor(dp_add_knife) then
+			self:cast(clx.."Given 'dp_aux_add_"..aux_obj_knife:section().."' probab boost is not an integer.",func,501.51)
+			return
+		elseif dp_add_knife < 0 then
+			self:cast(clx.."Given 'dp_aux_add_"..aux_obj_knife:section().."' in ["..trgt_genus.."_aux_tool_dp_boost'] is < 0.",func,501.52)
+			return
+		elseif dp_add_knife > 100 then
+			self:cast(clx.."Given 'dp_aux_add_"..aux_obj_knife:section().."' in ["..trgt_genus.."_aux_tool_dp_boost'] is > 100.",func,501.53)
+			return
+		end
+	end
+	-- -- Axes
+	local dp_add_axe
+	if aux_obj_axe then
+		-- Read
+		dp_add_axe = get_float(trgt_genus.."_aux_tool_dp_boost","dp_aux_add_"..aux_obj_axe:section())
+		-- Check
+		if dp_add_axe ~= math.floor(dp_add_axe) then
+			self:cast(clx.."Given 'dp_aux_add_"..aux_obj_axe:section().."' probab boost is not an integer.",func,501.61)
+			return
+		elseif dp_add_axe < 0 then
+			self:cast(clx.."Given 'dp_aux_add_"..aux_obj_axe:section().."' in ["..trgt_genus.."_aux_tool_dp_boost'] is < 0.",func,501.62)
+			return
+		elseif dp_add_axe > 100 then
+			self:cast(clx.."Given 'dp_aux_add_"..aux_obj_axe:section().."' in ["..trgt_genus.."_aux_tool_dp_boost'] is > 100.",func,501.63)
+			return
+		end
+	end
+
+	-- Return gathered values based on demand
+	if aux_tool_demand == "knife_first" then
+		if aux_obj_knife then
+			return aux_obj_knife, "demanded_any", dp_add_knife, knife_atbr
+		elseif aux_obj_axe then
+			return aux_obj_axe, "demanded_any", dp_add_axe, axe_atbr
+		else
+			return nil, "demanded_any"
+		end
+	elseif aux_tool_demand == "axe_first" then
+		if aux_obj_axe then
+			return aux_obj_axe, "demanded_any", dp_add_axe, axe_atbr
+		elseif aux_obj_knife then
+			return aux_obj_knife, "demanded_any", dp_add_knife, knife_atbr
+		else
+			return nil, "demanded_any"
+		end
+	elseif aux_tool_demand == "knife_only" then
+		if aux_obj_knife then
+			return aux_obj_knife, "demanded_knife", dp_add_knife, knife_atbr
+		else
+			return nil, "demanded_knife"
+		end
+	elseif aux_tool_demand == "axe_only" then
+		if aux_obj_axe then
+			return aux_obj_axe, "demanded_axe", dp_add_axe, axe_atbr
+		else
+			return nil, "demanded_axe"
+		end
+	else
+		self:cast("Unknown aux tool demand pattern.",func,501.7)
+	end
+end
+function BluntAuxTool(aux_obj,aux_blunt_percent)
+	local func = "BluntAuxTool()"
+	if string.find(aux_obj:section(),"knife") then
+		itms_refunct.blunt_knife(aux_obj,"dismantle",aux_blunt_percent)
+	elseif string.find(aux_obj:section(),"axe") then
+		itms_refunct.blunt_axe(aux_obj,"dismantle",aux_blunt_percent)
+	else
+		self:cast("Unknown aux_obj predefined type.",func,502)
+	end
+end
+function ChooseAuxKnife(lowest_con)
+	-- Choose the most used of the most expensive knife available
+	local compare_con, knives_by_cost, chosen_knife = 1.1, GetSortedKnives()
+
+	-- (LOCAL UTIL)
+	local function choose_leastcon_of(knife_section,lowest_con)
+		local chosen
+		for i = 0, getLocalActor():object_count() - 1 do
+			if getLocalActor():object(i):section() == knife_section then
+				local next_con = getLocalActor():object(i):condition()
+				if (next_con >= lowest_con) and (next_con < compare_con) then
+					compare_con = next_con
+					chosen = getLocalActor():object(i)
+				end
+			end
+		end
+		return chosen
+	end
+
+	for i = 1,#knives_by_cost do
+		if getLocalActor():object(knives_by_cost[i]) then
+			chosen_knife = choose_leastcon_of(knives_by_cost[i],lowest_con)
+			if chosen_knife then break end
+		end
+	end
+
+	return chosen_knife
+end
+function ChooseAuxAxe(lowest_con)
+	-- Choose the most used axe available
+	local compare_con, chosen_axe = 1.1
+
+	for i = 0, getLocalActor():object_count() - 1 do
+		if getLocalActor():object(i):section() == "wpn_axe" then
+			local next_con = getLocalActor():object(i):condition()
+			if (next_con >= lowest_con) and (next_con < compare_con) then
+				compare_con = next_con
+				chosen_axe = getLocalActor():object(i)
+			end
+		end
+	end
+
+	return chosen_axe
+end
+function GetSortedKnives()
+	local t_in = {
+		{item = "wpn_knife_inv", 	cost = system_ini():r_string("wpn_knife_inv","cost")},
+		{item = "wpn_knife_inv_2", 	cost = system_ini():r_string("wpn_knife_inv_2","cost")},
+		{item = "wpn_knife_inv_3", 	cost = system_ini():r_string("wpn_knife_inv_3","cost")},
+		{item = "wpn_knife_inv_4", 	cost = system_ini():r_string("wpn_knife_inv_4","cost")},
+		{item = "wpn_knife_inv_5", 	cost = system_ini():r_string("wpn_knife_inv_5","cost")},
+		{item = "wpn_knife_m", 		cost = system_ini():r_string("wpn_knife_m","cost")}}
+	table.sort(t_in,function(a,b) return a.cost > b.cost end)
+	local t_out = {}
+	for i = 1, #t_in do
+		t_out[i] = t_in[i].item
+	end
+	return t_out
+end
+
+
+------------------------------
+-- CONTENT EXECUTION ENGINE --
+------------------------------
+function irm_dismantle:GetFromConfig(probabs_section,tool_bhv_section,probabs_prefix,tool_bhv_prefix,probabs_main_line,suffix)
+	local func = "GetFromConfig()"
+	-- Check main and optional input, define line operators
+	if not probabs_section then self:cast("Missing probabs section.",func,601) return end
+	if not tool_bhv_section then self:cast("Missing tool behaviour section.",func,602) return end
+	probabs_prefix = probabs_prefix or "dp_"
+	tool_bhv_prefix = tool_bhv_prefix or "tb_"
+	probabs_main_line = probabs_main_line or "dp_main"
+	suffix = suffix or self:tool_is_in("tools_all_dismantle_kits") and "kit" or self.tool
+
+	-- TOOL BEHAVIOUR
+	local tool_bhv
+
+	-- Option for getting only probabs from config
+	if tool_bhv_section ~= "skip" then
+		-- Read tool behaviour value from config
+		tool_bhv = get_string(tool_bhv_section,tool_bhv_prefix..suffix)
+		-- Check tool behaviour value from config  - compare input with allowed values
+		local allowed_tbhv = {
+			keep 			= true,
+			blunt_on_probab = true,
+			force_blunt 	= true,
+			decrease 		= true,
+			drop 			= true,
+			kill 			= true}
+		if not allowed_tbhv[tool_bhv] then
+			self:cast(clx.."Unknown tool behaviour pattern: ["..tool_bhv_section.."] "..tool_bhv_prefix..suffix.." == "..tool_bhv..".",func,603)
+			return
+		end
+	end
+
+	-- Option for getting only tool behaviour from config
+	if probabs_section == "skip" then
+		return tool_bhv
+	end
+
+	-- DISMANTLE PROBABILITY
+	local probab
+
+	-- Read and check main probab value from config
+	local m_probab = get_float(probabs_section,probabs_main_line)
+	if m_probab ~= math.floor(m_probab) then
+		self:cast(clx.."Given '"..probabs_main_line.."' probab is not an integer.",func,604)
+		return
+	elseif m_probab < 0 then
+		cast_console("[DISMANTLE DEBUG] GetFromConfig() : '"..probabs_main_line.."' probab < 0. Assuming 0.")
+	elseif m_probab > 100 then
+		cast_console("[DISMANTLE DEBUG] GetFromConfig() : '"..probabs_main_line.."' probab > 100. Assuming 100.")
+	end
+
+	-- Read and check tool adjustment probab value from config
+	local t_probab = get_float(probabs_section,probabs_prefix..suffix)
+	if t_probab ~= math.floor(t_probab) then
+		self:cast(clx.."Given '"..probabs_prefix..suffix.."' probab is not an integer.",func,605)
+		return
+	elseif t_probab < 0 then
+		cast_console("[DISMANTLE DEBUG] GetFromConfig() : '"..probabs_prefix..suffix.."' probab < 0. Assuming 0.")
+	elseif t_probab > 100 then
+		cast_console("[DISMANTLE DEBUG] GetFromConfig() : '"..probabs_prefix..suffix.."' probab > 100. Assuming 100.")
+	end
+
+	-- Construct final probab
+	probab = m_probab + t_probab + self.actor_class_main_bonus
+
+	if probab < 0 then
+		cast_console("[DISMANTLE DEBUG] GetFromConfig() : final dismantle probab < 0. Assumed 0.")
+	elseif probab > 100 then
+		cast_console("[DISMANTLE DEBUG] GetFromConfig() : final dismantle probab > 100. Assumed 100.")
+	end
+
+	return probab, tool_bhv
+end
+function irm_dismantle:ExecuteContentFromConfig(probab,config_section_prefix)
+	local func = "ExecuteContentFromConfig()"
+	-- Check input and set config section name
+	if not probab then self:cast("Missing probab.",func,710) return end
+	if not config_section_prefix then self:cast("Missing config section prefix.",func,711) return end
+	local cfg_sec
+	if string.find(config_section_prefix,"_for_all") then
+		cfg_sec = config_section_prefix.."_content"
+	else
+		cfg_sec = config_section_prefix.."_content_"..self.trgt
+	end
+	-- Config section presence and lenght check
+	if not configltx:section_exist(cfg_sec) then
+		self:cast(clx.."Missing section ["..cfg_sec.."]",func,712)
+		return
+	end
+	local lines_amt = configltx:line_count(cfg_sec)
+	if lines_amt == 0 then self:cast(clx.."Config section ["..cfg_sec.."] is empty.",func,714) return end
+	if lines_amt < 2 then self:cast(clx.."Config section ["..cfg_sec.."] incomplete.",func,715) return end
+
+	-- (LOCAL UTIL) Config line presence checking tool
+	local function is_line(config_line,config_section)
+		if not config_section then config_section = cfg_sec end
+		return configltx:line_exist(config_section,config_line)
+	end
+
+	-- (LOCAL UTIL) Final execution tool
+	local function CheckAndExecute(probab,succ_line,fail_line,test_amt_line,succ_amt_line,fail_amt_line,debug_i)
+		local funx = "CheckAndExecute()"
+		local succ, fail, test_amt, succ_amt, fail_amt
+		debug_i = tostring(debug_i) or ""
+		-- Check config values
+		if probab ~= math.floor(probab) then
+			self:cast("Given probab is not an integer.",funx,720)
+			return
+		elseif probab < 0 then
+			cast_console("[DISMANTLE DEBUG] CheckAndExecute()arg1 : probab < 0. Assuming 0.")
+		elseif probab > 100 then
+			cast_console("[DISMANTLE DEBUG] CheckAndExecute()arg1 : probab > 100. Assuming 100.")
+		end
+		if get_string(cfg_sec,succ_line) == "" then
+			self:cast(clx.."Given 'succ"..debug_i.."' setting in section ["..cfg_sec.."] is empty.",funx,721)
+			return
+		else
+			succ = get_string(cfg_sec,succ_line)
+		end
+		if get_string(cfg_sec,fail_line) == "" then
+			self:cast(clx.."Given 'fail"..debug_i.."' setting in section ["..cfg_sec.."] is empty.",funx,722)
+			return
+		else
+			fail = get_string(cfg_sec,fail_line)
+		end
+		if not test_amt_line then
+			self:cast("Missing 'test_amt_line' value.",funx,723.1)
+			return
+		elseif test_amt_line == "default" then
+			test_amt = 1
+		elseif get_float(cfg_sec,test_amt_line) ~= math.floor(get_float(cfg_sec,test_amt_line)) then
+			self:cast(clx.."Given 'test"..debug_i.."_amt' is not an integer.",funx,723.2)
+			return
+		elseif get_float(cfg_sec,test_amt_line) < 0 then
+			self:cast(clx.."Given 'test"..debug_i.."_amt' is negative.",funx,723.3)
+			return
+		else
+			test_amt = get_float(cfg_sec,test_amt_line)
+		end
+		if not succ_amt_line then
+			self:cast("Missing 'succ_amt_line' value.",funx,724.1)
+			return
+		elseif succ_amt_line == "default" then
+			succ_amt = 1
+		elseif get_float(cfg_sec,succ_amt_line) ~= math.floor(get_float(cfg_sec,succ_amt_line)) then
+			self:cast(clx.."Given 'succ"..debug_i.."_amt' is not an integer.",funx,724.2)
+			return
+		elseif get_float(cfg_sec,succ_amt_line) < 0 then
+			self:cast(clx.."Given 'succ"..debug_i.."_amt' is negative.",funx,724.3)
+			return
+		else
+			succ_amt = get_float(cfg_sec,succ_amt_line)
+		end
+		if not fail_amt_line then
+			self:cast("Missing 'fail_amt_line' value.",funx,725.1)
+			return
+		elseif fail_amt_line == "default" then
+			fail_amt = 1
+		elseif get_float(cfg_sec,fail_amt_line) ~= math.floor(get_float(cfg_sec,fail_amt_line)) then
+			self:cast(clx.."Given 'fail"..debug_i.."_amt' is not an integer.",funx,725.2)
+			return
+		elseif get_float(cfg_sec,fail_amt_line) < 0 then
+			self:cast(clx.."Given 'fail"..debug_i.."_amt' is negative.",funx,725.3)
+			return
+		else
+			fail_amt = get_float(cfg_sec,fail_amt_line)
+		end
+
+		-- Get the shit done (and cast debug)
+		for i=1,test_amt do
+			if test_on(probab) then
+				if succ ~= "skip" then
+					give(succ,succ_amt)
+				end
+				cast_op_test(probab,test_amt_line,test_amt,succ_line,succ_amt_line,succ_amt,succ,fail_line,fail_amt_line,fail_amt,fail,"s",i)
+			else
+				if fail ~= "skip" and fail ~= "event" then
+					give(fail,fail_amt)
+				end
+				cast_op_test(probab,test_amt_line,test_amt,succ_line,succ_amt_line,succ_amt,succ,fail_line,fail_amt_line,fail_amt,fail,"f",i)
+			end
+		end
+	end
+
+	-- Define feed for final execution
+	local succ_line, succ_amt_line, fail_line, fail_amt_line, test_amt_line
+
+	-- Config integrity check
+	for k,v in pairs(alun_utils.collect_section(configltx,cfg_sec)) do
+		if is_line("succ",cfg_sec) then
+			if string.find(v,"succ") then
+				if string.find(v,"succ%w") then
+					self:cast(clx.."Invalid structure in section ["..cfg_sec.."]. Both 'succ' and 'succ*' lines detected.",func,731)
+					return
+				end
+			end
+		end
+		if is_line("fail",cfg_sec) then
+			if string.find(v,"fail") then
+				if string.find(v,"fail%w") then
+					self:cast(clx.."Invalid structure in section ["..cfg_sec.."]. Both 'fail' and 'fail*' lines detected.",func,732)
+					return
+				end
+			end
+		end
+	end
+
+	-- Prepare tested pairs execution
+	if is_line("succ") then
+		--// Single Pair Mode //--
+		succ_line = "succ"
+		-- Config integrity check
+		if is_line("fail") then
+			fail_line = "fail"
+		else
+			self:cast(clx.."Missing 'fail' line to match 'succ' line in section ["..cfg_sec.."].",func,740)
+			return
+		end
+		-- Read optional settings
+		succ_amt_line = is_line("succ_amt") and "succ_amt" or "default"
+		fail_amt_line = is_line("fail_amt") and "fail_amt" or "default"
+		test_amt_line = is_line("test_amt") and "test_amt" or "default"
+		-- Execute
+		CheckAndExecute(probab,succ_line,fail_line,test_amt_line,succ_amt_line,fail_amt_line)
+	else
+		--// Multiple Pairs Mode //--
+		-- Structure check
+		if not is_line("succ1") then
+			if not is_line("succ2") then
+				self:cast(clx.."Invalid 'succ*' structure in section ["..cfg_sec.."].",func,751)
+				return
+			end
+		end
+		local i = 1
+		repeat
+			succ_line = is_line("succ"..i) and "succ"..i
+			-- Read optional fail line
+			fail_line = is_line("fail"..i) and "fail"..i or is_line("fail") and "fail" or "error"
+			if fail_line == "error" then
+				self:cast(clx.."Invalid 'fail*' structure in section ["..cfg_sec.."].",func,752)
+				return
+			end
+			-- Config line pairs integrity check
+			if fail_line ~= "fail" and fail_line ~= "error" then
+				if not is_line("succ"..i) then
+					self:cast(clx.."Missing 'succ"..i.."' to match 'fail"..i.."' in section ["..cfg_sec.."].",func,753)
+					return
+				end
+			end
+			-- Read optional amount settings
+			succ_amt_line = is_line("succ"..i.."_amt") and "succ"..i.."_amt" or is_line("succ_amt") and "succ_amt" or "default"
+			fail_amt_line = is_line("fail"..i.."_amt") and "fail"..i.."_amt" or is_line("fail_amt") and "fail_amt" or "default"
+			test_amt_line = is_line("test"..i.."_amt") and "test"..i.."_amt" or is_line("test_amt") and "test_amt" or "default"
+			-- Execute this pair
+			if fail_line ~= "error" then
+				CheckAndExecute(probab,succ_line,fail_line,test_amt_line,succ_amt_line,fail_amt_line,i)
+			end
+			i = i + 1
+		until is_line("succ"..i) ~= true
+	end
+
+	-- Handle Optional Always Given Content
+	if is_line("always_give") then
+		--// Single Mode //--
+		-- Read from config
+		local always_give = get_string(cfg_sec,"always_give")
+		local always_give_amt = is_line("always_give_amt") and get_float(cfg_sec,"always_give_amt")
+		-- Check
+		if always_give_amt then
+			if always_give_amt == "" then
+				self:cast(clx.."Given 'always_give_amt' in section ["..cfg_sec.."] is empty.",func,760)
+				return
+			elseif always_give_amt ~= math.floor(always_give_amt) then
+				self:cast(clx.."Given 'always_give_amt' in section ["..cfg_sec.."] is not an integer.",func,761)
+				return
+			elseif always_give_amt < 0 then
+				self:cast(clx.."Given 'always_give_amt' in section ["..cfg_sec.."] is negative.",func,762)
+				return
+			end
+		end
+		-- Execute
+		give(always_give,always_give_amt)
+		-- Cast debug info
+		cast_op_ag_single(always_give,always_give_amt)
+	else
+		--// Multiple Mode //--
+		if is_line("always_give_multiple") then
+			if get_bool(cfg_sec,"always_give_multiple") then
+				-- Config structure check
+				if not is_line("always_give1") then
+					if not is_line("always_give2") then
+						self:cast(clx.."Invalid multiple 'always_give*' structure in section ["..cfg_sec.."].",func,770)
+						return
+					end
+				end
+				-- Read from config and execute
+				local i = 1
+				repeat
+					-- Structure check
+					if is_line("always_give"..i.."_amt") then
+						if not is_line("always_give"..i) then
+							self:cast(clx.."Invalid multiple 'always_give*' structure in section ["..cfg_sec.."].",func,771)
+							return
+						end
+					end
+					-- Read
+					local ag_amt = is_line("always_give"..i.."_amt") and get_float(cfg_sec,"always_give"..i.."_amt") or is_line("always_give_amt") and get_float(cfg_sec,"always_give_amt")
+					local ag_content = get_string(cfg_sec,"always_give"..i)
+					-- Execute
+					give(ag_content,ag_amt)
+					-- Cast debug info
+					cast_op_ag_multiple(ag_content,ag_amt)
+					i = i + 1
+				until is_line("always_give"..i) ~= true
+			else
+				self:cast(clx.."Invalid 'always_give_multiple' value in section ["..cfg_sec.."].",func,772)
+			end
+		end
+	end
+end
+function irm_dismantle:ExecuteBatteryTiersContentFromConfigs(config_section_prefix)
+	local func = "ExecuteBatteryTiersContentFromConfigs()"
+	-- Check input and set config section name
+	if not config_section_prefix then self:cast("Missing config_section_prefix.",func,801) return end
+	local cfg_sec = config_section_prefix.."_content_"..self.trgt
+
+	-- Config section presence check
+	if not configltx:section_exist(cfg_sec) then
+		self:cast(clx.."Missing section ["..cfg_sec.."]",func,802)
+		return
+	end
+
+	-- (LOCAL UTIL) Config line presence checking tool
+	local function is_line(config_line,config_section)
+		if not config_section then config_section = cfg_sec end
+		return configltx:line_exist(config_section,config_line)
+	end
+
+	-- Config line presence check
+	if not is_line("load_tiers_from_axr_battery") then
+		self:cast(clx.."Missing 'load_tiers_from_axr_battery' line in ["..cfg_sec.."].",func,803)
+		return
+	end
+
+	-- Auto loading from axr_battery.ltx enable check
+	if not get_bool(cfg_sec,"load_tiers_from_axr_battery") then
+		cast_console("[DISMANTLE DEBUG] "..func.." : Loading from axr_battery disabled in ["..cfg_sec.."].")
+		return
+	end
+
+	-- Load condition values for batteries from axr_battery.ltx
+	local bt = {
+		[1] = {
+			["treshold"] = 1,
+			["succ"] = "batteries_ccell"
+			},
+		[2] = {
+			["treshold"] = ini_file("plugins\\axr_battery.ltx"):r_float("batteries_ccell","power"),
+			["succ"] = "batteries"
+			},
+		[3] = {
+			["treshold"] = ini_file("plugins\\axr_battery.ltx"):r_float("batteries","power"),
+			["succ"] = "batteries_dead"
+			},
+		[4] = {
+			["treshold"] = ini_file("plugins\\axr_battery.ltx"):r_float("batteries_dead","power"),
+			["succ"] = "batteries_ccell_empty"
+			}
+		}
+
+	-- Execute
+	for i = 4,1,-1 do
+		if self:TargetCondition() <= bt[i].treshold then
+			give(bt[i].succ)
+			break
+		end
+	end
+end
+
+
+----------------------------------------------
+-- FINISH : EVENTS, HUD CAPTIONS, EFFECTORS --
+----------------------------------------------
+function irm_dismantle:FinishWith(finish_type,finish_content)
+	local func = "FinishWith()"
+	if self:IsShown() then self:HideDialog() end
+	get_hud():HideActorMenu()
+
+	-- UI finishers
+	if finish_type == "UI_cancel_override" then
+		if finish_content == "override_no_trgt" then
+			hud_caption("st_dismantle_screen_no_trgts")
+		elseif finish_content == "override_no_aux" then
+			hud_caption("st_dismantle_screen_no_aux_"..self.aux_demanded)
+		end
+		self:OnButtonCancel()
+
+
+	-- surprise finishers
+	elseif finish_type == "target_surprise" then
+		if finish_content == "gauss" then
+			itms_refunct.quick_actor_effect("electro_shock")
+		elseif finish_content == "xplo" then
+			itms_refunct.quick_actor_effect("blast")
+		end
+
+
+	-- tool fail finishers
+	elseif finish_type == "tool_fail_override" then
+		if finish_content == "swiss_sharp_on_wpn_fail" then
+			itms_refunct.quick_actor_effect("swiss_sharp_on_wpn_fail")
+			hud_caption("st_dismantle_screen_swiss_wpn_fail")
+		elseif finish_content == "cutlery_sharp_on_wpn_fail" then
+			itms_refunct.quick_actor_effect("cutlery_sharp_on_wpn_fail")
+			hud_caption("st_dismantle_screen_cutlery_wpn_fail")
+		elseif finish_content == "hammer_inv_on_wpn_fail" then
+			itms_refunct.quick_actor_effect("hammer_inv_on_wpn_fail")
+			hud_caption("st_dismantle_screen_fail_hammer")
+		elseif finish_content == "hammer_inv_on_helm_fail" then
+			itms_refunct.quick_actor_effect("hammer_inv_on_helm_fail")
+			hud_caption("st_dismantle_screen_fail_hammer")
+		elseif finish_content == "shovels_on_wpn_fail" then
+			itms_refunct.quick_actor_effect("hammer_inv_on_wpn_fail")
+			hud_caption("st_dismantle_screen_fail_shovel")
+		elseif finish_content == "shovels_on_helm_fail" then
+			itms_refunct.quick_actor_effect("hammer_inv_on_helm_fail")
+			hud_caption("st_dismantle_screen_fail_shovel")
+		elseif finish_content == "crowbar_on_helm_fail" then
+			itms_refunct.quick_actor_effect("swiss_sharp_on_wpn_fail")
+			hud_caption("st_dismantle_screen_fail_crowbar")
+		end
+
+
+	-- weapon genus specific finishers
+	elseif finish_type == "weapon" then
+		if finish_content == "hit" then
+			actor_effects.use_item("dismantle_short_hit")
+
+		elseif finish_content == "cutlery" then
+			if test_on(50) then
+				actor_effects.use_item("dismantle_cutlery1")
+			else
+				actor_effects.use_item("dismantle_cutlery1")
+			end
+
+		elseif finish_content == "metalplastic" then
+			actor_effects.use_item("dismantle_metalplastic25")
+
+		elseif finish_content == "kit" then
+			if test_on(50) then
+				actor_effects.use_item("dismantle_wpn_kit1")
+			else
+				actor_effects.use_item("dismantle_wpn_kit2")
+			end
+		end
+
+
+	-- outfit genus specific finishers
+	elseif finish_type == "outfit" then
+		if finish_content == "hit" then
+			actor_effects.use_item("dismantle_outfit_hit")
+
+		elseif finish_content == "kit" then
+			if test_on(50) then
+				actor_effects.use_item("dismantle_outfit_kit1")
+			else
+				actor_effects.use_item("dismantle_outfit_kit2")
+			end
+		end
+
+
+	-- family B specific finishers
+	elseif finish_type == "standard" then
+		if finish_content == "short_hit" then
+			actor_effects.use_item("dismantle_short_hit")
+
+		elseif finish_content == "metalplastic" then
+			actor_effects.use_item("dismantle_metalplastic25")
+
+		elseif finish_content == "cutlery" then
+			if test_on(50) then
+				actor_effects.use_item("dismantle_cutlery1")
+			else
+				actor_effects.use_item("dismantle_cutlery1")
+			end
+
+		elseif finish_content == "hammertime" then
+			if test_on(50) then
+				actor_effects.use_item("dismantle_hammertime1")
+			else
+				actor_effects.use_item("dismantle_hammertime2")
+			end
+
+		elseif finish_content == "grooming" then -- not used atm
+			if test_on(50) then
+				actor_effects.use_item("dismantle_grooming1")
+			else
+				actor_effects.use_item("dismantle_grooming2")
+			end
+
+		elseif finish_content == "outfitlike" then
+			actor_effects.use_item("dismantle_grooming2")
+		end
+
+	end
+
+	self:ClearMemory()
+end
+
+
+-----------
+-- UTILS --
+-----------
+function give(section,amount)
+	if not section then irm_dismantle:cast("Missing spawn section.","give()",920) return end
+	amount = amount or 1
+	if not alife() then if mc_cooking then mc_cooking.itemop_give(section, amount) end return end
+	for i = 1, amount do
+		alife():create(section,getLocalActor():position(),0,0,0)
+	end
+end
+function give_const(cfg_sec)
+	local func = "give_const()"
+	-- Initial check
+	if not configltx:section_exist(cfg_sec) then
+		irm_dismantle:cast(ltx.."Missing ["..cfg_sec.."] section.",func,931)
+		return
+	end
+
+	if not configltx:line_exist(cfg_sec,"give_const") then
+		-- Cast debug info
+		cast_console_for_const(clx.." Missing 'give_const' in ["..cfg_sec.."] - skipping.")
+	else
+		local const_content = get_string(cfg_sec,"give_const")
+		-- Config integrity check
+		if const_content == "" then
+			irm_dismantle:cast(clx.."Given 'give_const' in section ["..cfg_sec.."] is empty.",func,932)
+			return
+		end
+		local const_amt
+		if not configltx:line_exist(cfg_sec,"give_const_amt") then
+			const_amt = 1
+			-- Cast debug info
+			cast_console_for_const(clx.." Missing 'give_const_amt' in ["..cfg_sec.."] - assuming 1.")
+		else
+			const_amt = get_float(cfg_sec,"give_const_amt")
+			-- Config integrity check
+			if const_amt == "" then
+				irm_dismantle:cast(clx.."Given 'give_const_amt' in section ["..cfg_sec.."] is empty.",func,933.1)
+				return
+			elseif const_amt ~= math.floor(const_amt) then
+				irm_dismantle:cast(clx.."Given 'give_const_amt' in section ["..cfg_sec.."] is not an integer.",func,933.2)
+				return
+			elseif const_amt < 0 then
+				irm_dismantle:cast(clx.."Given 'give_const_amt' in section ["..cfg_sec.."] is negative.",func,933.3)
+				return
+			end
+		end
+		-- Execute
+		give(const_content,const_amt)
+		-- Cast debug info
+		cast_op_gconst(const_content,const_amt)
+	end
+end
+function test_on(probab)
+	if not probab then irm_dismantle:cast("Missing probab.","test_on()",940) return end
+	return probab > math.random(0,100)
+end
+function hud_caption(xml_id)
+	if not xml_id then irm_dismantle:cast("Missing static id.","hud_caption()",950) return end
+	get_hud():HideActorMenu()
+	itms_manager.show_message(game.translate_string(xml_id),25)
+end
+function get_float(section,line)
+	if not section or not line then irm_dismantle:cast("Missing section and/or line argument.","get_float()",960) return end
+	return configltx:r_float(section,line)
+end
+function get_string(section,line)
+	if not section or not line then irm_dismantle:cast("Missing section and/or line argument.","get_string()",970) return end
+	return configltx:r_string(section,line)
+end
+function get_bool(section,line)
+	local func = "get_bool()"
+	if not section or not line then irm_dismantle:cast("Missing section and/or line argument.",func,981) return end
+	local _r = get_string(section,line)
+	if _r ~= "true" and _r ~= "false" then
+		irm_dismantle:cast("Given value is not boolean. Section ["..section.."], line '"..line.."'.",func,982)
+	else
+		return configltx:r_bool(section,line)
+	end
+end
+function get_plugin(section)
+	return alun_utils.collect_section(plugin,section,true)
+end
+function irm_dismantle:tool_is_in(section)
+	return get_plugin(section)[self.tool]
+end
+function irm_dismantle:trgt_is_in(section)
+	return get_plugin(section)[self.trgt]
+end
+function get_kit_table(kit_type)
+	local t_kit = {}
+	if kit_type == "outfit" then
+		t_kit = {
+			[0] = "outfit_dismantler_empty",
+			[1] = "outfit_dismantler5",
+			[2] = "outfit_dismantler4",
+			[3] = "outfit_dismantler3",
+			[4] = "outfit_dismantler2",
+			[5] = "outfit_dismantler"}
+	elseif kit_type == "weapon" then
+		t_kit = {
+			[0] = "wpn_dismantler_empty",
+			[1] = "wpn_dismantler5",
+			[2] = "wpn_dismantler4",
+			[3] = "wpn_dismantler3",
+			[4] = "wpn_dismantler2",
+			[5] = "wpn_dismantler"}
+	end
+	return t_kit
+end
+function irm_dismantle:ClearMemory()
+	self.tool = nil
+	self.trgt = nil
+	self.aux_obj = nil
+	self.aux_demanded = nil
+	self.aux_boost = nil
+	self.aux_condec = nil
+	self.actor_class_main_bonus = nil
+	self.actor_class_fail_bonus = nil
+	self.actor_class_cdec_bonus = nil
+	self.actor_class_blnt_bonus = nil
+	self.xml = nil
+	self.form = nil
+	self.list_box_trgts = nil
+	self.file_item_main_sz = nil
+	self.file_item_fd_sz = nil
+	self.file_item_fn_sz = nil
+	self.uiic = nil
+	self.icon_trgt = nil
+	self.caption_tool = nil
+	self.caption_trgts_title = nil
+	self.caption_trgts = nil
+	self.caption_left_inner_title = nil
+	self.caption_warning = nil
+	self.caption_aux_title = nil
+	self.caption_aux = nil
+	self.slots_warning = nil
+	self.tabs = nil
+	self.helptabs = nil
+	self.help_bg = nil
+	self.slot2_id = nil
+	self.slot3_id = nil
+	self.slot7_id = nil
+	self.slot9_id = nil
+	self.slot12_id = nil
+	self.empty_kits_enabled = nil
+end
+
+
+-----------
+-- DEBUG --
+-----------
+local log_number = 1
+function irm_dismantle:cast(info,header,error_number,showtime,is_known)
+	if not is_debug then return end
+	if not configltx:r_bool("dismantle_debug","dbg_enable_cast_errors") then return end
+	local icon = "ui_inGame2_PDA_icon_actorbackpack"
+	local title = "("..log_number..") ".."[DISMANTLE DEBUG - ERROR NUMBER]     "
+	info = info or "(?)"
+	header = header or "(?)"
+	error_number = error_number or 404
+	showtime = showtime or 8000
+
+	if is_known then
+		if not get_bool("dismantle_debug","dbg_enable_known_errors_casting") then return end
+		info = "[KNOWN]:   "..info
+		error_number = error_number and "K_"..error_number or "K_404"
+		showtime = 3000
+		icon = "ui_inGame2_PDA_icon_secret_found"
+	end
+
+	news_manager.send_tip(getLocalActor(),info,nil,nil,showtime,nil,title..error_number.."    [IN FUNCTION] "..header,icon)
+
+	if configltx:r_bool("dismantle_debug","dbg_enable_cast_err_to_console") then
+		local tool = self.tool and "["..self.tool.."]" or " (?) "
+		local trgt = self.trgt and "["..self.trgt.."]" or " (?) "
+		local aux = self.aux_demanded and "  with aux demand: '"..self.aux_demanded.."'." or "."
+		cast_console("[DISMANTLE DEBUG] Error number:  "..error_number.."   Used:  "..tool.."  on  "..trgt..aux)
+	end
+
+	log_number = log_number + 1
+end
+function cast_op_test(probab,test_amt_line,test_amt,succ_line,succ_amt_line,succ_amt,succ,fail_line,fail_amt_line,fail_amt,fail,result,i,showtime)
+	if not is_debug then return end
+	if not get_bool("dismantle_debug","dbg_enable_operations_casting") then return end
+	showtime = showtime or 16000
+	local icon, info
+	local s = "[S_AMT_L]   "..succ_amt_line.."     [S_AMT]   "..succ_amt.."     [S]   "..succ.."     [S_LINE]   "..succ_line
+	local f = "[F_AMT_L]   "..fail_amt_line.."     [F_AMT]   "..fail_amt.."     [F]   "..fail.."     [F_LINE]   "..fail_line
+	if result == "s" then
+		icon = "dh_dbg_operation_icon_green_card"
+		info = s
+	elseif result == "f" then
+		icon = "dh_dbg_operation_icon_red_card"
+		info = f
+	end
+	local header = "("..log_number..")".."[TEST ON PROBAB]      "..probab.."       [TEST AMOUNT LINE]    "..test_amt_line.."       [TEST AMOUNT]    "..test_amt.."       [TEST ITERATION]    "..i
+	news_manager.send_tip(getLocalActor(),info,nil,nil,showtime,nil,header,icon)
+	log_number = log_number + 1
+end
+function cast_op_ag_single(ag_content,ag_amt,showtime)
+	if not is_debug then return end
+	if not get_bool("dismantle_debug","dbg_enable_operations_casting") then return end
+	local header = "("..log_number..")".."[ALWAYS GIVE -- SINGLE MODE]"
+	showtime = showtime or 5000
+	ag_content = ag_content or "(?)"
+	ag_amt = ag_amt or "default"
+	local info = "ALWAYS GIVE ==      "..ag_content.."     ALWAYS GIVE AMOUNT ==      "..ag_amt
+	news_manager.send_tip(getLocalActor(),info,nil,nil,showtime,nil,header,"dh_dbg_operation_icon_yellow_card")
+	log_number = log_number + 1
+end
+function cast_op_ag_multiple(ag_content,ag_amt,showtime)
+	if not is_debug then return end
+	if not get_bool("dismantle_debug","dbg_enable_operations_casting") then return end
+	local header = "("..log_number..")".."[ALWAYS GIVE -- MULTIPLE MODE]"
+	showtime = showtime or 5000
+	ag_content = ag_content or "(?)"
+	ag_amt = ag_amt or "default"
+	local info = "ALWAYS GIVE ==      "..ag_content.."     ALWAYS GIVE AMOUNT ==      "..ag_amt
+	news_manager.send_tip(getLocalActor(),info,nil,nil,showtime,nil,header,"dh_dbg_operation_icon_yellow_card")
+	log_number = log_number + 1
+end
+function cast_op_gconst(const_content,const_amt,showtime)
+	if not is_debug then return end
+	if not get_bool("dismantle_debug","dbg_enable_operations_casting") then return end
+	local header = "("..log_number..")".."[CONST GIVE]"
+	showtime = showtime or 5000
+	const_content = const_content or "(?)"
+	const_amt = const_amt or "default"
+	local info = "CONST GIVE ==      "..const_content.."     CONST GIVE AMOUNT ==      "..const_amt
+	news_manager.send_tip(getLocalActor(),info,nil,nil,showtime,nil,header,"dh_dbg_operation_icon_mechs")
+	log_number = log_number + 1
+end
+function cast_console(txt)
+	if not is_debug then return end
+	if configltx:r_bool("dismantle_debug","dbg_enable_cast_console") then
+		alun_utils.debug_write(txt)
+	end
+end
+function cast_console_for_const(txt)
+	if not is_debug then return end
+	if configltx:r_bool("dismantle_debug","dbg_enable_cast_console_for_const") then 
+		alun_utils.debug_write(txt)
+	end
+end

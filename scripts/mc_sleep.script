@@ -1,0 +1,408 @@
+-- mc_sleep.script
+-- Misery_Coop_Port: consent-based coop sleep (the "Full" coop adaptation of Misery's
+-- ui_sleep_dialog, married to the base-coop GM_SCRIPT_SLEEP broadcast idea).
+--
+-- WHY THIS EXISTS / DESIGN (agreed with the user):
+--   Sleeping skips the SHARED, server-authoritative clock, so one player must NOT be able
+--   to fast-forward time for everyone unilaterally. Instead, opening the sleep menu ASKS:
+--     1. initiator picks hours in ui_sleep_dialog -> request_sleep(hours)  [client->server]
+--     2. server prompts EVERY other player "X wants to sleep Nh, sleep too?" [server->clients]
+--        - each prompted client evaluates ITS OWN conditions locally; a failing condition
+--          (bleeding / irradiated / in combat / not in surge cover / no bedding) is an
+--          automatic decline carrying the reason.
+--     3. each client answers accept/decline (+ its rest TIER)               [client->server]
+--     4. ALL accept & pass  -> server creates each player's tier rest booster, then
+--        broadcasts SLEEP_DO -> every client fades, change_game_time(hours), eats its
+--        booster, restores power.                                            [server->clients]
+--        ANY decline/fail/timeout -> server tells the initiator who/why (SLEEP_DENY).
+--
+-- Transport: GM_MC_SLEEP_EVENT (105). mc_net routes the channel here; first payload byte
+-- is the sub-event code. Mirrors mc_cooking's RPC discipline (OnServer/OnClient self-guards).
+--
+-- Tiers (per-player rest quality, Misery booster items sleep_t{1,2,3}_{hours}h):
+--   original sleep spot (Skadovsk bunk / canonical sr_sleep zones) = T3;
+--   else gear: tent+bag+nrc = T3, tent+bag|tent+nrc = T2, any single (bag|nrc|tent) = T1,
+--   nothing = T0 = "no way to sleep" (blocks).
+
+local E_REQUEST = 1  -- client -> server : initiator wants to sleep (hours, tier)
+local E_PROMPT  = 2  -- server -> client : ask this player (initiator_name, hours)
+local E_RESPOND = 3  -- client -> server : accept/decline (+ tier, reason)
+local E_DO      = 4  -- server -> clients: execute sleep (hours)
+local E_DENY    = 5  -- server -> initiator: cancelled (reason)
+
+local COMBAT_WINDOW   = 15000  -- ms since last damage that still counts as "in combat"
+local PROMPT_TIMEOUT  = 30000  -- ms a prompted client waits before auto-declining
+local SESSION_STALE   = 45000  -- ms after which the server discards an unfinished session
+
+-- canonical "original" sleep spots -> T3 (the sr_sleep zones Misery's dialog references)
+local SLEEP_ZONES = { "zat_a2_sr_sleep", "jup_a6_sr_sleep", "pri_a16_sr_sleep" }
+-- portable bedding sections, read from the SAME config itms_manager uses
+-- (plugins\itms_manager.ltx [sleeping_bag_sections] = itm_sleepbag/sleep_bag/
+-- compression_bag, [nrc_section] = nrc_foil) so the trigger + tier match the real items.
+-- Cached; falls back to the known defaults if the ini read comes up empty.
+local _bedding = nil
+local function bedding_sets()
+	if _bedding then return _bedding end
+	local ini = ini_file and ini_file("plugins\\itms_manager.ltx")
+	local bags = (ini and alun_utils and alun_utils.collect_section(ini, "sleeping_bag_sections", true)) or {}
+	local nrc  = (ini and alun_utils and alun_utils.collect_section(ini, "nrc_section", true)) or {}
+	if next(bags) == nil then bags = { itm_sleepbag = true, sleep_bag = true, compression_bag = true } end
+	if next(nrc)  == nil then nrc  = { nrc_foil = true } end
+	_bedding = { bags = bags, nrc = nrc }
+	return _bedding
+end
+
+-- true if `section` is a piece of sleeping gear -> using it opens the coop sleep picker.
+function is_bedding(section)
+	local b = bedding_sets()
+	return b.bags[section] == true or b.nrc[section] == true
+end
+
+-- =====================================================================================
+-- CLIENT-SIDE CONDITION + TIER EVALUATION (each player judges only its own local actor)
+-- =====================================================================================
+
+-- in-combat: damage-recency. mc_player_loop polls the local actor each tick and calls
+-- note_health(); a health DROP stamps last_combat_time. (No reliable actor-side
+-- best_enemy()/combat flag exists on this engine, and the prompt is rare, so recency is
+-- the robust signal. bleeding/rad already gate separately, so their health drain double-
+-- counting as "combat" is harmless.)
+local last_combat_time = 0
+local last_health = nil
+function note_health(hp)
+	if hp == nil then return end
+	if last_health ~= nil and hp < last_health - 0.0005 then
+		last_combat_time = time_global()
+	end
+	last_health = hp
+end
+
+function cl_in_combat()
+	return last_combat_time > 0 and (time_global() - last_combat_time) < COMBAT_WINDOW
+end
+
+local function actor_in_sleep_zone(a)
+	for i = 1, #SLEEP_ZONES do
+		local zone = db.zone_by_name and db.zone_by_name[SLEEP_ZONES[i]]
+		if zone and zone:inside(a:position()) then return true end
+	end
+	return false
+end
+
+-- per-player rest tier (0 = cannot sleep). original spot overrides gear to T3.
+-- Misery rest quality is about your SETUP: tent+bag+nrc = T3; tent+bag | tent+nrc = T2;
+-- any single piece = T1. The "tent" = its two materials (foam mattress + tarpaulin) -- in
+-- SP you pitch a tent with them; in coop their PRESENCE supplies the tent tier (no deployed
+-- physobj). These materials are quality MODIFIERS, not sleep triggers (they don't open the
+-- picker -- the sleeping bag does).
+local TENT_FOAM = "beadspread"   -- "Foam mattress"
+local TENT_TARP = "tarpaulin"    -- "Tarpaulin"
+
+local function actor_has_any(a, set)
+	for s in pairs(set) do if a:object(s) then return true end end
+	return false
+end
+
+function cl_my_tier()
+	local a = getLocalActor()
+	if not a then return 0 end
+	if actor_in_sleep_zone(a) then return 3 end
+	local b = bedding_sets()
+	local bag  = actor_has_any(a, b.bags)
+	local nrc  = actor_has_any(a, b.nrc)
+	local tent = (a:object(TENT_FOAM) ~= nil) and (a:object(TENT_TARP) ~= nil)
+	if tent and bag and nrc then return 3 end
+	if (tent and bag) or (tent and nrc) then return 2 end
+	if bag or nrc or tent then return 1 end
+	return 0
+end
+
+-- surge-proof spot = the surge-cover check (same "are you safe when anomalies sweep"
+-- test the hide quest uses). get_nearest_cover takes a per-actor override -> coop-safe.
+function cl_surge_safe()
+	local a = getLocalActor()
+	if not (a and surge_manager) then return false end
+	if surge_manager.get_nearest_cover then
+		return surge_manager.get_nearest_cover(a) ~= nil
+	end
+	if surge_manager.actor_in_cover then return surge_manager.actor_in_cover() == true end
+	return false
+end
+
+-- (ok, reason, tier) for the local player. reason is a short UI string when not ok.
+function cl_check_self()
+	local a = getLocalActor()
+	if not a then return false, "no actor", 0 end
+	local tier = cl_my_tier()
+	if tier == 0 then return false, "no bedding", 0 end
+	if (a.bleeding or 0)  > 0 then return false, "bleeding",   tier end
+	if (a.radiation or 0) > 0 then return false, "irradiated", tier end
+	if cl_in_combat()         then return false, "in combat",  tier end
+	if not cl_surge_safe()    then return false, "not in cover", tier end
+	return true, "", tier
+end
+
+-- =====================================================================================
+-- CLIENT -- initiator path. ui_sleep_dialog's Sleep button calls this with the chosen hrs.
+-- =====================================================================================
+function request_sleep(hours)
+	if not OnClient() then return end
+	local a = getLocalActor()
+	if not a then return end
+	hours = math.floor(tonumber(hours) or 0)
+	if hours < 1 then hours = 1 elseif hours > 24 then hours = 24 end
+
+	local ok, reason, tier = cl_check_self()
+	if not ok then
+		hud_msg("Can't sleep: " .. reason)
+		return
+	end
+
+	local p = mc_net.new_message(mc_core.GM_MC_SLEEP_EVENT)
+	p:w_u8(E_REQUEST)
+	p:w_u16(a:id())
+	p:w_u8(hours)
+	p:w_u8(tier)
+	mc_net.send_to_server(p)
+	hud_msg("Asking the others to sleep...")
+	mc_core.mc_log("[sleep] request: actor %s hours %s tier %s", tostring(a:id()), tostring(hours), tostring(tier))
+end
+
+-- =====================================================================================
+-- mc_net entrypoint for GM_MC_SLEEP_EVENT. First byte selects the handler.
+-- =====================================================================================
+function on_event(packet)
+	local ev = packet:r_u8()
+	if     ev == E_REQUEST then sv_on_request(packet)
+	elseif ev == E_PROMPT  then cl_on_prompt(packet)
+	elseif ev == E_RESPOND then sv_on_respond(packet)
+	elseif ev == E_DO      then cl_on_do(packet)
+	elseif ev == E_DENY    then cl_on_deny(packet)
+	else mc_core.mc_log("! mc_sleep: unknown event code %s", tostring(ev)) end
+end
+
+-- =====================================================================================
+-- SERVER -- aggregate the consent vote. db.mp_actors is populated server-side (it's used
+-- in mc_player_state.key_held_by_other), so it is the connected-player roster here.
+-- =====================================================================================
+-- pending = { initiator, hours, await = {id=true,...}, tier = {id=tier}, deadline }
+local pending = nil
+
+local function each_player(fn)
+	for id, actor in pairs(db.mp_actors) do
+		if actor ~= nil then fn(id, actor) end
+	end
+end
+
+local function player_name(id)
+	local a = db.mp_actors[id]
+	return (a and a:name()) or ("player " .. tostring(id))
+end
+
+function sv_on_request(packet)
+	if not OnServer() then return end
+	local initiator = packet:r_u16()
+	local hours     = packet:r_u8()
+	local tier      = packet:r_u8()
+
+	-- drop a stale, never-finished session so a dropped responder can't wedge sleep forever
+	if pending and (time_global() - pending.deadline) > 0 then pending = nil end
+	if pending then
+		deny(initiator, "another sleep is already pending")
+		return
+	end
+
+	pending = { initiator = initiator, hours = hours, await = {}, tier = { [initiator] = tier },
+	            deadline = time_global() + SESSION_STALE }
+
+	-- prompt every OTHER connected player; the initiator already consented + passed.
+	local others = 0
+	each_player(function(id)
+		if id ~= initiator then
+			pending.await[id] = true
+			others = others + 1
+			local p = mc_net.new_message(mc_core.GM_MC_SLEEP_EVENT)
+			p:w_u8(E_PROMPT)
+			p:w_stringZ(player_name(initiator))
+			p:w_u8(hours)
+			mc_net.send_to_client(p, id)
+		end
+	end)
+
+	mc_core.mc_log("[sleep] %s asks to sleep %sh -> prompting %s other(s)",
+		player_name(initiator), tostring(hours), tostring(others))
+
+	-- solo session (no other players): nobody to ask -> go straight to sleep.
+	if others == 0 then sv_commit() end
+end
+
+function sv_on_respond(packet)
+	if not OnServer() then return end
+	local id     = packet:r_u16()
+	local accept = packet:r_bool()
+	local tier   = packet:r_u8()
+	local reason = packet:r_stringZ()
+
+	if not (pending and pending.await[id]) then return end  -- stray/late reply
+	pending.await[id] = nil
+
+	if not accept then
+		local who = player_name(id)
+		mc_core.mc_log("[sleep] %s declined (%s) -> cancel", who, tostring(reason))
+		deny(pending.initiator, who .. (reason ~= "" and (" - " .. reason) or " declined"))
+		pending = nil
+		return
+	end
+	pending.tier[id] = tier
+
+	-- everyone answered yes?
+	if next(pending.await) == nil then sv_commit() end
+end
+
+-- all consented + passed: create each player's rest booster, then broadcast the skip.
+function sv_commit()
+	if not (OnServer() and pending) then return end
+	local hours = pending.hours
+
+	for id, tier in pairs(pending.tier) do
+		local sec = ("sleep_t%d_%dh"):format(tier >= 1 and tier or 1, hours)
+		local se = alife() and alife():object(id)
+		if se and system_ini():section_exist(sec) then
+			alife():create(sec, se.position, 0, 0, id)   -- lands in that actor's inventory; eaten on wake
+		end
+	end
+
+	-- advance the AUTHORITATIVE (server) clock -- the source of truth that syncs to every
+	-- client. Without this the server's next time-sync snaps clients back to un-slept time.
+	-- (The clients also nudge their own clock in cl_on_do for an immediate feel; the server
+	-- sync then makes it authoritative -- same delta, so they converge.)
+	if level and level.change_game_time then
+		level.change_game_time(0, hours, 0)
+	end
+
+	each_player(function(id)
+		local p = mc_net.new_message(mc_core.GM_MC_SLEEP_EVENT)
+		p:w_u8(E_DO)
+		p:w_u8(hours)
+		mc_net.send_to_client(p, id)
+	end)
+	mc_core.mc_log("[sleep] committed: %sh for all players (server clock advanced)", tostring(hours))
+	pending = nil
+end
+
+function deny(initiator, reason)
+	if not OnServer() then return end
+	local p = mc_net.new_message(mc_core.GM_MC_SLEEP_EVENT)
+	p:w_u8(E_DENY)
+	p:w_stringZ(reason or "")
+	mc_net.send_to_client(p, initiator)
+end
+
+-- =====================================================================================
+-- CLIENT -- the consent prompt (yes/no), the deny notice, and the actual sleep execution.
+-- =====================================================================================
+function cl_on_prompt(packet)
+	if not OnClient() then return end
+	local who   = packet:r_stringZ()
+	local hours = packet:r_u8()
+
+	-- evaluate our own conditions NOW; a failing one auto-declines with the reason.
+	local ok, reason = cl_check_self()
+	if not ok then
+		respond(false, 0, reason)
+		hud_msg(who .. " wants to sleep, but you can't: " .. reason)
+		return
+	end
+	if mc_sleep_ui and mc_sleep_ui.ask_consent then
+		mc_sleep_ui.ask_consent(who, hours)      -- shows yes/no; calls respond() on click
+	else
+		respond(true, select(3, cl_check_self()), "")   -- no UI -> auto-accept (host/dedicated edge)
+	end
+end
+
+function respond(accept, tier, reason)
+	if not OnClient() then return end
+	local a = getLocalActor()
+	if not a then return end
+	local p = mc_net.new_message(mc_core.GM_MC_SLEEP_EVENT)
+	p:w_u8(E_RESPOND)
+	p:w_u16(a:id())
+	p:w_bool(accept and true or false)
+	p:w_u8(tier or 0)
+	p:w_stringZ(reason or "")
+	mc_net.send_to_server(p)
+end
+
+function cl_on_deny(packet)
+	if not OnClient() then return end
+	hud_msg("Sleep cancelled: " .. tostring(packet:r_stringZ()))
+end
+
+-- the shared skip + fade, run on EVERY client (same hours -> clocks stay in sync). The
+-- booster the server just placed in our inventory is eaten in the post-fade callback,
+-- by when the alife->client sync has delivered it.
+local pending_hours = 0
+function cl_on_do(packet)
+	if not OnClient() then return end
+	local a = getLocalActor()
+	if not a then return end
+	pending_hours = packet:r_u8()
+
+	if xr_effects and xr_effects.disable_ui then xr_effects.disable_ui(a, nil) end
+	level.add_cam_effector("camera_effects\\sleep.anm", 10, false, "mc_sleep.dream_callback")
+	level.add_pp_effector("sleep_fade.ppe", 11, false)
+	_G.mus_vol = get_console():get_float("snd_volume_music")
+	_G.amb_vol = get_console():get_float("snd_volume_eff")
+	get_console():execute("snd_volume_music 0")
+	get_console():execute("snd_volume_eff 0")
+	mc_core.mc_log("[sleep] do: %sh (fading)", tostring(pending_hours))
+end
+
+function dream_callback()
+	local a = getLocalActor()
+	local hours = pending_hours
+	level.change_game_time(0, hours, 0)
+	if level_weathers and level_weathers.get_weather_manager then
+		level_weathers.get_weather_manager():forced_weather_change()
+	end
+	if surge_manager and surge_manager.get_surge_manager then
+		local sm = surge_manager.get_surge_manager()
+		if sm then sm.time_forwarded = true end
+	end
+	-- apply the rest: eat our tier booster (placed by the server) + restore stamina
+	if a then
+		local sec = ("sleep_t%d_%dh"):format(cl_my_tier_clamped(), hours)
+		local itm = a:object(sec)
+		if itm then a:eat(itm) end
+		a.power = 1
+	end
+	level.add_cam_effector("camera_effects\\sleep.anm", 10, false, "mc_sleep.dream_callback2")
+	mc_core.mc_log("[sleep] time forwarded %sh", tostring(hours))
+end
+
+function dream_callback2()
+	local a = getLocalActor()
+	if a and xr_effects and xr_effects.enable_ui then xr_effects.enable_ui(a, nil) end
+	get_console():execute("snd_volume_music " .. tostring(_G.mus_vol or 1))
+	get_console():execute("snd_volume_eff " .. tostring(_G.amb_vol or 1))
+	_G.amb_vol = 0
+	_G.mus_vol = 0
+end
+
+-- tier for eating the booster on wake (>=1; the server only ever places t1..t3)
+function cl_my_tier_clamped()
+	local t = cl_my_tier()
+	return t >= 1 and t or 1
+end
+
+-- =====================================================================================
+-- helper: brief on-screen line (news tip). Pure feedback; never gates anything.
+-- =====================================================================================
+function hud_msg(text)
+	local a = getLocalActor()
+	if a and news_manager and news_manager.send_tip then
+		news_manager.send_tip(a, tostring(text), nil, nil, nil)
+	else
+		mc_core.mc_log("[sleep] %s", tostring(text))
+	end
+end

@@ -1,0 +1,338 @@
+<w>
+	<main_frame x="19" y="422" width="483" height="239" delay="810"/>
+	<background_frame x="0" y="0" width="483" height="239">
+		<texture>ui_inGame2_hint_wnd_main_window</texture>
+	</background_frame>
+
+	<static_name x="30" y="28" width="423" height="28" stretch="1" complex_desc="0">
+		<text font="din_next17_bold" complex_mode="0" align="c" vert_align="c"/>
+	</static_name>
+
+	<static_weight x="30" y="56" width="423" height="28">
+		<text align="l" font="din_next17_bold" r="210" g="210" b="210"/>
+	</static_weight>
+
+	<static_cost x="317" y="56" width="106" height="23">
+		<text font="din_next17_bold" align="r" r="210" g="210" b="210"/>
+	</static_cost>
+
+	<static_no_trade x="30" y="84" width="423" height="28">
+		<text align="l" font="din_next17" complex_mode="1"/>
+	</static_no_trade>
+
+	<descr_list x="30" y="84" width="400" height="183" always_show_scroll="0" fit_to_height="1">
+		<font font="din_next17" r="170" g="170" b="170"/>
+	</descr_list>
+	<description_line x="30" y="70" width="392" height="13" stretch="1">
+		<texture>ui_inGame2_hint_wnd_Information</texture>
+	</description_line>
+<!--
+	<condition_params x="0" y="0" width="485" height="39">
+		<caption x="0" y="6" width="113" height="20">
+			<text align="l" font="din_next17" r="124" g="119" b="115">st_condition</text>
+		</caption>
+
+		<progress_state x="0" y="28" width="228" height="11" horz="1">
+			<progress>
+				<texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
+			</progress>
+			<background>
+				<texture a="90" r="55" g="255" b="255">ui_buymenu_progBar</texture>
+			</background>
+			<color_less color="pda_red"/>
+			<color_more color="pda_green"/>
+		</progress_state>
+	</condition_params>
+-->
+	<wpn_params x="0" y="0" width="400" height="239">
+		<prop_line x="0" y="0" width="400" height="13" stretch="1">
+			<texture>ui_inGame2_hint_wnd_Properties</texture>
+		</prop_line>
+		<static_accuracy x="0" y="14" width="26" height="25" stretch="1">
+			<texture>ui_wp_prop_tochnost</texture>
+		</static_accuracy>
+		<static_handling x="0" y="39" width="26" height="25" stretch="1">
+			<texture>ui_wp_prop_ergonomics</texture>
+		</static_handling>
+		<static_damage x="0" y="65" width="26" height="25" stretch="1">
+			<texture>ui_wp_prop_damage</texture>
+		</static_damage>
+		<static_rpm x="0" y="90" width="26" height="25" stretch="1">
+			<texture>ui_wp_prop_skorostrelnost</texture>
+		</static_rpm>
+		<static_ammo x="0" y="115" width="26" height="25" stretch="1">
+			<texture>ui_wp_propery_07</texture>
+		</static_ammo>
+		<cap_accuracy x="34" y="17" width="151" height="11">
+			<text font="din_next17" r="170" g="170" b="170" align="l">ui_inv_accuracy</text>
+		</cap_accuracy>
+		<cap_handling x="34" y="42" width="151" height="11">
+			<text font="din_next17" r="170" g="170" b="170" align="l">ui_inv_handling</text>
+		</cap_handling>
+		<cap_damage x="34" y="68" width="151" height="11">
+			<text font="din_next17" r="170" g="170" b="170" align="l">ui_inv_damage</text>
+		</cap_damage>
+		<cap_rpm x="34" y="93" width="151" height="11">
+			<text font="din_next17" r="170" g="170" b="170" align="l">ui_inv_rate_of_fire</text>
+		</cap_rpm>
+
+		<progress_accuracy x="196" y="20" width="191" height="13" horz="1">
+			<progress stretch="1">
+				<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line</texture>
+			</progress>
+			<background stretch="1">
+				<texture>ui_inGame2_hint_wnd_bar</texture>
+			</background>
+			<color_less color="pda_red"/>
+			<color_more color="pda_green"/>
+		</progress_accuracy>
+		<progress_handling x="196" y="45" width="191" height="13" horz="1">
+			<progress stretch="1">
+				<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line</texture>
+			</progress>
+			<background stretch="1">
+				<texture>ui_inGame2_hint_wnd_bar</texture>
+			</background>
+			<color_less color="pda_red"/>
+			<color_more color="pda_green"/>
+		</progress_handling>
+		<progress_damage x="196" y="70" width="191" height="13" horz="1">
+			<progress stretch="1">
+				<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line</texture>
+			</progress>
+			<background stretch="1">
+				<texture>ui_inGame2_hint_wnd_bar</texture>
+			</background>
+			<color_less color="pda_red"/>
+			<color_more color="pda_green"/>
+		</progress_damage>
+		<progress_rpm x="196" y="96" width="191" height="13" horz="1">
+			<progress stretch="1">
+				<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line</texture>
+			</progress>
+			<background stretch="1">
+				<texture>ui_inGame2_hint_wnd_bar</texture>
+			</background>
+			<color_less color="pda_red"/>
+			<color_more color="pda_green"/>
+		</progress_rpm>
+
+		<cap_ammo_count x="34" y="118" width="151" height="11">
+			<text font="din_next17" r="170" g="170" b="170" align="l">ui_ammo_count</text>
+		</cap_ammo_count>
+		<cap_ammo_count2 x="196" y="118" width="151" height="11">
+			<text font="din_next17" align="l" r="170" g="170" b="170"/>
+		</cap_ammo_count2>
+
+		<cap_ammo_types x="34" y="141" width="226" height="11">
+			<text font="din_next17" align="l" r="170" g="170" b="170">ui_ammo_types</text>
+		</cap_ammo_types>
+		<cap_ammo_used_type x="196" y="141" width="75" height="11">
+			<text font="din_next17" align="l" r="170" g="170" b="170"/>
+		</cap_ammo_used_type>
+		<static_ammo_type1 x="23" y="165" width="151" height="56"/>
+		<static_ammo_type2 x="158" y="165" width="151" height="56"/>
+		<static_ammo_type3 x="293" y="165" width="151" height="56"/>
+	</wpn_params>
+
+#include "ui\af_params.xml"
+#include "ui\booster_params.xml"
+
+	<upgrade_info>
+		<main_frame x="0" y="0" width="483" height="141"/>
+
+		<background_frame x="0" y="0" width="483" height="141">
+			<texture>ui_inGame2_hint_wnd_main_window</texture>
+		</background_frame>
+
+		<info_name x="30" y="28" width="392" height="28" complex_mode="1">
+			<text font="din_next17_bold" align="l" vert_align="t"/>
+		</info_name>
+
+		<info_cost x="30" y="28" width="392" height="28" complex_mode="1">
+			<text font="din_next17_bold" align="l" vert_align="t"/>
+		</info_cost>
+
+		<info_desc x="30" y="63" width="392" height="28" complex_mode="1">
+			<text font="din_next17" align="l" vert_align="t" r="170" g="170" b="170"/>
+		</info_desc>
+
+		<info_prerequisites x="30" y="91" width="392" height="28" complex_mode="1">
+			<text font="din_next17" align="l" vert_align="t" r="170" g="170" b="170"/>
+		</info_prerequisites>
+
+		<properties x="30" y="28" width="400" height="28">
+			<upgr_line x="0" y="0" width="392" height="13" stretch="1">
+				<texture>ui_inGame2_hint_wnd_upgrades</texture>
+			</upgr_line>
+			<icon x="0"	 y="0" width="30" height="28" stretch="1"/>
+			<text x="38" y="4" width="355" height="25">
+				<text font="din_next17" r="170" g="170" b="170"/>
+			</text>
+		</properties>
+	</upgrade_info>
+
+	<cell_item_text x="2" y="1" width="43" height="23" stretch="1">
+		<texture a="200">ui_item_count_back</texture>
+		<text x="0" y="0" width="55" height="23" font="din_next17" color="ui_2" align="c" vert_align="c"/>
+	</cell_item_text>
+
+	<cell_item_mark x="2" y="1" width="23" height="21" stretch="1">
+		<texture a="130">ui_icons_newPDA_perssign_h</texture>
+	</cell_item_mark>
+
+	<cell_item_upgrade x="2" y="1" width="25" height="23" stretch="1">
+		<texture a="180">ui_upgrade_arrow2</texture>
+	</cell_item_upgrade>
+
+	<condition_progess_bar x="2" y="1" width="57" height="7" horz="1" min="0" max="1" pos="1">
+		<background x="0" y="0" width="57" height="7" stretch="1">
+			<texture r="62" g="74" b="74">ui_inGame2_inventory_item_status_bar_16</texture>
+		</background>
+		<progress stretch="1">
+			<texture r="142" g="149" b="149">ui_inGame2_inventory_item_status_bar_16</texture>
+		</progress>
+		<min_color r="196" g="18" b="18"/>
+		<middle_color r="255" g="255" b="118"/>
+		<max_color r="107" g="207" b="119"/>
+	</condition_progess_bar>
+	<!-- ============================ outfit_info ==================================== -->
+
+	<outfit_info x="0" y="0" width="400" height="253">
+		<prop_line x="0" y="0" width="392" height="13" stretch="1">
+			<texture>ui_inGame2_hint_wnd_Properties</texture>
+		</prop_line>
+<!--
+		<caption x="0" y="11" width="400" height="28">
+			<text font="din_next17_bold" align="c" vert_align="c" r="170" g="170" b="170">ui_st_outfit_protect</text>
+		</caption>
+-->
+		<burn_immunity x="0" y="0" width="26" height="25" stretch="1">
+			<texture>ui_am_prop_thermo</texture>
+			<text font="din_next17" x="34" y="0" r="170" g="170" b="170" align="l" vert_align="c"/>
+			<progress_immunity x="196" y="6" width="191" height="13" horz="1">
+				<progress stretch="1">
+					<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line</texture>
+				</progress>
+				<background stretch="1">
+					<texture>ui_inGame2_hint_wnd_bar</texture>
+				</background>
+				<color_less color="pda_red"/>
+				<color_more color="pda_green"/>
+			</progress_immunity>
+			<static_value x="321" y="0" width="60" height="25" magnitude="100">
+				<text font="din_next17" color="ui_6" align="r" vert_align="c"/>
+			</static_value>
+		</burn_immunity>
+
+		<shock_immunity x="0" y="0" width="26" height="25" stretch="1">
+			<texture>ui_am_prop_electro</texture>
+			<text font="din_next17" x="34" y="0" r="170" g="170" b="170" align="l" vert_align="c"/>
+			<progress_immunity x="196" y="6" width="191" height="13" horz="1">
+				<progress stretch="1">
+					<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line</texture>
+				</progress>
+				<background stretch="1">
+					<texture>ui_inGame2_hint_wnd_bar</texture>
+				</background>
+				<color_less color="pda_red"/>
+				<color_more color="pda_green"/>
+			</progress_immunity>
+			<static_value x="321" y="0" width="60" height="25" magnitude="100">
+				<text font="din_next17" color="ui_6" align="r" vert_align="c"/>
+			</static_value>
+		</shock_immunity>
+
+		<chemical_burn_immunity x="0" y="0" width="26" height="25" stretch="1">
+			<texture>ui_am_prop_chem</texture>
+			<text font="din_next17" x="34" y="0" r="170" g="170" b="170" align="l" vert_align="c"/>
+			<progress_immunity x="196" y="6" width="191" height="13" horz="1">
+				<progress stretch="1">
+					<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line</texture>
+				</progress>
+				<background stretch="1">
+					<texture>ui_inGame2_hint_wnd_bar</texture>
+				</background>
+				<color_less color="pda_red"/>
+				<color_more color="pda_green"/>
+			</progress_immunity>
+			<static_value x="321" y="0" width="60" height="25" magnitude="100">
+				<text font="din_next17" color="ui_6" align="r" vert_align="c"/>
+			</static_value>
+		</chemical_burn_immunity>
+
+		<radiation_immunity x="0" y="0" width="26" height="25" stretch="1">
+			<texture>ui_am_propery_09</texture>
+			<text font="din_next17" x="34" y="0" r="170" g="170" b="170" align="l" vert_align="c"/>
+			<progress_immunity x="196" y="6" width="191" height="13" horz="1">
+				<progress stretch="1">
+					<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line</texture>
+				</progress>
+				<background stretch="1">
+					<texture>ui_inGame2_hint_wnd_bar</texture>
+				</background>
+				<color_less color="pda_red"/>
+				<color_more color="pda_green"/>
+			</progress_immunity>
+			<static_value x="321" y="0" width="60" height="25" magnitude="100">
+				<text font="din_next17" color="ui_6" align="r" vert_align="c"/>
+			</static_value>
+		</radiation_immunity>
+
+		<telepatic_immunity x="0" y="0" width="26" height="25" stretch="1">
+			<texture>ui_am_propery_11</texture>
+			<text font="din_next17" x="34" y="0" r="170" g="170" b="170" align="l" vert_align="c"/>
+			<progress_immunity x="196" y="6" width="191" height="13" horz="1">
+				<progress stretch="1">
+					<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line</texture>
+				</progress>
+				<background stretch="1">
+					<texture>ui_inGame2_hint_wnd_bar</texture>
+				</background>
+				<color_less color="pda_red"/>
+				<color_more color="pda_green"/>
+			</progress_immunity>
+			<static_value x="321" y="0" width="60" height="25" magnitude="100">
+				<text font="din_next17" color="ui_6" align="r" vert_align="c"/>
+			</static_value>
+		</telepatic_immunity>
+
+		<wound_immunity x="0" y="0" width="26" height="25" stretch="1">
+			<texture>ui_am_prop_damage</texture>
+			<text font="din_next17" x="34" y="0" r="170" g="170" b="170" align="l" vert_align="c"/>
+			<progress_immunity x="196" y="6" width="191" height="13" horz="1">
+				<progress stretch="1">
+					<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line</texture>
+				</progress>
+				<background stretch="1">
+					<texture>ui_inGame2_hint_wnd_bar</texture>
+				</background>
+				<color_less color="pda_red"/>
+				<color_more color="pda_green"/>
+			</progress_immunity>
+			<static_value x="321" y="0" width="60" height="25" magnitude="100">
+				<text font="din_next17" color="ui_6" align="r" vert_align="c"/>
+			</static_value>
+		</wound_immunity>
+
+		<fire_wound_immunity x="0" y="0" width="26" height="25" stretch="1">
+			<texture>ui_am_propery_01</texture>
+			<text font="din_next17" x="34" y="0" r="170" g="170" b="170" align="l" vert_align="c"/>
+			<progress_immunity x="196" y="6" width="191" height="13" horz="1">
+				<progress stretch="1">
+					<texture a="150">ui_inGame2_hint_wnd_bar_alfa_line</texture>
+				</progress>
+				<background stretch="1">
+					<texture>ui_inGame2_hint_wnd_bar</texture>
+				</background>
+				<color_less color="pda_red"/>
+				<color_more color="pda_green"/>
+			</progress_immunity>
+			<static_value x="321" y="0" width="60" height="25" magnitude="100">
+				<text font="din_next17" color="ui_6" align="r" vert_align="c"/>
+			</static_value>
+		</fire_wound_immunity>
+
+	</outfit_info>
+
+</w>

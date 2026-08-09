@@ -1,0 +1,57 @@
+-- mc_sleep_ui.script
+-- Misery_Coop_Port: the coop-sleep CONSENT prompt (the "X wants to sleep, sleep too?"
+-- yes/no a non-initiating player sees). Uses the engine's built-in message_box_yes_no
+-- style, so it needs NO custom .xml (unlike the hour-picker, which reuses the deployed
+-- ui_sleep_dialog.xml). mc_sleep.cl_on_prompt -> ask_consent(); the click drives
+-- mc_sleep.respond(accept, tier, reason).
+
+local prompt = nil
+
+class "sleep_consent" (CUIScriptWnd)
+
+function sleep_consent:__init() super()
+	self.mb = CUIMessageBoxEx()
+	self:Register(self.mb, "consent_mb")
+	self:AddCallback("consent_mb", ui_events.MESSAGE_BOX_YES_CLICKED, self.OnYes, self)
+	self:AddCallback("consent_mb", ui_events.MESSAGE_BOX_NO_CLICKED,  self.OnNo,  self)
+	-- message_box_ok routes its OK to the same "decline" path (defensive: some skins emit
+	-- OK rather than NO on the right button).
+	self:AddCallback("consent_mb", ui_events.MESSAGE_BOX_OK_CLICKED,  self.OnNo,  self)
+end
+
+function sleep_consent:Show(text)
+	-- proven input-focus path (same as the working cook UI): HideActorMenu, then show the
+	-- hosting wnd so its registered message-box callbacks receive the yes/no click.
+	local hud = get_hud()
+	if hud then hud:HideActorMenu() end
+	self:ShowDialog(true)
+	self.mb:InitMessageBox("message_box_yes_no")
+	self.mb:SetText(text)
+	self.mb:ShowDialog(true)
+end
+
+function sleep_consent:close()
+	self.mb:HideDialog()
+	self:HideDialog()
+	if prompt == self then prompt = nil end
+end
+
+function sleep_consent:OnYes()
+	local _, _, tier = mc_sleep.cl_check_self()
+	mc_sleep.respond(true, tier or 1, "")
+	self:close()
+end
+
+function sleep_consent:OnNo()
+	mc_sleep.respond(false, 0, "declined")
+	self:close()
+end
+
+-- mc_sleep.cl_on_prompt entry: pop the yes/no for this player.
+function ask_consent(initiator_name, hours)
+	if prompt ~= nil then
+		prompt:close()
+	end
+	prompt = sleep_consent()
+	prompt:Show(string.format("%s wants to sleep %sh.  Sleep too?", tostring(initiator_name), tostring(hours)))
+end

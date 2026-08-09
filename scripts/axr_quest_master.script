@@ -1,0 +1,158 @@
+-- axr_quest_master.script
+-- Misery_Coop_Port: coop port of Alundaio's alun_riddle treasure-hunt chain (10 journals).
+--
+-- COOP DELTAS (vs Misery SP original):
+--  * Item callbacks fire SERVER-side in this fork (bind_stalker mp_actor_binder now dispatches
+--    axr_main.actor_on_item_take). So every alife():create spawn runs server-authoritative here
+--    -- no client->server RPC needed for the spawn (unlike cooking/looting, which originate on a
+--    client UI). The chain gate is a server-side per-journal flag (_advanced).
+--  * give_info_portion is set on the TAKER (obj:parent()) and syncs server->client -- it completes
+--    the just-finished task condlist {+alun_riddle_N} and drives the chain. give_task runs on the
+--    CLIENT task_manager, so the next objective is BRIDGED to the taker's client over the
+--    GM_MC_PLAYER_EVENT channel (mc_cooking routes EVENT_RIDDLE -> cl_on_riddle).
+--  * FORK-FATAL stpk_utils.get/set_weapon_data (the journal-5 weapon stamping) is DROPPED -- the
+--    reward weapon is spawned plainly (COOP_TECHNICAL: no script STATE_Read write-back).
+--  * axr_misery.ActorClass (class system disabled) -> the class-conditional reward defaults to the
+--    AKM (wpn_ak47m_alun). The Mosin (wpn_m1891_alun) item exists but isn't auto-awarded.
+--  * journal-7's bloodsucker-lair NPC + smart_cover + conditional boxes are simplified to a single
+--    loot box holding journal-8 (spawning an NPC with logic + smart_cover is coop-risky).
+--  * news_manager achievement tip (cosmetic) is dropped; the achievement info-portion is still set.
+--
+-- RUNTIME (needs the user's playtest; static port only): (1) that item callbacks fire server-side
+-- here exactly as item-use does, (2) that give_info_portion + the world-spawned journals/stashes
+-- replicate to all clients, (3) that the bridged give_task surfaces in the taker's journal.
+
+local EVENT_RIDDLE = 9   -- server->client task bridge (MUST match the code mc_cooking.on_player_event routes here)
+
+local _advanced = {}     -- server-side per-journal gate: advance each chain step exactly once
+
+-- ---------------------------------------------------------------------------------------
+-- spawn helpers (server-side; mirror the SP create_items/create_ammunition, coop-guarded)
+-- ---------------------------------------------------------------------------------------
+local function sec_ok(sec)
+	return sec and sec ~= "" and system_ini():section_exist(sec)
+end
+
+local function world_spawn(sec, x, y, z, lvid, gvid)
+	if alife() and sec_ok(sec) then
+		alife():create(sec, vector():set(x, y, z), lvid, gvid)
+	end
+end
+
+local function stash_at(x, y, z, lvid, gvid)
+	if alife() then
+		return alife():create("inv_backpack", vector():set(x, y, z), lvid, gvid)
+	end
+	return nil
+end
+
+local function into(parent_se, sec, amt)
+	if not (alife() and parent_se and sec_ok(sec)) then return end
+	for _ = 1, (amt or 1) do
+		alife():create(sec, parent_se.position, parent_se.m_level_vertex_id, parent_se.m_game_vertex_id, parent_se.id)
+	end
+end
+
+local function into_ammo(parent_se, sec, boxes)
+	if not (alife() and parent_se and sec_ok(sec)) then return end
+	local num = system_ini():r_u32(sec, "box_size")
+	alife():create_ammo(sec, parent_se.position, parent_se.m_level_vertex_id, parent_se.m_game_vertex_id,
+		parent_se.id, (boxes or 1) * (num or 30))
+end
+
+-- server->client: hand the taker their next objective (give_task runs on the client task_manager)
+function notify_task(actor_id, task_id)
+	if not (OnServer() and mc_net and mc_core and actor_id and task_id) then return end
+	local p = mc_net.new_message(mc_core.GM_MC_PLAYER_EVENT)
+	p:w_u8(EVENT_RIDDLE)
+	p:w_stringZ(task_id)
+	mc_net.send_to_client(p, actor_id)
+end
+
+function cl_on_riddle(packet)
+	if not OnClient() then return end
+	local task_id = packet:r_stringZ()
+	if task_id and task_id ~= "" and task_manager and task_manager.get_task_manager then
+		local ok, err = pcall(function() task_manager.get_task_manager():give_task(task_id) end)
+		if mc_core then mc_core.mc_log("[riddle] give_task %s ok=%s %s", tostring(task_id), tostring(ok), ok and "" or tostring(err)) end
+	end
+end
+
+-- advance one chain step: gate once, run the server spawns, set the taker's info, bridge the task
+local function advance(obj, set_info, give_task_id, spawn_fn)
+	local sec = obj:section()
+	if _advanced[sec] then return end
+	_advanced[sec] = true
+	if alife() and spawn_fn then spawn_fn() end
+	local a = obj:parent()
+	if a then
+		if set_info and a.give_info_portion then a:give_info_portion(set_info) end
+		if give_task_id then notify_task(a:id(), give_task_id) end
+	end
+	if mc_core then mc_core.mc_log("[riddle] advance %s -> info=%s task=%s", tostring(sec), tostring(set_info), tostring(give_task_id)) end
+end
+
+-- ---------------------------------------------------------------------------------------
+-- the chain (faithful port of the SP positions/loot; see COOP DELTAS above)
+-- ---------------------------------------------------------------------------------------
+function on_item_take(obj)
+	if not (obj and obj.section) then return end
+	local sec = obj:section()
+	if not _advanced or _advanced[sec] then return end
+
+	if sec == "itm_alun_journal_1" then           -- doc
+		advance(obj, "alun_riddle_begin", "alun_riddle_1", function()
+			world_spawn("itm_alun_journal_2", 62.007720947266, -1.5662006139755, 452.41647338867, 1069958, 41)
+			world_spawn("itm_alun_journal_2", 118.51746368408, -3.8533968925476, 191.03785705566, 1169348, 316)
+		end)
+	elseif sec == "itm_alun_journal_2" then       -- river
+		advance(obj, "alun_riddle_1", "alun_riddle_2", function()
+			local s = stash_at(566.39813232422, -7.3773126602173, -195.25889587402, 1836814, 220)
+			into(s, "itm_alun_journal_3", 1); into(s, "medkit", 2); into(s, "antirad", 2)
+			into(s, "wpn_addon_silencer_9x39", 1)
+		end)
+	elseif sec == "itm_alun_journal_3" then       -- fire
+		advance(obj, "alun_riddle_2", "alun_riddle_3", function()
+			world_spawn("itm_alun_journal_4", 13.152874946594, 9.0864534378052, -394.25241088867, 970504, 8)
+		end)
+	elseif sec == "itm_alun_journal_4" then       -- dam
+		advance(obj, "alun_riddle_3", "alun_riddle_4", function()
+			local s = stash_at(372.59381103516, 28.16738319397, -331.74893188477, 1734850, 258)
+			into(s, "itm_alun_journal_5", 1); into(s, "antirad", 2); into(s, "medkit", 1); into(s, "grenade_f1", 1)
+		end)
+	elseif sec == "itm_alun_journal_5" then       -- ship  (reward: the AKM; class-conditional Mosin dropped, class disabled)
+		advance(obj, "alun_riddle_4", "alun_riddle_5", function()
+			local s = stash_at(165.67411804199, -3.479465007782, -140.53729248047, 1258566, 13)
+			into(s, "itm_alun_journal_6", 1); into(s, "bread", 1)
+			into(s, "wpn_ak47m_alun", 1); into_ammo(s, "ammo_7.62x39_ap", 4)
+		end)
+	elseif sec == "itm_alun_journal_6" then       -- electricity
+		advance(obj, "alun_riddle_5", "alun_riddle_6", function()
+			local s = stash_at(-336.76156616211, 40.072235107422, -398.68731689453, 278578, 29)
+			into(s, "itm_alun_journal_7", 1); into_ammo(s, "ammo_7.62x39_ap", 2); into(s, "grenade_f1", 1)
+		end)
+	elseif sec == "itm_alun_journal_7" then       -- bloodsucker lair (NPC+smart_cover simplified to a loot box)
+		advance(obj, "alun_riddle_6", "alun_riddle_7", function()
+			local s = stash_at(-440.99615478516, 4.99871301651, 47.874130249023, 122126, 14)
+			into(s, "itm_alun_journal_8", 1)
+		end)
+	elseif sec == "itm_alun_journal_8" then       -- bridge
+		advance(obj, "alun_riddle_7", "alun_riddle_8", function()
+			world_spawn("itm_alun_journal_9", 432.5026550293, 29.048379898071, -277.16079711914, 1674415, 258)
+		end)
+	elseif sec == "itm_alun_journal_9" then       -- crane  (reward: the Sunrise outfit)
+		advance(obj, "alun_riddle_8", "alun_riddle_9", function()
+			local s = stash_at(192.27871704102, 6.5809636116028, 3.2830765247345, 1293074, 55)
+			into(s, "itm_alun_journal_10", 1); into(s, "helm_respirator", 1); into(s, "stalker_outfit_alun", 1)
+			into(s, "medkit", 1); into(s, "vodka", 1); into(s, "bandage", 1)
+		end)
+	elseif sec == "itm_alun_journal_10" then      -- the end (chain complete + achievement)
+		advance(obj, "alun_riddle_9", nil, nil)
+		local a = obj:parent()
+		if a and a.give_info_portion then a:give_info_portion("riddle_master_zaton") end
+	end
+end
+
+function on_game_start()
+	callback_register("actor_on_item_take", on_item_take)
+end

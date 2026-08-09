@@ -1,0 +1,47 @@
+-- PORT_NOTES (Misery_Coop_Port shadow) -- coop-minimal axr_misery
+-- The SP original is Misery's CLASS / STARTUP-SPAWN system: assaulter/recon/sniper
+-- selection, fsgame.ltx class_diversity file-swapping + forced restart, and a
+-- single-player dynamic actor spawn + per-class starting loadout (alife():create).
+-- The user DISABLED the class system (default OFF) and that machinery is
+-- architecturally incompatible with coop (per-player spawn via the coop
+-- start_positions; one baseline; no global file-swap). So this shadow ships ONLY the
+-- shared globals + safe utilities that 15 other Misery systems read -- the misery
+-- options Config store (16 refs), ActorClass (11 refs), the MiseryBlackRoad flags,
+-- and anabiotic_use (called from actor_effects_data) -- and DROPS all class/spawn
+-- logic (dynamic_actor_spawn/loadout, set_actor_class, copy_class_file, the
+-- main_menu class selector, the per-frame medic/spawn on_update).
+-- db.actor is nil in coop -> getLocalActor().
+
+ActorClass = alun_utils.read_from_ini(nil,"actor","actor_class","string","assaulter")
+MiseryBlackRoad = false
+MiseryBlackRoadEnableReducedRewards = true
+Config = alun_utils.cfg_file("misery_options.ini")
+
+function on_game_start()
+	-- write Misery's default options if absent so Config:GetValue returns the Misery
+	-- defaults (dependents pass call-site fallbacks too, so this is belt-and-braces).
+	-- No class/spawn callbacks are registered.
+	if not (Config:SectionExist("settings")) then
+		Config:SetValue("settings","dynamic_helmet_hud",true)
+		Config:SetValue("settings","upd_battery_drain",true)
+		Config:SetValue("settings","infinite_npc_primary_ammo",true)
+		Config:SetValue("settings","hardcore_ai_aim",true)
+		Config:SetValue("settings","safe_cover_notification",false)
+		Config:Save()
+	end
+end
+
+-- Called from actor_effects_data's anabiotic item effect (loadstring'd client-side).
+-- Plays the anabiotic black-out + mutes audio for the local player; the surge time-
+-- skip is handled by bind_stalker.anabiotic_callback (already in the coop shadow).
+function anabiotic_use()
+	if (getLocalActor() == nil) then return end
+	xr_effects.disable_ui_lite_with_imput(getLocalActor(), nil)
+	level.add_cam_effector("camera_effects\\surge_02.anm", 10, false, "bind_stalker.anabiotic_callback")
+	level.add_pp_effector("surge_fade.ppe", 11, false)
+	give_info("anabiotic_in_process")
+	_G.mus_vol = get_console():get_float("snd_volume_music")
+	_G.amb_vol = get_console():get_float("snd_volume_eff")
+	get_console():execute("snd_volume_music 0")
+	get_console():execute("snd_volume_eff 0")
+end

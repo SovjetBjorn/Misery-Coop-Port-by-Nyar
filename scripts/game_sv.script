@@ -1,0 +1,80 @@
+-- PORT_NOTES (Misery_Coop_Port shadow)
+-- Base: XRAY patches\scripts\game_sv.script (byte-identical except listed deltas).
+-- Re-diff against base whenever the coop layer updates.
+-- Delta 1: save() appends mc_player_state.save(packet) after the num_saves byte.
+-- Delta 2: load() reads mc_player_state.load(packet) after the num_saves byte.
+-- Appended blob breaks PRE-PORT saves: start a fresh campaign at deploy.
+-- PackStartGameInfo untouched - reconnect restore rides the GM_MC_CLIENT_HELLO handshake.
+-- CoPA's game_sv.dscript (additive dialog-reward functions) still loads on top - untouched.
+
+local num_saves = 1
+local max_saves = 5
+
+function save(packet)
+	story_flags.save_flags(packet)
+	xr_logic.pstor_save_all("game_cl", packet)
+	xr_voicedialogs.save_dialogs(packet)
+	packet:w_u8(num_saves)
+	-- PORT delta 1
+	if mc_player_state then
+		mc_player_state.save(packet)
+	end
+end
+
+function load(packet)
+	story_flags.load_flags(packet)
+	xr_logic.pstor_load_all("game_cl", packet)
+	xr_voicedialogs.load_dialogs(packet)
+	num_saves = packet:r_u8()
+	-- PORT delta 2
+	if mc_player_state then
+		mc_player_state.load(packet)
+	end
+end
+
+function SendStoryFlags(gameID)
+	local packet = game_cl.GenerateGameMessage(GM_SCRIPT_COLLECT_STORY_FLAGS)
+	story_flags.save_flags(packet)
+	u_EventSendToReliable(packet, gameID)
+end
+
+function PackStartGameInfo(packet, gameID)
+	SendStoryFlags(gameID)
+	
+	if GameType() ~= game_cl.game_id_coop then
+		return
+	end
+	
+	xr_logic.pstor_save_all("game_cl", packet)
+	xr_voicedialogs.save_dialogs(packet)
+	sim_squad_scripted_cl_manager.get_squad_manager():pack_squads_info(packet)
+	surge_manager.get_surge_manager():pack_start_game_info(packet)
+	treasure_manager.send_map_locations(gameID)
+	xr_statistic.write_data_for(gameID)
+end
+
+function spawnEntity(sect, patrol_path)
+	xr_effects.xrmpe_client_spawn(nil, nil, {sect, patrol_path})
+end
+
+function spawnEntityVertex(sect, patrol_path)
+	xr_effects.xrmpe_client_spawn_vertex(nil, nil, {sect, patrol_path})
+end
+
+function loadLastSave(initiator_id)
+	if not IsServerStartedLoading() then
+		get_console():execute("load_last_save")
+	end
+end
+
+function saveGame(initiator_id)
+	if not IsServerStartedLoading() then
+		local save_name = "quicksave - "..tostring(num_saves)
+		num_saves = num_saves + 1
+		if num_saves > max_saves then
+			num_saves = 1
+		end
+		
+		get_console():execute("save "..save_name)
+	end
+end

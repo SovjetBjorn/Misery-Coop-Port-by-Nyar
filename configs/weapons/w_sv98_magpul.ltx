@@ -1,0 +1,484 @@
+;; Misery_Coop_Port: repoint upgrade tree to sibling w_svd (tools\build_upgrade_variants.py)
+[wpn_sv98_magpul]:identity_immunities,weapon_probability,default_weapon_params
+upgrades = vartree_svd_podavatel, vartree_svd_kompensator, vartree_svd_tilnik, vartree_svd_sights, vartree_svd_mag
+upgrade_scheme = upgrade_scheme_svd
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn                  = "weapons\sv98_magpul"		; option for Level Editor
+$npc			 		= on				; option for Level Editor
+$prefetch 		 		= 8
+scheduled               = off              	; option for ALife Simulator
+cform                   = skeleton
+class                   = WP_SVD
+description				= gunsl_wpn_sv98_magpul_descr
+
+ef_main_weapon_type		 = 3
+ef_weapon_type			 = 8
+
+default_to_ruck         = false
+sprint_allowed       	= true
+control_inertion_factor = 1.0
+
+;-------------------------------------------------------------------------------
+cost					= 107500
+weapon_class			= sniper_rifle
+inv_weight				= 6.6
+
+def_show_bones = =
+def_hide_bones = scope1, scope2, scope3, scope4, scope5, scope6, scope7, scope8, scope9, scope10, scope11, sight, sheka, knife
+
+;---TTX---------------------------------------------------------------------------
+hit_power           	= 0.929
+hit_impulse		 			= 155
+hit_type 					= fire_wound
+fire_distance           = 200
+bullet_speed		 	= 839;начальная скорость пули
+rpm                     = 20
+rpm_empty_click         = 10
+
+use_aim_bullet			= false		;Поддерживается ли первая суппер пуля
+time_to_aim				= 1.0
+
+hud                     = wpn_sv98_magpul_hud
+
+misfire_probability        = 0.005 ;вероятность осечки при максимальном износе  !!!old - now not working
+;изношенность, при которой появляется шанс осечки
+misfire_start_condition		= 0.6
+;изношеность при которой шанс осечки становится константным
+misfire_end_condition		= 0.1
+;шанс осечки при изношености больше чем misfireStartCondition
+misfire_start_prob	     	= 0.006
+;шанс осечки при изношености больше чем misfireEndCondition
+misfire_end_prob	     	= 0.072
+;увеличение изношености при одиночном выстреле
+condition_shot_dec      	= 0.0014
+;увеличение изношености при выстреле очередью
+condition_queue_shot_dec	= 0.0015
+fire_dispersion_condition_factor = 4;увеличение дисперсии в процентах при максимальном износе
+ammo_limit				= 60
+ammo_current			= 10
+ammo_elapsed			= 0
+
+ammo_mag_size			= 10
+ammo_class				= ammo_7.62x54_7h1, ammo_7.62x54_7h14, ammo_7.62x54_ap 
+hand_dependence         = 1
+single_handed           = 0
+
+
+;---DOF-------------------------------------------------------------------------
+;zoom_dof				= 0.5, 1.0, 180
+reload_dof				= 0.0, 0.5, 5, 1.7
+
+;--дисперсия----------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base	= 0.03;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor	= 1.4f
+crosshair_inertion   	= 5
+
+;отдача
+cam_relax_speed         = 3	;скорость возврата в исходное положение
+cam_relax_speed_ai      = 360	;скорость возврата в исходное положение
+cam_dispersion          = 2.07;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 1.34;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
+cam_max_angle			= 0.01	;максимальный угол отдачи
+cam_max_angle_horz		= 0.01	;(degree) maximum shot horizontal degree
+cam_step_angle_horz		= 0.37;(degree) size of step camera moved in horizontal position while shooting
+
+PDM_disp_base 			= 1.2
+PDM_disp_vel_factor 	= 2.0
+PDM_disp_accel_factor 	= 2.0
+PDM_disp_crouch	 		= 1.0
+PDM_disp_crouch_no_acc 	= 1.0
+
+zoom_cam_relax_speed        = 3   ; scope & ironsight
+zoom_cam_relax_speed_ai     = 360
+zoom_cam_dispersion         = 0.67
+zoom_cam_dispersion_inc     = 0.61
+zoom_cam_dispersion_frac    = 1.0
+zoom_cam_max_angle          = 0.01
+zoom_cam_max_angle_horz     = 0.01
+zoom_cam_step_angle_horz    = 0.25
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
+;-------------------------------------------------------------------------------
+holder_range_modifier	= 2.85           ; во сколько раз увеличивается eye_range
+holder_fov_modifier		= 1.0           ; во сколько раз увеличивается eye_fov
+
+min_radius              = 0
+max_radius              = 50
+
+hit_probability_gd_novice	= 1
+hit_probability_gd_stalker	= 1
+hit_probability_gd_veteran	= 1
+hit_probability_gd_master	= 1
+
+;-------------------------------------------------------------------------------
+slot                    = 2                ; // secondary
+animation_slot          = 2                ; type of the animation that will be used
+reload_type 			= 1 ;Только неполная перезарядка
+use_third_person_anims      = false               ; нужно ли использовать анимацию на мировой модели оружия / есть ли idle анимация
+
+misfire_before_shot = true ;Имитация осечки во время клина оружия
+
+inv_name				= gunsl_wpn_sv98_magpul
+inv_name_short			= gunsl_wpn_sv98_magpul
+
+
+inv_grid_width     = 6
+inv_grid_height    = 2
+inv_grid_x         = 29
+inv_grid_y         = 31
+
+
+kill_msg_x			= 914
+kill_msg_y			= 61
+kill_msg_width		= 98
+kill_msg_height		= 26
+
+upgr_icon_x			= 4396
+upgr_icon_y			= 187
+upgr_icon_width		= 352
+upgr_icon_height   	= 106
+
+position                = -0.026, -0.070, 0.0
+orientation             = 0, 0, 0
+
+position_new_anm                = -0.045, -0.075, -0.007
+orientation_new_anm             = -3, -4, 9
+
+fire_point				= 0.00,0.12,0.69
+fire_point2				= 0.00,0.12,0.69
+
+flame_particles		    = weapons\generic_weapon06
+smoke_particles		   	= weapons\generic_shoot_00
+rpm_empty_click 		= 120
+
+shell_point		 		= 0.0, 0.129, 0.192
+shell_dir		 		= 0.0, 0.0, 0.4
+shell_particles	 		= weapons\generic_flame_01
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+;под мишкой
+strap_position         	= -0.26,-0.11,0.15			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      	= -15,-9,110				; (3rd person view in degrees)
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo            = 10
+visual                  = dynamics\weapons\wpn_sv98\wpn_sv98_magpul.ogf
+
+light_disabled				= false
+;light_color		 			= 1.3,1.5,2
+light_color		 		= 0.6,0.5,0.3
+light_range		 		= 4.0
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.5
+
+ph_mass			 			= 3
+
+;addons
+scope_status				= 1
+silencer_status				= 2
+grenade_launcher_status		= 0
+
+silencer_name           = wpn_addon_silencer_svd  ; section name for the attachable silencer
+silencer_x                  = 269		; offset in inventory icon
+silencer_y                  = 25
+silencer_light_color			= 0.6,0.5,0.3
+silencer_light_range			= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.01
+silencer_light_time 			= 0.02
+
+zoom_enabled				= true
+zoom_rotate_time			= 0.4
+scope_zoom_factor	        = 10
+$scope_zoom_factor_descr	= 6.0
+
+scope_texture		= wpn_crosshair_leupold
+scope_name 					= wpn_addon_scope
+scope_x 						= 60
+scope_y 						= -2
+
+
+;звуки
+snd_draw		        = weapons\svd\mechanics\svd_draw
+snd_holster		        = weapons\svd\mechanics\svd_hide
+snd_shoot = weapons\extra\sv98_magpul\f0
+snd_bolt_action         = weapons\rem700_firebreath\bolt
+snd_empty		        = weapons\svd\mechanics\svd_dry_1
+snd_reload				= weapons\rem700_firebreath\reload
+snd_reload_empty		= weapons\rem700_firebreath\reload_empty
+snd_close		        = weapons\svd\mechanics\svd_hide
+snd_reload_jammed       = weapons\rem700_firebreath\misfire
+snd_reload_jammed_last  = weapons\rem700_firebreath\misfire
+snd_jammed_click        = weapons\svd\mechanics\svd_check
+snd_fakeshoot_first	    = weapons\dvl_10\sv98_shoot
+snd_fire_modes	        = 1
+snd_aim_start           = weapons\svd\mechanics\svd_aim_start
+snd_aim_end             = weapons\svd\mechanics\svd_aim_end
+snd_suicide	            = weapons\suicide_start
+snd_stop_suicide	    = weapons\suicide_end
+snd_laser_on	        = weapons\vss\vss_firemode
+snd_laser_off	        = weapons\vss\vss_firemode
+snd_torch_on	        = weapons\vss\vss_firemode
+snd_torch_off	        = weapons\vss\vss_firemode
+snd_headlamp_on         = weapons\headflash_on
+snd_headlamp_off        = weapons\headflash_off
+snd_silncer_shot = weapons\extra\sv98_magpul\s0
+
+wanm_idle_empty = idle
+wanm_shoot = idle
+wanm_shoot_last = idle
+
+[wpn_sv98_magpul_hud]:hud_base
+zoom_hide_crosshair		= true
+attach_place_idx		= 0
+item_visual					= dynamics\weapons\wpn_sv98\wpn_sv98_magpul_hud.ogf
+
+need_lens_frame = true		//включает для этого прицела двойной рендер в прицеливании
+
+hud_fov = 0.8
+hud_fov_zoom = 0.7
+
+inertion_pitch_offset_r = 0
+inertion_pitch_offset_n = 0
+inertion_pitch_offset_d = 0
+inertion_aim_origin_offset = 0.007
+
+
+hands_position			= -0.012400,0.003200,-0.249399
+hands_orientation	    = 0.000000,0.000000,0.000000
+
+hands_position_16x9     = -0.012400,0.003200,-0.249399
+hands_orientation_16x9  = 0.000000,0.000000,0.000000
+
+aim_hud_offset_pos	 							   = 0.001900,0.014500,0.012200
+aim_hud_offset_rot								   = 0,0,0
+aim_hud_offset_pos_16x9 = -0.010300,-0.004100,-0.117201
+aim_hud_offset_rot_16x9 = 0.000000,0.000000,0.000000
+
+aim_hud_offset_alt_pos = -0.015600,0.012250,-0.138153
+aim_hud_offset_alt_rot = 0.000000,0.000700,0.000000
+
+aim_hud_offset_alt_pos_16x9 = -0.015600,0.012250,-0.138153
+aim_hud_offset_alt_rot_16x9 = 0.000000,0.000700,0.000000
+
+item_position = -0.000010,0.008900,-0.000036
+item_orientation			= 0,0,0
+
+gl_hud_offset_pos		        = 0,0,0
+gl_hud_offset_rot			= 0,0,0
+
+lean_hud_offset_pos			= 0,0,0
+lean_hud_offset_rot			= 0,0,0
+
+shell_point				= 0.0,-9.0,0.0
+shell_dir                               = 0.0, 0.0, 0.0
+shell_bone				= wpn_body
+
+grenade_bone                            = grenade
+fire_point = -0.017000,0.049000,1.109000
+fire_bone               = wpn_body
+disable_bore = true                                            ;отключение анимации скуки
+
+$fire_point2		= 0,0,1.316
+$fire_bone2		= wpn_body
+$mix_shoot_after_idle = true                                    ;микс первого выстрела с анимациями idle
+$inertion_origin_offset = -0.06
+$zoom_dof_near = 0
+$zoom_dof_focus = 0
+$inertion_aim_origin_offset = 0.007
+$inertion_aim_speed = 10
+
+
+;Доставание///////////////////////////////////////////////////
+anm_show                   = awm_draw
+anm_show_empty             = awm_draw
+anm_show_jammed            = awm_draw
+
+;Убирание/////////////////////////////////////////////////////
+anm_hide                   = awm_hide
+anm_hide_empty             = awm_hide
+anm_hide_jammed            = awm_hide
+
+;Бездействие//////////////////////////////////////////////////
+anm_idle                            = awm_idle
+anm_idle_empty                      = awm_idle
+anm_idle_jammed                     = awm_idle
+
+;Бездействие в прицеливании///////////////////////////////////
+anm_idle_aim_start             = awm_aim_start
+anm_idle_aim_start_empty       = awm_aim_start
+anm_idle_aim_start_jammed      = awm_aim_start
+
+anm_idle_aim                   = awm_aim
+anm_idle_aim_empty             = awm_aim
+anm_idle_aim_jammed            = awm_aim
+anm_idle_aim_scope             = awm_aim
+anm_idle_aim_scope_empty       = awm_aim
+anm_idle_aim_scope_jammed      = awm_aim
+
+anm_idle_aim_end               = awm_aim_end
+anm_idle_aim_end_empty         = awm_aim_end
+anm_idle_aim_end_jammed        = awm_aim_end
+
+enable_directions_anm_idle_aim = true
+
+;Ходьба ВПЕРЕД//////////////////////////////////////////////////////////////////////////
+anm_idle_moving 					= awm_walk
+anm_idle_moving_jammed 					= awm_walk
+anm_idle_moving_empty					= awm_walk
+
+;Ходьба медленная (SHIFT) ВПЕРЕД//////////////////////////////////////////////////////////////////////////
+anm_idle_moving_slow 					= awm_walk_slow
+anm_idle_moving_slow_jammed 		    = awm_walk_slow
+anm_idle_moving_slow_empty				= awm_walk_slow
+
+;Ходьба в полуприсяди (CTRL) ВПЕРЕД//////////////////////////////////////////////////////////////////////////
+anm_idle_moving_crouch 					        = awm_walk_slow_down
+anm_idle_moving_crouch_jammed 					= awm_walk_slow_down
+anm_idle_moving_crouch_empty					= awm_walk_slow_down
+
+;Ходьба в присяде (CTRL+SHIFT) ВПЕРЕД/////////////////////////////////////////////////////////////////////////
+anm_idle_moving_crouch_slow 					= awm_walk_slow_super
+anm_idle_moving_crouch_slow_jammed 				= awm_walk_slow_super
+anm_idle_moving_crouch_slow_empty				= awm_walk_slow_super
+
+;ходьба в прицеливании ВПЕРЕД//////////////////////////////////////////////////////////////////
+anm_idle_aim_moving_forward                   = awm_aim_walk
+anm_idle_aim_moving_forward_empty             = awm_aim_walk
+anm_idle_aim_moving_forward_jammed            = awm_aim_walk
+
+;ходьба в прицеливании НАЗАД//////////////////////////////////////////////////////////////////
+anm_idle_aim_moving_back                   = awm_aim_walk
+anm_idle_aim_moving_back_empty             = awm_aim_walk
+anm_idle_aim_moving_back_jammed            = awm_aim_walk
+
+
+;ходьба в прицеливании ВЛЕВО//////////////////////////////////////////////////////////////////
+anm_idle_aim_moving_left                   = awm_aim_walk_left 
+anm_idle_aim_moving_left_empty             = awm_aim_walk_left
+anm_idle_aim_moving_left_jammed            = awm_aim_walk_left
+
+
+;ходьба в прицеливании ВПРАВО//////////////////////////////////////////////////////////////////
+anm_idle_aim_moving_right                   = awm_aim_walk_right
+anm_idle_aim_moving_right_empty             = awm_aim_walk_right
+anm_idle_aim_moving_right_jammed            = awm_aim_walk_right
+ 
+
+;ходьба в прицеливании ВПЕРЕД+ВЛЕВО////////////////////////////////////////////////////////////
+anm_idle_aim_moving_forward_left                   = awm_aim_walk
+anm_idle_aim_moving_forward_left_empty             = awm_aim_walk
+anm_idle_aim_moving_forward_left_jammed            = awm_aim_walk
+
+
+;ходьба в прицеливании ВПЕРЕД+ВПРАВО///////////////////////////////////////////////////////////
+anm_idle_aim_moving_forward_right                   = awm_aim_walk
+anm_idle_aim_moving_forward_right_empty             = awm_aim_walk
+anm_idle_aim_moving_forward_right_jammed            = awm_aim_walk
+
+
+;ходьба в прицеливании НАЗАД+ВЛЕВО/////////////////////////////////////////////////////////////
+anm_idle_aim_moving_back_left                   = awm_aim_walk
+anm_idle_aim_moving_back_left_empty             = awm_aim_walk
+anm_idle_aim_moving_back_left_jammed            = awm_aim_walk
+
+
+;ходьба в прицеливании НАЗАД+ВПРАВО////////////////////////////////////////////////////////////
+anm_idle_aim_moving_back_right                   = awm_aim_walk
+anm_idle_aim_moving_back_right_empty             = awm_aim_walk
+anm_idle_aim_moving_back_right_jammed            = awm_aim_walk
+
+;ходьба в прицеливании при надетом прицеле////////////////////////////////////////////////////
+anm_idle_aim_scope_moving	              = awm_aim_walk
+anm_idle_aim_scope_moving_empty		      = awm_aim_walk
+anm_idle_aim_scope_moving_jammed	      = awm_aim_walk
+
+
+;Бег//////////////////////////////////////////////////////////////////
+anm_idle_sprint_start             = awm_sprint_start, sprint_start
+anm_idle_sprint_start_empty       = awm_sprint_start, sprint_start
+anm_idle_sprint_start_jammed      = awm_sprint_start, sprint_start
+
+anm_idle_sprint                   = awm_sprint, sprint
+anm_idle_sprint_empty             = awm_sprint, sprint
+anm_idle_sprint_jammed            = awm_sprint, sprint
+
+anm_idle_sprint_end             = awm_sprint_end, sprint_end
+anm_idle_sprint_end_empty       = awm_sprint_end, sprint_end
+anm_idle_sprint_end_jammed      = awm_sprint_end, sprint_end
+
+;Скука////////////////////////////////////////////////////////////////////
+anm_bore                   = awm_draw
+anm_bore_empty             = awm_draw
+anm_bore_jammed            = awm_draw
+
+;Выстрелы обычными патронами/////////////////////////////////////////////////////////////////////
+anm_shoot                = awm_shoot, shoot
+anm_shoot_jammed	 = awm_shoot, shoot
+anm_shoot_last           = awm_shoot_last, shoot
+anm_shoot_aim            = awm_shoot_scope, shoot_scope
+anm_shoot_aim_jammed	 = awm_shoot_scope, shoot_scope
+anm_shoot_aim_last       = awm_shoot_scope_last, shoot_scope
+anm_shoot_aim_scope            = awm_shoot_scope, shoot_scope
+anm_shoot_aim_scope_last        = awm_shoot_scope_last, shoot_scope
+anm_shoot_aim_scope_jammed      = awm_shoot_scope, shoot_scope
+
+;Осечка//////////////////////////////////////////////////
+anm_fakeshoot_empty      = awm_dry_empty
+anm_fakeshoot_aim_empty      = awm_aim_dry
+anm_fakeshoot_jammed     = awm_dry, idle_jammed
+anm_fakeshoot_aim_jammed     = awm_aim_dry
+
+;Перезарядка/////////////////////////////////////////////////////////////////////
+anm_reload                           = awm_reload, reload
+anm_reload_empty                     = awm_reload_empty, reload_empty
+anm_reload_jammed                    = awm_revival, misfire
+anm_reload_jammed_last               = awm_revival, misfire
+
+;Разрядка//////////////////////////////////////////////////////////////////////////
+use_unloadmag_anim = true
+lock_time_anm_unload_mag = 0.8
+anm_unload_mag                               = awm_draw
+lock_time_anm_unload_mag_jammed = 0.8
+anm_unload_mag_jammed                        = awm_draw
+lock_time_anm_unload_mag_empty = 0.8
+anm_unload_mag_empty                         = awm_draw
+
+
+;штык-нож//////////////////////////////////////////////////////////////////////////
+anm_kick = svd_bayonet
+anm_kick_empty = svd_bayonet
+anm_kick_jammed = svd_bayonet
+
+
+lock_time_start_anm_kick = 0.17
+lock_time_end_anm_kick = 1.0
+lock_time_start_anm_kick_empty = 0.17
+lock_time_end_anm_kick_empty = 1.0
+lock_time_start_anm_kick_jammed = 0.17
+lock_time_end_anm_kick_jammed = 1.0
+
+
+;включение налобника//////////////////////////////////////////////////////////////////////////
+anm_headlamp_on = awm_headflash, flash
+anm_headlamp_on_empty = awm_headflash, flash
+anm_headlamp_on_jammed = awm_headflash, flash
+;выключение налобника//////////////////////////////////////////////////////////////////////////
+anm_headlamp_off = awm_headflash, flash
+anm_headlamp_off_empty = awm_headflash, flash
+anm_headlamp_off_jammed = awm_headflash, flash
+
+;включение пнв//////////////////////////////////////////////////////////////////////////
+anm_nv_on = awm_headflash, flash
+anm_nv_on_empty = awm_headflash, flash
+anm_nv_on_jammed = awm_headflash, flash
+
+;выключение пнв//////////////////////////////////////////////////////////////////////////
+anm_nv_off = awm_headflash
+anm_nv_off_empty = awm_headflash
+anm_nv_off_jammed = awm_headflash, flash

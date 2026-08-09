@@ -1,0 +1,63 @@
+;; Misery_Coop_Port reduced copy of XRAY patches\configs\misc\common_items.ltx - sections now owned by Misery item subfiles removed: 0 (tools\build_items.py)
+;*******всяческие игровые  плюшки, но не путать с квестовыми, сюда можно добавлять что то типа запчастей или безделушек для продажи**************************
+
+[common_item_base]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$prefetch 				= 8
+class					= II_ATTCH
+cform					= skeleton
+script_binding      	= bind_physic_object.init
+cost					= 0
+inv_weight				= 0
+
+[cassette_base]:common_item_base
+inv_weight				= 0.2
+
+[cassette_red]:cassette_base
+$spawn 					= "common_items\cassette_red"
+visual					= dynamics\devices\dev_cassette\dev_cassette_red.ogf
+inv_name				= st_cassette_red_name
+inv_name_short			= st_cassette_red_name
+description				= st_cassette_red_descr
+inv_grid_width			= 1
+inv_grid_height			= 1
+inv_grid_x				= 20
+inv_grid_y				= 1
+cost					= 5000
+
+[cassette_blue]:cassette_base
+$spawn 					= "common_items\cassette_blue"
+visual					= dynamics\devices\dev_cassette\dev_cassette_blue.ogf
+inv_name				= st_cassette_blue_name
+inv_name_short			= st_cassette_blue_name
+description				= st_cassette_blue_descr
+inv_grid_width			= 1
+inv_grid_height			= 1
+inv_grid_x				= 21
+inv_grid_y				= 1
+cost					= 10000
+
+[cassette_green]:cassette_base
+$spawn 					= "common_items\cassette_green"
+visual					= dynamics\devices\dev_cassette\dev_cassette_green.ogf
+inv_name				= st_cassette_green_name
+inv_name_short			= st_cassette_green_name
+description				= st_cassette_green_descr
+inv_grid_width			= 1
+inv_grid_height			= 1
+inv_grid_x				= 22
+inv_grid_y				= 1
+cost					= 9999
+
+[cassette_yellow]:cassette_base
+$spawn 					= "common_items\cassette_yellow"
+visual					= dynamics\devices\dev_cassette\dev_cassette_yellow.ogf
+inv_name				= st_cassette_yellow_name
+inv_name_short			= st_cassette_yellow_name
+description				= st_cassette_yellow_descr
+inv_grid_width			= 1
+inv_grid_height			= 1
+inv_grid_x				= 23
+inv_grid_y				= 1
+cost					= 1488

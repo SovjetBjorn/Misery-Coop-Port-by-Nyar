@@ -1,0 +1,1389 @@
+;;#######################################################################################;;
+;;## CONFIGS FILE FOR DISMANTLE FEATURE  ##  Items Refunct Mod for MISERY by Plaargath ##;;
+;;#######################################################################################;;
+
+;; IMPORTANT - on change update the ingame help in: st_itms_refunct_help.xml - IMPORTANT ;;
+
+
+;;;;;;;;;;;;
+;; HOW TO ;;
+;;;;;;;;;;;;
+
+; TOOL TARGET RELATION
+; This how-to doesn't cover basic information given in ingame help and is about the config file and how to edit it. More underlying settings (like which tool should accept which target) are in the plugin (dismantle.ltx). In most cases editing the plugin will need editing the script too. Here are settings to view or modify wihtout the need to look into the code.
+
+; TOOL FAIL
+; PROBABS
+; Some tools can fail when used on some targets. Such possibility is based on probabs.
+; Sections with the probabs are defined by target: [tool_fail_probab_on_*] where * is target species, and lines are 'tfp_*' where * is tool section.
+; Not every tool can fail on every target, therefore adding new sections of this kind will be futile. Tools that cannot fail must have their tfp_* lines too, with values set to zero. Changing that will cause buggy behaviour. Possible tool breaking targets are firearmss, weapon addons and helmets, for tools go inside 'tool_fail_probab_on_*' sections and look for lines with non-zero values.
+; TARGET CONDITION LOSS ON FAIL
+; A failing tool will damage the target. Amount of damage done must be specified.
+; Sections with the condition loss are defined by target: [tool_fail_con_decrease_on_*] where * is target species, and lines are tfcd_* where * is tool section.
+
+; TOOL BEHAVIOUR SETTINGS
+; You can set behaviour pattern for each tool. Sections with the pattern are [*_tool_bhv] where * is target genus/species, and lines are tb_* where * is tool section or 'kit' for any type of dismantling kit.
+; Possible tool behaviours:
+;	keep				all tools: 			keep the tool intact
+;	blunt_on_probab		*_sharp tools: 		blunt the tool on probab given in [tool_zeroone_blunt_probabs]
+;	force_blunt			*_sharp tools: 		blunt the tool
+;	decrease			dismantling kits:	decrease uses left number by 1
+;	kill				all tools: 			destroy the tool
+;	drop_blunted		all tools: 			drop blunted tool to the ground: *_sharp tools will be blunted, dismantling kits will be decreased
+;	drop_intact			all tools: 			drop the tool to the ground
+; Any other setting will produce an error.
+
+; AUXILIARY TOOLS
+; AUX DEMAND
+; Some tool-target sets will require use of an auxiliary tool - a sharp knife or an axe.
+; Groups of targets and tools that need aux tools are specified in plugins comments, and are reminded in comments in this config, next to tool behaviour settings. A 'needs aux' comment means that that tool will work together both with a knife or an axe, 'needs aux axe' means that only an axe can be used as the aux tool, 'needs aux knife' means that only a knife can be used as the aux tool.
+; Specific table of dependencies goes like this:
+;TARGET_GROUP    TOOL_GROUP      TARGETS           AUX_DEMAND
+;outfit          g1,2,3,4        all               any
+;outfitlike      g1              all               any
+;                g4              not camel         any           <- in this case af_camelbak is excluded from aux demand
+;helm (          g1              all               any
+;not tough )
+;helm (tough)    g1              all               knife
+;                g2              all               axe
+;                g4              all               axe
+;                kit             all               axe
+; AUX TOOLS BLUNTING
+; Auxiliary tools will blunt on use. Different amount of condition will be lost depending on target they are used on.
+; Sections with those amounts are defined by target: [aux_tool_blunt_rate_on_*] where * is target genus/species. Lines are constructed like this: atbr_*_** where * is target species/genus and ** is aux tool type (knife/axe).
+; Aux tool blunt rate is at the same time a limit of minimal condition that the knife or axe must have to be qualified as a potential aux tool. Specific choice of aux tool candidate is done automatically. If actor has more than one axe, an axe with lowest condition will be chosen. Knives will be chosen according to their prices - more expensive first. If actor has more than one knife of a certain type, the one with lowest condtion will be chosen.
+; Knives choice is related to another statistic: aux tool dismantle probab boost. The better the tool (price) the more boost it will add to basic dismantle probab.
+; Sections with aux dismantle probabs boosts (see DISMANTLING OPERATION PROBABILITIES) are defined by target: [*_aux_tool_dp_boost] where * is target genus/species and the lines are constructed like this: dp_aux_add_* where * is aux tool section.
+
+; TARGET CONTENT
+; There are two ways of defining content items that will be spawned after dismantling a target: based on probab test and not based on probabs. Both have some variations that will be described later on.
+
+; DISMANTLING OPERATION PROBABILITIES
+; Almost every dismantle operations outcome is based on probabs - passing the probab test will render success content items (succ) and failing the test will render fail content items (fail). The test draws a random number between 0 and 100 and compares it to given probab. If the probab is greater than the drawn number the test is passed. Most given probabs must be integers between 0 and 100.
+; The final dismantle probab is constructed in several steps. Sections with the probabs are defined by target group: [*_probabs] where * is target group. Inside those sections in basic pair scenario (see CONTENT LINES below) you can find first two steps:
+; First there is a 'dp_main' line - this is the main probab for target group. Most powerful probab setting.
+; Next there are values specified for each tool, making it possible to differentiate between various tools efficiency on the same targets. These values are going to be added to the main probab. Unlike other probabs these values can be negative if a tool is meant to nerf the main probab. Tool probabs lines are defined by tool: 'dp_*' where * is tool section for makeshift dismantling tools or 'kit' for dismantling kits.
+; Another step would be adding probabs boost from an auxiliary tool if one is used (described before), and another adding a class bonus (described later).
+; Exceptions from this rule are described later on.
+
+
+; CONTENT SECTIONS AND VALUES
+; Sections with content are defined either by specific target or by group of targets: [*_content_**] where * is target group and ** is target section, or [*_for_all_content] where * is target group. Presence of a '_for_all' section will make the engine abandon searching for content sections defined by target section of each target in that group.
+; Value can be any section that can be spawned in inventory with the use of alife():create method or integer numbers - see CONTENT LINES.
+; Unique values are:
+;   skip     used when nothing is to be spawned (remember never to leave any line with empty value),
+;   event    reserved for xplo targets fail special case, described later on.
+; Variations and extentnions to this basic rule will be described later on. However the engine is prepared for making use of the following patterns:
+; CONTENT LINES
+; Some lines must be there every time, some are optional.
+; Most basic set of content is a SINGLE TEST MODE.
+; Create a pair of success and fail content items in 'succ' and 'fail' lines. These lines must be there.
+; Default amount of those items given is 1. If you want to increase it, create a line like this: 'succ_amt' or 'fail_amt' and assign a number. 
+; Another option is that you can make the engine repeat the test given amount of times. To do that create a line 'test_amt' and assign a number. For example assigning 3 means that on dismantle there will be three consecutive probab tests launched, each one giving its 'succ' or 'fail' item. Absence of 'test_amt' line means that test is run once.
+; Another option is MULTIPLE PAIRS MODE.
+; You can create more than a single pair of content items. In that case lines must be created in following manner: 'succ*' and another 'succ*' and so on, where * is subsequently 1, 2 and so on. Amount of these is not limited, however there cannot be less than two.
+; Those success items can all have the same 'fail' counter item, in that case create a single 'fail' line that will be used as a pair for each 'succ*' line. Or you can create 'fail*' lines in the same manner to define each pair separately. It is possible to diversify only some of fail items, for example you can have: 'succ1', 'succ2', 'succ3', 'fail', 'fail2' - in this case 'succ1' and 'succ3' will use 'fail' as pair, while 'succ2' will use 'fail2'.
+; Multiple pairs can have optional amounts added too, to do so add lines looking like this: 'succ*_amt' and/or 'fail*_amt' where * is the pair number. If there will be a 'succ_amt' or a 'fail_amt' line, they will be used to amount each pair without specified amount. For example having 'succ1', 'succ2', 'succ3', 'succ2_amt', 'succ_amt' means that 'succ1' and 'succ3' will be given in amount of 'succ_amt', while 'succ2' will be given in amount of 'succ2_amt'. The same rule applies for fail lines. Absence of any amount lines will make the engine assume default amount equal to one.
+; And again you can make the engine repeat a test for any pair given amount of times. To do that create lines like 'test*_amt' where * is the number used in 'succ*' line defining the pair. If the engine finds a 'test_amt' line it will use that amount for all multiple pairs, not specifying any test amounts again makes it default one for each.
+
+; ADDITIONAL CONTENT GENERATING METHODS NOT BASED ON PROBABS
+; It's possible to add content that will be given without the use of probab tests in two ways: in target sections (more precise) and in collective sections (less precise).
+; CONSTANT GIVE METHOD (COLLECTIVE)
+; Almost each target genus/speices can get a constant dismantle reward that will be given every time that an item belonging to that genus/species is dismantled. Such sections are [all_*] where * is target genus/species. The line must be: 'give_const'. An additional option is to add a 'give_const_amt' line if more than one const-given item is to be spawned. Absence of such line will spawn default amount: one item.
+; ALWAYS GIVE METHOD
+; Each content section can contain additional option: 'always_give' line. That content will be given each time the target is dismantled. Optional setting is again the amount which can be specified in 'always_give_amt' line. This method also has its multiple instance: if more than one always-given items is to be spawned, follow this syntax: 'always_give*' (and optional 'always_give*_amt' for amount) where * is number of the next item, for example always_give1, always_give2 and so on. Presence of an 'always_give' line without a number attached will cause the engine to ignore any numbered always-give lines.
+; Replacing the probab method with always-give method completely is possible, however in such case 'succ' and 'fail' must be defined anyway, just set 'skip' as their values to make the test futile.
+
+; NOTE Do not mistake [all_*] sections with [*_for_all] sections - these are ment for exactly same type of targets and their content, to be used when there are multiple different section names not worth copying (for example weapon addon nightvision scopes), unlike more specific content sections ending with specific target section (for example different weapon species). The [*_for_all] sections will make the engine look for succ/fail patterns, not omit it in a const-give manner.
+
+
+; DISMANTLING PROBABS ACTOR CLASS MODIFIERS - CLASS BONUSES
+; Degtyarev classes are differed from each other with four charasteristics, corresponding with some real-life skills:
+;  (1) main bonus (added to all dismantle probabs),
+;  (2) tool fail bonus (substracted from tool fail probabs),
+;  (3) tool fail condition decrease bonus (subtracted from target condition decrease on tool fail override),
+;  (4) tool blunt bonus (subtracted from blunt probabs).
+; Number (1) tells the story of how generally fluent is Degtyarev in taking stuff apart succesfully.
+; Number (2) describes how well does Degtyarev know limitations of his tools and can avoid breaking them.
+; Number (3) describes how quick can he react when a fail situation occurs, preventing too much damage on the target.
+; Number (4) describes how well does he know how to use sharp edges and preserve their sharpness in field conditions.
+
+
+; Last but not least it's time to describe both simplified and more sophisticated dismantling scenarios. These are defined by targets:
+
+
+; EXPLOSIVE WEAPON RELATED TARGETS
+; Probabs are used in a standard way to determine success or failure. There is one [xplo_probabs] section with three lines for each specific targets main probab and three lines for tool 'dp_*' addition common for all targets. Tool behaviour will work normally on success. However on unsuccessful dismantle mines and IED's will share their discontent with Degtyarev vehemently. You cannot change this through config alone. In this case 'succ' line must stay with 'skip' value. On successful dismantle the content will be generated with always-give method. (Technically speaking it is still possible to play with pair system here, but the script wasn't written with such eventuality in mind and will need  editing in function DismantleXplo() to get the standard execution engine to work properly for these targets.)
+
+; ARTIFACT AND ANOMALY DETECTORS
+; Dismantling detectors scenario includes one addition. In section [detectors_probabs_geiger] a separate probab is set to determine if the target will contain geiger_dead item as an additional content. It is possible however to edit the additional [detectors_geiger_for_all_content] section following pair system syntax.
+
+
+; TARGETS WITH CONDITION PROPERTY
+
+; GAUSS RIFLES
+; There is one storyline gauss rifle object in the game. It cannot be dismantled, to avoid ruining the game progress. On attempt to do so an event will take place, similar to tool failing scenario with tool dropping intact. You can set amount of condition the storyline gauss will lose. Other gauss rifles can be dismantled.
+; Dismantling a gauss rifle will trigger an event similar to tool fail scenario every time, with tool dropping blunted, however content items will be generated. They will be given without use of probab test and are set in lines 'gauss_*' where * is 1, 2 and so on. There is no limit on amount of such consecutive lines. To omit this way of generating content, set 'gauss_1' to 'skip'.
+; Mechanics of gauss rifle dismantling don't include standard probab-based content generating or standard tool behaviour patterns. Adding this possibility requires editing DismantleGauss() function.
+
+; UPD AND BINOCULARS
+; These two targets have an additional line that enables or disables spawning batteries in condition tiers. If enabled then target condition will be compared with batteries condition tresholds and a corresponding battery type will be spawned.
+
+
+; MOST SOPHISTICATED TARGETS
+; The final three targets genera (firearms, outfits and helmets) are the most sophisticated ones and differ strongly. But they have one settings group in common: condition tiers.
+
+; CONDITION TIERS
+; The more the target is worn, the lower probabs it should have. This is achieved with the use of condition tiers, which makes the targets group main probab depend on the targets condition.
+; First the amount of condition tiers needs to be defined in 'tier_amt' line. There is no limit on tiers amount, or in other words on how dense the progression will be set.
+; Next each tier must get its treshold condition value in descending order, following this syntax: 'tier_*_perc' where * is the index of each subsequent tier. The value is the targets condition that will be considered an upper limit for that tier. All condition values must be between 0 and 1.
+; Next step is defining the main probab for each tier. These lines are defined by tiers: 'tier_*_main_slot_probab' where * is the tier index. The word 'slot' will become clear later when firearms and outfits will be described. It stayed there for helmtes too for legibility reasons.
+; And that's it. After reading a probab for a condition tier, the final probab is constructed in a way described before (in next steps adding 'dp_*' values, possible aux values and class bonus).
+
+
+; HELMETS
+; Helmets targets are an example of combining condition tiers, aux tools and standard content execution engine (pairs, const and always content).
+
+; OUTFITS AND FIREARMS
+; These two genera have two things in common: a) they use slot system (described below) and b) there is no customization possible regarding line structure. The amount of succ/fail and other lines inside slot content sections and subslots cannot be changed, no multiple mode possible here, the script needs the structure exactly as it is. Changes are possible only in: numbers of slots/subslots in slot definitions and content items sections in slot/subslot ('skip' works here too).
+
+; OUTFITS
+; Dismantling an outfit with a makeshift tool will always require the use of aux tool. Standard tool behaviour patterns are disabled and replaced with forced zero-one blunting of all sharpened targets. To revert to standard tool behaviour patterns, set the 'force_zerooneblunt' flag to false and fill in tb_*'s.
+; SLOT SYSTEM
+; To achieve sensible content distribution unique for every outfit species a slot system has been used. There are eight slots: three fabric slots, two protection slots, a helmet slot, a device subslot and a gear subslot. Each species is defined with a set of amounts of each slots. Slot amount means how many times the engine will process that slots content during single outfit dismantling operation (amount of probab test run on that content).
+; Sections with slot definitions are defined by target species: [outfit_slot_definitions_*] where * is outfit species, and the lines are: 'outfit_slot_*_amt' where * is slot name and 'outfit_subslot_*_amt' where * is subslot name.
+; Content in slots is organized as pairs of content items (succ/fail) that will be spawned on each slot probab test. Subslots are a bit different sets of content (described later). Slot content is defined in section [outfit_slot_content]. Lines follow this syntax: outfit_slot_$*_** where $ is slot type, * is slot subtype and ** is 'succ' or 'fail'.
+; SLOTS
+; - fabric slots - these three slots represent different fabrics given on successful probab test and waste items on probab test failure.
+; - protection slots - these two slots represent different protection plates on success or waste item on failure.
+; - helm - this slot contains helmet on success or waste on fail.
+; SUBSLOTS
+; - device - contains three electric armor attachment devices (in target taxonomy classified as electric belt species in outfit related genus) for success and the same waste item for fail. A single slot amount here means that a separate probab test will be run for each of three content pairs, giving three items as a result.
+; - gear - contains three other armor attachments for success and the same waste item for fail. A single slot amount here means that one probab test will be run, and on success the exact reward will be chosen randomly from among the three given gear subslot success content items, giving one item as a result.
+; FACTION PATCHES
+; Some outfits will give faction patches on dismantle. The amount of given patches depends on targets condition. Here the condition tiers are used again. Set the amount of patches for each condition tier in [outfit_probabs] section in lines: 'tier_*_patch_amt' where * is the tier index. 
+; List of outfits giving faction patches can be editetd in plugin in section [outfits_with_patches_list]. To make the list work after edit, lines in config section [outfit_patches] must be udpated. Lines defining patch items for each outfit follow this syntax: 'op_*' where * is outfit section and value is the item to be given.
+
+; NOTE - SSP and SEVA helm spawning balance hotfix
+; Eeach time an SSP/SEVA outfit is dismantled, an additional scenario is launched. Its purpose is to choose between getting a helmet subslot reward or gear/device rewards - we can't have them all at the same time (balance).
+; The default method to get probab needed to make that choice is to translate the outfit's condition into probab value. To do that the 'dp_ssp_helmet_condition_into_probab' setting in the 'outfit_probabs' section must be set to 'true'. Otherwise a fixed probab setting given in the 'dp_ssp_helmet_scenario' line will be used.
+; For that hack to work sections 'outfit_slot_definitions_ssp_helm' and 'outfit_slot_definitions_seva_helm' were added. Also to make sure that the helm reward is always spawned after the helmet scenario was chosen, the 'outfit_slot_helmet_fail' line in 'outfit_slot_content' section was cheated and the fail item is now the same as the success one instead of waste item.
+
+
+; FIREARMS
+; On dismantling firearms some basic operations will be done automatically: the weapon will be unloaded and detachable silencers and grenade launchers will be detached. If the weapons condition is lower than critical treshold, these basic operations will produce fail content. The treshold is set in 'weapon_critical_con_treshold' line and these fail items are defined in lines: 'wpn_unload_ammo_fail' for unload and 'wpn_addon_detach_fail' for silencer/grenade launcher detaching.
+; SLOT SYSTEM
+; To achieve sensible content distribution unique for every weapon species a slot system has been used. There are three slots: light slot, heavy slot and scope slot. Each species is defined with a set of amounts of each slots. Slot amount means how many times the engine will process that slots content during single weapon dismantling operation (amount of probab test run on that content).
+; Sections with slot definitions are defined by target species: [slot_definitions_wpn_*] where * is weapon species, and the lines are: 'wpn_slot_*_amt' where * is slot name.
+; Content in slots is organized as pairs of content items (succ/fail) that will be spawned on each slot probab test. Slot content is defined in section [wpn_slot_content]. Lines follow this syntax: 'wpn_slot_*_**' where * is slot type and ** is 'succ' or 'fail'.
+; SLOTS
+; - light and heavy - these two slots represent parts of different kind that are given on successful probab test (spareparts_small/spareparts) and waste items of different kind that are given on probab test failure (wpn_waste_light/wpn_waste_heavy).
+; - scope - if a weapon has a fixed scope attachment it should have one scope slot assigned. Other use of this slots amount will lead to buggy behaviour.
+; FIXED ATTACHMENTS
+; Some weapons have fixed attachments that cannot be detached. They construct additional test pairs using similar to slots mechanics, however the presence or absence of a fixed silencer/grenade launcher is detected autamatically (based on plugin lists). In case of silencers success items are in [wpn_fixed_silencer_content] section, for grenade launchers it's [wpn_fixed_grndlnch_content]. Fail items for them are defined in lines 'wpn_slot_silencer_fail' and 'wpn_slot_grndlnch_fail' respectively.
+; Fixed scopes attachments use one more step. While having the fail item defined in a similar line 'wpn_slot_scope_fail', the success item depends on target condition - here another condition tiers are used. There can be only three such tiers and their condition tresholds are defined in section [wpn_probabs] in lines: 'fixed_scope_tier_*_perc' where * is the tier index. Success content items of those tiers are in sections [wpn_fixed_scope_tier_*_content] where * is the tier index. The items themselves should be normal/moist/worn versions of each scope variety.
+; All weapon probab tests run on the same probab: tier main probab with tool 'dp_*' value and class bonus added.
+
+
+
+; DEBUG
+; The content execution engine will return onscreen error messages for most common mistakes made in the config file (duplicating lines inside a section is not detected). If the bug description is not informative enough, you can use the error number as a search string to search through the script.
+; Appearing of an onscreen bug message usually means that a part of dismantling operation was cancelled to avoid CTD. However emergency termination of any part of the operation is bound to make the whole feature malfunction, buggy UI behaviour included. In such case one should always suspect irrelevant outcome. Therefore apply appropriate fix before moving forward unless you know exactly what to expect from the code.
+; If you get a CTD logged with 'error handler is invoked! invalid_parameter_handler \xrCore\xrDebugNew.cpp line 815' it usually means that XRay choked on some setting left empty.
+; You can enable and disable components of debug messaging in [dismantle_debug] section. Keep in mind that no messages will be displayed until you enable the precedent debug flag in xrs_debug_tools.ltx in section 'plugin', at parameter 'enable' - that needs to be set 'true' for dismantle debug messages to be displayed.
+; Onscreen error messages will provide info on what went wrong. Enabled cast_console will cast their copies to console (and write them in the xray log). Disabling cast_errors disables their console/log copies too. Each onscreen message will get its own number to make their reading easier when testing quickly. That number will not be included in console/log copy, however the log message will have additional info about used tool and selected target, so that the log is more useful on heavy testing.
+; There is second type of messages that will be cast to console when cast_console is enabled (even if cast_errors is disabled). They're about situations that might be a bug, but aren't necessaarily so. For example probabs are constructed in few steps. If the final probab after all adding and substracting exceeds the 0 to 100 limit it doesn't have to be a bug, but might be one. Other such are about disabling axr_battery loading.
+; Another type of message is about give_const method: cast_console_for_const enables messages about missing 'give_const' or 'give_const_amt' lines in [all_*] sections. Leaving those sections empty is absolutely normal, however it's useful to have such empty sections reported while debugging/testing the method. Otherwsie it is recommended to disable this one, because it really spams the log.
+; Another type of message is about known bugs. If a bug is marked as known in the code it will generate a message that will look differently than other bugs bug, i.a. a 'K_' prefix will be added to its number. Disabling casting of known errors is recommended after some time of testing when one already starts to naturally omit such reports.
+; Another type of message is dismantle operation report. It will report onscreen every standard probab test and always-give and give-const content distibution and will never be written in console/log. Useful when testing with use of pla.script helpers, eliminating the need to rely on ingame inventory window. These messages won't include all targets (for example weapons and outfits).
+; HELPERS
+; There are some helper functions added that will make testing much easier and can be called from ingame debug menu. For list of calls look inside pla.script.
+; Debugging tip: if you created some new sections or edited the names of existing, uncommenting include of dismantle plugin and config in system.ltx for one game launch might be a useful extra-check (any doubled sections will cause a logged CTD).
+
+
+
+
+; Some prompts are also given in comments inside following sections.
+;;#######################################################################################;;
+
+;;;;;;;;;;;;;;;;;;;
+;; DEBUG OPTIONS ;;
+;;;;;;;;;;;;;;;;;;;
+
+[dismantle_debug]
+; Enable/disable these with 'true'/'false':
+; NOTE: This works only after setting xrs_debug_tools.ltx > [plugin] > enable to 'true'.
+; Casting onscreen error messages. Highly not recommended to disable, even in release version.
+dbg_enable_cast_errors = true
+; Casting console/log messages (copies of onscreen error messages and other console reporting of possible errors).
+dbg_enable_cast_console = true
+; Casting console reports for const-give. Recommended to enable only for time of debugging/testing give_const behaviour.
+dbg_enable_cast_console_for_const = true
+; Copies of onscreen errors to console/log (works only with enabled cast_errors and enabled cast_sonsole).
+dbg_enable_cast_err_to_console = true
+; Casting of known errors.
+dbg_enable_known_errors_casting = true
+; Casting operation reports (every execution performed with standard probab-give, always-give and give-const methods).
+dbg_enable_operations_casting = true
+
+
+
+;;;;;;;;;;;;;;;;;
+;; CLASS BONUS ;;
+;;;;;;;;;;;;;;;;;
+
+[class_bonus]
+; Actor class main bonus - added to dismantle probabs.
+cb_main_class_bonus_assaulter 	 = 1
+cb_main_class_bonus_recon 		 = 5
+cb_main_class_bonus_sniper 		 = 0
+; Actor class tool fail bonus - subtracted from tool fail probabs.
+cb_fail_class_bonus_assaulter 	 = 0
+cb_fail_class_bonus_recon 		 = 2
+cb_fail_class_bonus_sniper 		 = 1
+; Actor class condition decrease bonus - subtracted from target condition decrease on tool fail override.
+cb_cdec_class_bonus_assaulter 	 = 0.03
+cb_cdec_class_bonus_recon 		 = 0.02
+cb_cdec_class_bonus_sniper 		 = 0.01
+; Actor class tool blunt bonus - subtracted from tool blunt probabs.
+cb_blnt_class_bonus_assaulter 	 = -4
+cb_blnt_class_bonus_recon 		 = 5
+cb_blnt_class_bonus_sniper 		 = 0
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TOOL BLUNT PROBABS AND AUX TOOL BLUNT RATES ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[tool_zeroone_blunt_probabs]
+; Sharpened tools get usually blunted on probab test. Since they don't have condition property, it's zero-one blunting. Define probability of getting a tool blunted here.
+; Example: 40 means 40% chance of finishing with a blunted tool and 60% chance of finishing with the tool intact.
+; NOTE: Not all dismantling scenarios will use this, zero-one blunting of a sharpened tool is one of a few possible tool behaviour patterns. Fate of a tool is a separate setting (tool behaviour: tb_* in [*_tool_bhv]).
+tbp_swiss_sharp 		= 40
+tbp_cutlery_sharp 		= 50
+tbp_shovel_mili_sharp 	= 27
+tbp_shovel_old_sharp 	= 30
+tbp_grooming_sharp 		= 75
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; AUX TOOLS BLUNT RATES ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Define how much condition will each aux tool lose on each target genus/species. Values between 0 and 1 only.
+[aux_tool_blunt_rate_on_outfit]
+atbr_outfit_light_knife 	= 0.06
+atbr_outfit_light_axe 		= 0.03
+atbr_outfit_medium_knife 	= 0.08
+atbr_outfit_medium_axe 		= 0.04
+atbr_outfit_heavy_knife 	= 0.1
+atbr_outfit_heavy_axe 		= 0.05
+atbr_outfit_seva_knife 		= 0.12
+atbr_outfit_seva_axe 		= 0.06
+atbr_outfit_ssp_knife 		= 0.14
+atbr_outfit_ssp_axe 		= 0.07
+atbr_outfit_exo_knife 		= 0.16
+atbr_outfit_exo_axe 		= 0.08
+
+[aux_tool_blunt_rate_on_helm_mask]
+atbr_helm_mask_knife		= 0.04
+atbr_helm_mask_axe 			= 0.02
+
+[aux_tool_blunt_rate_on_helm_hard]
+atbr_helm_hard_knife		= 0.03
+atbr_helm_hard_axe 			= 0.03
+
+[aux_tool_blunt_rate_on_helm_good]
+atbr_helm_good_knife 		= 0.03
+atbr_helm_good_axe 			= 0.03
+
+[aux_tool_blunt_rate_on_outfitlike]
+atbr_outfitlike_knife 		= 0.04
+atbr_outfitlike_axe 		= 0.02
+
+;;;;;;;;;;;;;;;;;;;;;;;
+;; TOOL FAIL PROBABS ;;
+;;;;;;;;;;;;;;;;;;;;;;;
+; Probabs of each tools failure on each listed target species/subspecies.
+; Tool fail probabs on target that are set to 0 should stay that way.
+;		 Increasing them will make it possible to trigger fail overrides that are not intended to occur.
+;		 Keeping zeroes here is ensuring that unexpected overrides won't be called.
+;		 Calling an unexpected fail override will result in buggy behaviour ranging from wrong outcome to CTD's.
+
+; Firearms
+[tool_fail_probab_on_wpn_handgun]
+tfp_hammer_inv 			= 4
+tfp_crowbar 			= 0
+tfp_shovel_old 			= 3
+tfp_shovel_mili 		= 0
+tfp_swiss_sharp 		= 2
+tfp_cutlery_sharp 		= 3
+tfp_shovel_old_sharp 	= 3
+tfp_shovel_mili_sharp 	= 0
+tfp_grooming_sharp 		= 0
+tfp_kit 				= 0
+[tool_fail_probab_on_wpn_smg]
+tfp_hammer_inv 			= 4
+tfp_crowbar 			= 0
+tfp_shovel_old 			= 3
+tfp_shovel_mili 		= 0
+tfp_swiss_sharp 		= 2
+tfp_cutlery_sharp 		= 3
+tfp_shovel_old_sharp 	= 3
+tfp_shovel_mili_sharp 	= 0
+tfp_grooming_sharp 		= 0
+tfp_kit 				= 0
+[tool_fail_probab_on_wpn_smgscope]
+tfp_hammer_inv 			= 4
+tfp_crowbar 			= 0
+tfp_shovel_old 			= 3
+tfp_shovel_mili 		= 0
+tfp_swiss_sharp 		= 2
+tfp_cutlery_sharp 		= 3
+tfp_shovel_old_sharp 	= 3
+tfp_shovel_mili_sharp 	= 0
+tfp_grooming_sharp 		= 0
+tfp_kit 				= 0
+[tool_fail_probab_on_wpn_rifle]
+tfp_hammer_inv 			= 4
+tfp_crowbar 			= 0
+tfp_shovel_old 			= 3
+tfp_shovel_mili 		= 0
+tfp_swiss_sharp 		= 2
+tfp_cutlery_sharp 		= 3
+tfp_shovel_old_sharp 	= 3
+tfp_shovel_mili_sharp 	= 0
+tfp_grooming_sharp 		= 0
+tfp_kit 				= 0
+[tool_fail_probab_on_wpn_riflescope]
+tfp_hammer_inv 			= 4
+tfp_crowbar 			= 0
+tfp_shovel_old 			= 3
+tfp_shovel_mili 		= 0
+tfp_swiss_sharp 		= 2
+tfp_cutlery_sharp 		= 3
+tfp_shovel_old_sharp 	= 3
+tfp_shovel_mili_sharp 	= 0
+tfp_grooming_sharp 		= 0
+tfp_kit 				= 0
+[tool_fail_probab_on_wpn_heavy]
+tfp_hammer_inv 			= 4
+tfp_crowbar 			= 0
+tfp_shovel_old 			= 3
+tfp_shovel_mili 		= 0
+tfp_swiss_sharp 		= 2
+tfp_cutlery_sharp 		= 3
+tfp_shovel_old_sharp 	= 3
+tfp_shovel_mili_sharp 	= 0
+tfp_grooming_sharp 		= 0
+tfp_kit 				= 0
+[tool_fail_probab_on_wpn_heavyscope]
+tfp_hammer_inv 			= 4
+tfp_crowbar 			= 0
+tfp_shovel_old 			= 3
+tfp_shovel_mili 		= 0
+tfp_swiss_sharp 		= 2
+tfp_cutlery_sharp 		= 3
+tfp_shovel_old_sharp 	= 3
+tfp_shovel_mili_sharp 	= 0
+tfp_grooming_sharp 		= 0
+tfp_kit 				= 0
+
+[tool_fail_probab_on_wpn_addon_grndlnch]
+tfp_hammer_inv 			= 3
+tfp_crowbar 			= 0
+tfp_shovel_old 			= 2
+tfp_shovel_mili 		= 0
+tfp_swiss_sharp 		= 1
+tfp_cutlery_sharp 		= 2
+tfp_shovel_old_sharp 	= 2
+tfp_shovel_mili_sharp 	= 0
+tfp_grooming_sharp 		= 0
+tfp_kit 				= 0
+[tool_fail_probab_on_wpn_addon_nightscope]
+tfp_hammer_inv 			= 3
+tfp_crowbar 			= 0
+tfp_shovel_old 			= 2
+tfp_shovel_mili 		= 0
+tfp_swiss_sharp 		= 1
+tfp_cutlery_sharp 		= 2
+tfp_shovel_old_sharp 	= 2
+tfp_shovel_mili_sharp 	= 0
+tfp_grooming_sharp 		= 0
+tfp_kit 				= 0
+; Hard helmets
+[tool_fail_probab_on_helm_hard]
+tfp_hammer_inv 			= 55
+tfp_crowbar 			= 3
+tfp_shovel_old 			= 60
+tfp_shovel_mili 		= 5
+tfp_swiss_sharp 		= 0
+tfp_cutlery_sharp 		= 0
+tfp_shovel_old_sharp 	= 60
+tfp_shovel_mili_sharp 	= 5
+tfp_grooming_sharp 		= 0
+tfp_kit 				= 0
+[tool_fail_probab_on_helm_good]
+tfp_hammer_inv 			= 66
+tfp_crowbar 			= 3
+tfp_shovel_old 			= 70
+tfp_shovel_mili 		= 5
+tfp_swiss_sharp 		= 0
+tfp_cutlery_sharp 		= 0
+tfp_shovel_old_sharp 	= 70
+tfp_shovel_mili_sharp 	= 5
+tfp_grooming_sharp 		= 0
+tfp_kit 				= 0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TOOL FAIL CONDITION DECREASE ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; How much condition will each listed target species lose on each listed tool fail.
+[tool_fail_con_decrease_on_wpn_handgun]
+tfcd_hammer_inv 		= 0.08
+tfcd_shovel_old 		= 0.09
+tfcd_swiss_sharp 		= 0.03
+tfcd_cutlery_sharp 		= 0.04
+tfcd_shovel_old_sharp 	= 0.09
+[tool_fail_con_decrease_on_wpn_smg]
+tfcd_hammer_inv 		= 0.08
+tfcd_shovel_old 		= 0.09
+tfcd_swiss_sharp 		= 0.03
+tfcd_cutlery_sharp 		= 0.04
+tfcd_shovel_old_sharp 	= 0.09
+[tool_fail_con_decrease_on_wpn_smgscope]
+tfcd_hammer_inv 		= 0.08
+tfcd_shovel_old 		= 0.09
+tfcd_swiss_sharp 		= 0.03
+tfcd_cutlery_sharp 		= 0.04
+tfcd_shovel_old_sharp 	= 0.09
+[tool_fail_con_decrease_on_wpn_rifle]
+tfcd_hammer_inv 		= 0.08
+tfcd_shovel_old 		= 0.09
+tfcd_swiss_sharp 		= 0.03
+tfcd_cutlery_sharp 		= 0.04
+tfcd_shovel_old_sharp 	= 0.09
+[tool_fail_con_decrease_on_wpn_riflescope]
+tfcd_hammer_inv 		= 0.08
+tfcd_shovel_old 		= 0.09
+tfcd_swiss_sharp 		= 0.03
+tfcd_cutlery_sharp 		= 0.04
+tfcd_shovel_old_sharp 	= 0.09
+[tool_fail_con_decrease_on_wpn_heavy]
+tfcd_hammer_inv 		= 0.08
+tfcd_shovel_old 		= 0.09
+tfcd_swiss_sharp 		= 0.03
+tfcd_cutlery_sharp 		= 0.04
+tfcd_shovel_old_sharp 	= 0.09
+[tool_fail_con_decrease_on_wpn_heavyscope]
+tfcd_hammer_inv 		= 0.08
+tfcd_shovel_old 		= 0.09
+tfcd_swiss_sharp 		= 0.03
+tfcd_cutlery_sharp 		= 0.04
+tfcd_shovel_old_sharp 	= 0.09
+
+[tool_fail_con_decrease_on_helm_hard]
+tfcd_crowbar 			= 0.1
+tfcd_hammer_inv 		= 0.08
+tfcd_shovel_old 		= 0.08
+tfcd_shovel_mili 		= 0.09
+tfcd_shovel_old_sharp 	= 0.08
+tfcd_shovel_mili_sharp 	= 0.09
+[tool_fail_con_decrease_on_helm_good]
+tfcd_crowbar 			= 0.08
+tfcd_hammer_inv 		= 0.06
+tfcd_shovel_old 		= 0.06
+tfcd_shovel_mili 		= 0.07
+tfcd_shovel_old_sharp 	= 0.06
+tfcd_shovel_mili_sharp 	= 0.07
+
+[all_outfits]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; OUTFIT PROBABS, TOOL BHV AND CONTENT ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[outfit_probabs]
+; Target-condition-based tiers amount.
+tier_amt = 4
+; Tier treshlods (with target condition value in descending order).
+tier_1_perc 			= 1
+tier_2_perc 			= 0.75
+tier_3_perc 			= 0.5
+tier_4_perc 			= 0.25
+; Base slot probab for each tier.
+tier_1_main_slot_probab = 45
+tier_2_main_slot_probab = 30
+tier_3_main_slot_probab = 20
+tier_4_main_slot_probab = 10
+; Amount of faction patches obtained for each tier.
+tier_1_patch_amt 		= 2
+tier_2_patch_amt 		= 2
+tier_3_patch_amt 		= 1
+tier_4_patch_amt 		= 0
+; Base slot probab adjustment for each tool. This value will be added to base probab. Auxiliary tool boost will come on top of that.
+dp_hammer_inv 			= 25
+dp_crowbar 				= 25
+dp_shovel_old 			= 25
+dp_shovel_mili 			= 25
+dp_swiss_sharp 			= 30
+dp_cutlery_sharp 		= 3
+dp_shovel_mili_sharp 	= 12
+dp_shovel_old_sharp 	= 10
+dp_grooming_sharp 		= -3
+dp_kit 					= 50
+; Balance hotfix: additional helmet-spawning scenario for SSP/SEVA outfits
+; Translate outfit condition into helm probab (recommended 'true')
+dp_ssp_helmet_condition_into_probab = true
+; Alternative fixed probab value
+dp_ssp_helmet_scenario 	= 70
+
+[outfit_aux_tool_dp_boost]
+; Additional probab boost for each auxiliary tool.
+dp_aux_add_wpn_knife_inv_4 	= 10
+dp_aux_add_wpn_knife_inv_3 	= 8
+dp_aux_add_wpn_knife_inv_5 	= 6
+dp_aux_add_wpn_knife_inv_2 	= 4
+dp_aux_add_wpn_knife_m 		= 4
+dp_aux_add_wpn_knife_inv 	= 2
+dp_aux_add_wpn_axe 			= 2
+
+[outfit_tool_bhv]
+; Usual tool behaviour settings don't apply for outfits. However if you want to use such settings instead of having forced zeroone-blunt of sharpened makeshift tools applied, change the below flag to 'false' and define tb_*'s.
+; If the flag is set to 'true' (recommended) then tool will be forced to blunt and tb_ won't be even read. If the flag is set to 'false' then given tb_ will be applied.
+force_zerooneblunt = true
+; optional tool behaviours
+tb_hammer_inv 		= keep 				; needs aux
+tb_crowbar 			= keep 				; needs aux
+tb_shovel_old 		= keep 				; needs aux
+tb_shovel_mili 		= keep 				; needs aux
+tb_swiss_sharp 		= force_blunt 		; needs aux
+tb_cutlery_sharp 	= force_blunt 		; needs aux
+tb_shovel_mili_sharp= blunt_on_probab 	; needs aux
+tb_shovel_old_sharp = blunt_on_probab 	; needs aux
+tb_grooming_sharp 	= kill 				; needs aux
+tb_kit 				= decrease
+
+
+; SLOT DEFINITIONS
+;  outfit_slot_*_amt = x, where x = number of single fail/succ (on probab) operations (x = 1 will create 1 item)
+;  outfit_subslot_device_amt = x, where x = number of f/s operations for EACH item in subslot (x = 1 creates 3 items)
+;  outfit_subslot_gear_amt = x, where x is number of f/s operations for ONE of items in subslot (x = 1 creates 1 item)
+	[outfit_slot_definitions_light]
+	outfit_slot_fabric1_amt 	= 3
+	outfit_slot_fabric2_amt 	= 2
+	outfit_slot_fabric3_amt 	= 1
+	outfit_slot_protect1_amt 	= 0
+	outfit_slot_protect2_amt 	= 0
+	outfit_slot_helmet_amt 		= 0
+	outfit_subslot_device_amt 	= 0
+	outfit_subslot_gear_amt 	= 1
+	[outfit_slot_definitions_medium]
+	outfit_slot_fabric1_amt 	= 4
+	outfit_slot_fabric2_amt 	= 3
+	outfit_slot_fabric3_amt 	= 3
+	outfit_slot_protect1_amt 	= 1
+	outfit_slot_protect2_amt 	= 0
+	outfit_slot_helmet_amt 		= 0
+	outfit_subslot_device_amt 	= 0
+	outfit_subslot_gear_amt 	= 1
+	[outfit_slot_definitions_heavy]
+	outfit_slot_fabric1_amt 	= 5
+	outfit_slot_fabric2_amt 	= 4
+	outfit_slot_fabric3_amt 	= 4
+	outfit_slot_protect1_amt 	= 1
+	outfit_slot_protect2_amt 	= 1
+	outfit_slot_helmet_amt 		= 0
+	outfit_subslot_device_amt 	= 0
+	outfit_subslot_gear_amt 	= 1
+	[outfit_slot_definitions_ssp]
+	outfit_slot_fabric1_amt 	= 2
+	outfit_slot_fabric2_amt 	= 7
+	outfit_slot_fabric3_amt 	= 3
+	outfit_slot_protect1_amt 	= 0
+	outfit_slot_protect2_amt 	= 0
+	outfit_slot_helmet_amt 		= 0
+	outfit_subslot_device_amt 	= 1
+	outfit_subslot_gear_amt 	= 1
+	[outfit_slot_definitions_ssp_helm]
+	outfit_slot_fabric1_amt 	= 2
+	outfit_slot_fabric2_amt 	= 7
+	outfit_slot_fabric3_amt 	= 3
+	outfit_slot_protect1_amt 	= 0
+	outfit_slot_protect2_amt 	= 0
+	outfit_slot_helmet_amt 		= 1
+	outfit_subslot_device_amt 	= 0
+	outfit_subslot_gear_amt 	= 0
+	[outfit_slot_definitions_seva]
+	outfit_slot_fabric1_amt 	= 1
+	outfit_slot_fabric2_amt 	= 2
+	outfit_slot_fabric3_amt 	= 3
+	outfit_slot_protect1_amt 	= 1
+	outfit_slot_protect2_amt 	= 1
+	outfit_slot_helmet_amt 		= 0
+	outfit_subslot_device_amt 	= 1
+	outfit_subslot_gear_amt 	= 1
+	[outfit_slot_definitions_seva_helm]
+	outfit_slot_fabric1_amt 	= 1
+	outfit_slot_fabric2_amt 	= 2
+	outfit_slot_fabric3_amt 	= 3
+	outfit_slot_protect1_amt 	= 1
+	outfit_slot_protect2_amt 	= 1
+	outfit_slot_helmet_amt 		= 1
+	outfit_subslot_device_amt 	= 0
+	outfit_subslot_gear_amt 	= 0
+	[outfit_slot_definitions_exo]
+	outfit_slot_fabric1_amt 	= 0
+	outfit_slot_fabric2_amt 	= 4
+	outfit_slot_fabric3_amt 	= 10
+	outfit_slot_protect1_amt 	= 1
+	outfit_slot_protect2_amt 	= 3
+	outfit_slot_helmet_amt 		= 0
+	outfit_subslot_device_amt 	= 0
+	outfit_subslot_gear_amt 	= 1
+[outfit_slot_content]
+; Single pairs for each slot
+outfit_slot_fabric1_succ 	= textile_patch_b
+outfit_slot_fabric1_fail 	= outfit_waste_light
+outfit_slot_fabric2_succ 	= textile_patch_m
+outfit_slot_fabric2_fail 	= outfit_waste_light
+outfit_slot_fabric3_succ 	= textile_patch_e
+outfit_slot_fabric3_fail 	= outfit_waste_heavy
+outfit_slot_protect1_succ 	= af_kevlar
+outfit_slot_protect1_fail 	= outfit_waste_heavy
+outfit_slot_protect2_succ 	= af_plates
+outfit_slot_protect2_fail 	= outfit_waste_heavy
+outfit_slot_helmet_succ 	= helm_protective
+	; the following line was 'outfit_waste_heavy' before balance hotfix
+	; it's changed to == succ to ensure that the helmet will be always given
+outfit_slot_helmet_fail 	= helm_protective
+; 3 pairs for device subslot (fail is the same for each pair)
+outfit_subslot_device1_succ = af_surge
+outfit_subslot_device2_succ = af_cooler
+outfit_subslot_device3_succ = af_freon
+outfit_subslot_device_fail 	= tech_waste
+; 1 pair for gear subslot (succ is random)
+outfit_subslot_gear1_succ 	= af_camelbak
+outfit_subslot_gear2_succ 	= af_frames
+outfit_subslot_gear3_succ 	= af_grid
+outfit_subslot_gear_fail 	= outfit_waste_light
+	[outfit_patches]
+	; If adding, synch with plugin [outfits_with_patches_list]
+	op_cs_heavy_outfit 		= csky_patch
+	op_dolg_outfit 			= dolg_patch
+	op_dolg_heavy_outfit 	= dolg_patch
+	op_svoboda_light_outfit = freedom_patch
+	op_svoboda_heavy_outfit = freedom_patch
+	op_stalker_outfit 		= stalker_patch
+	op_stalker_outfit_barge = stalker_patch
+	op_specops_outfit 		= army_patch
+	op_military_outfit 		= army_patch
+
+[all_wpn]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; FIREARMS PROBABS, TOOL BHV AND CONTENT ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_probabs]
+; Target-condition-based tiers amount.
+tier_amt = 4
+; Tier treshlods (with target condition value in descending order).
+tier_1_perc 	= 1
+tier_2_perc 	= 0.75
+tier_3_perc 	= 0.5
+tier_4_perc 	= 0.25
+; Base slot probab for each tier.
+tier_1_main_slot_probab = 45
+tier_2_main_slot_probab = 30
+tier_3_main_slot_probab = 15
+tier_4_main_slot_probab = 5
+; Base slot probab adjustment for each tool. This value will be added to base probab.
+dp_hammer_inv 			= 1
+dp_crowbar 				= 1
+dp_shovel_old 			= 1
+dp_shovel_mili 			= 1
+dp_swiss_sharp 			= 5
+dp_cutlery_sharp 		= 4
+dp_shovel_mili_sharp 	= 1
+dp_shovel_old_sharp 	= 1
+dp_grooming_sharp 		= -3
+dp_kit 					= 45
+; Weapon condition tresholds for determining if dismantled fixed scope will be in its good/moist/worn variety.
+fixed_scope_tier_1_perc 	= 1
+fixed_scope_tier_2_perc 	= 0.66
+fixed_scope_tier_3_perc 	= 0.33
+; Below this condition common basic operations (ammo unload and addons detach) will fail.
+weapon_critical_con_treshold = 0.01
+
+[wpn_tool_bhv]
+tb_hammer_inv 		= keep
+tb_crowbar 			= keep
+tb_shovel_old 		= keep
+tb_shovel_mili 		= keep
+tb_swiss_sharp 		= blunt_on_probab
+tb_cutlery_sharp 	= blunt_on_probab
+tb_shovel_mili_sharp= blunt_on_probab
+tb_shovel_old_sharp = blunt_on_probab
+tb_grooming_sharp 	= kill
+tb_kit 				= decrease
+	; Slots: don't change scope amounts.
+	[slot_definitions_wpn_handgun]
+	wpn_slot_light_amt = 2
+	wpn_slot_heavy_amt = 0
+	wpn_slot_scope_amt = 0
+	[slot_definitions_wpn_smg]
+	wpn_slot_light_amt = 3
+	wpn_slot_heavy_amt = 0
+	wpn_slot_scope_amt = 0
+	[slot_definitions_wpn_smgscope]
+	wpn_slot_light_amt = 3
+	wpn_slot_heavy_amt = 0
+	wpn_slot_scope_amt = 1
+	[slot_definitions_wpn_rifle]
+	wpn_slot_light_amt = 3
+	wpn_slot_heavy_amt = 1
+	wpn_slot_scope_amt = 0
+	[slot_definitions_wpn_riflescope]
+	wpn_slot_light_amt = 3
+	wpn_slot_heavy_amt = 1
+	wpn_slot_scope_amt = 1
+	[slot_definitions_wpn_heavy]
+	wpn_slot_light_amt = 3
+	wpn_slot_heavy_amt = 2
+	wpn_slot_scope_amt = 0
+	[slot_definitions_wpn_heavyscope]
+	wpn_slot_light_amt = 3
+	wpn_slot_heavy_amt = 2
+	wpn_slot_scope_amt = 1
+[wpn_slot_content]
+; common weapon slots content
+wpn_slot_light_succ 		= spareparts_small
+wpn_slot_light_fail 		= wpn_waste_light
+wpn_slot_heavy_succ 		= spareparts
+wpn_slot_heavy_fail 		= wpn_waste_heavy
+; common basic operations fail content
+wpn_unload_ammo_fail 		= ammo_bad
+wpn_addon_detach_fail		= wpn_waste_light
+; addon slots fail content
+wpn_slot_scope_fail 		= wpn_waste_light
+wpn_slot_silencer_fail 		= wpn_waste_light
+wpn_slot_grndlnch_fail 		= wpn_waste_light
+
+[wpn_fixed_silencer_content]
+; weapon fixed silencer addon slots content - success only
+wpn_slot_sil55645_succ 		= wpn_addon_silencer_556x45
+wpn_slot_sil918_succ 		= wpn_addon_silencer_9x18
+wpn_slot_sil939_succ 		= wpn_addon_silencer_9x39
+wpn_slot_silsvu_succ 		= wpn_addon_silencer_svu
+[wpn_fixed_grndlnch_content]
+; weapon fixed grenade launcher addon slots content - success only
+wpn_slot_grndlnch_east_succ = wpn_addon_grenade_launcher
+wpn_slot_grndlnch_west_succ = wpn_addon_grenade_launcher_m203
+
+; Fixed scope varieties: the following three scetions must have exactly the same lines defined for each scope variety, even if the actual scope section (normal/moist/worn) doesn't differ
+[wpn_fixed_scope_tier_1_content]
+fixed_scope_wp 				= wpn_addon_scope
+fixed_scope_wp_special 		= wpn_addon_scope_vsk
+fixed_scope_zf 				= wpn_addon_scope_zf4
+fixed_scope_susat 			= wpn_addon_scope_susat_x1.6
+fixed_scope_susat_moist 	= wpn_addon_scope_susat_moist
+fixed_scope_acog_trijicon 	= wpn_addon_scope_acog_trijicon
+fixed_scope_snag 			= wpn_addon_scope_snag
+fixed_scope_m16 			= wpn_addon_scope_m16
+fixed_scope_m21 			= wpn_addon_scope_m21
+fixed_scope_m24 			= wpn_addon_scope_m24
+fixed_scope_ksvk 			= wpn_addon_scope_ksvk
+fixed_scope_trg 			= wpn_addon_scope_trg
+fixed_scope_sig_sniper 		= wpn_addon_scope_sig550_sniper
+fixed_scope_fnfalpara 		= wpn_addon_scope_fn_fal_para
+fixed_scope_rpg7 			= wpn_addon_scope_rpg7
+[wpn_fixed_scope_tier_2_content]
+fixed_scope_wp 				= wpn_addon_scope_moist
+fixed_scope_wp_special 		= wpn_addon_scope_vsk
+fixed_scope_zf 				= wpn_addon_scope_zf4_moist
+fixed_scope_susat 			= wpn_addon_scope_susat_moist
+fixed_scope_susat_moist 	= wpn_addon_scope_susat_moist
+fixed_scope_acog_trijicon	= wpn_addon_scope_acog_trijicon
+fixed_scope_snag 			= wpn_addon_scope_snag
+fixed_scope_m16 			= wpn_addon_scope_m16
+fixed_scope_m21 			= wpn_addon_scope_m21
+fixed_scope_m24 			= wpn_addon_scope_m24
+fixed_scope_ksvk 			= wpn_addon_scope_ksvk
+fixed_scope_trg 			= wpn_addon_scope_trg
+fixed_scope_sig_sniper 		= wpn_addon_scope_sig550_sniper
+fixed_scope_fnfalpara 		= wpn_addon_scope_fn_fal_para
+fixed_scope_rpg7 			= wpn_addon_scope_rpg7
+[wpn_fixed_scope_tier_3_content]
+fixed_scope_wp 				= wpn_addon_scope_worn
+fixed_scope_wp_special 		= wpn_addon_scope_vsk
+fixed_scope_zf 				= wpn_addon_scope_zf4_worn
+fixed_scope_susat 			= wpn_addon_scope_susat_worn
+fixed_scope_susat_moist 	= wpn_addon_scope_susat_worn
+fixed_scope_acog_trijicon	= wpn_addon_scope_acog_trijicon
+fixed_scope_snag 			= wpn_addon_scope_snag
+fixed_scope_m16 			= wpn_addon_scope_m16
+fixed_scope_m21 			= wpn_addon_scope_m21
+fixed_scope_m24 			= wpn_addon_scope_m24
+fixed_scope_ksvk 			= wpn_addon_scope_ksvk
+fixed_scope_trg 			= wpn_addon_scope_trg
+fixed_scope_sig_sniper 		= wpn_addon_scope_sig550_sniper
+fixed_scope_fnfalpara 		= wpn_addon_scope_fn_fal_para
+fixed_scope_rpg7 			= wpn_addon_scope_rpg7
+
+[all_helmets]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HELMETS PROBABS, TOOL BHV AND CONTENT ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[all_helm_mask]
+give_const = outfit_waste_light
+[helm_mask_probabs]
+; Target-condition-based tiers amount.
+tier_amt = 4
+; Tier treshlods (with target condition value in descending order).
+tier_1_perc 	= 1
+tier_2_perc 	= 0.75
+tier_3_perc 	= 0.5
+tier_4_perc 	= 0.25
+; Base slot probab for each tier.
+tier_1_main_slot_probab = 80
+tier_2_main_slot_probab = 70
+tier_3_main_slot_probab = 60
+tier_4_main_slot_probab = 50
+; Base slot probab adjustment for each tool. This value will be added to base probab. Auxiliary tool boost will come on top of that.
+dp_hammer_inv 			= 2
+dp_crowbar 				= 2
+dp_shovel_old 			= 2
+dp_shovel_mili 			= 2
+dp_swiss_sharp 			= 10
+dp_cutlery_sharp 		= 10
+dp_shovel_mili_sharp 	= 4
+dp_shovel_old_sharp 	= 3
+dp_grooming_sharp 		= 5
+dp_kit 					= 40
+[helm_mask_aux_tool_dp_boost]
+; Additional probab boost for each auxiliary tool.
+dp_aux_add_wpn_knife_inv_4 	= 10
+dp_aux_add_wpn_knife_inv_3 	= 10
+dp_aux_add_wpn_knife_inv_5 	= 8
+dp_aux_add_wpn_knife_inv_2 	= 8
+dp_aux_add_wpn_knife_m 		= 6
+dp_aux_add_wpn_knife_inv 	= 6
+dp_aux_add_wpn_axe 			= 2
+[helm_mask_tool_bhv]
+tb_hammer_inv 		= keep 				 ; needs aux
+tb_crowbar 			= keep 				 ; needs aux
+tb_shovel_old 		= keep 				 ; needs aux
+tb_shovel_mili 		= keep 				 ; needs aux
+tb_swiss_sharp 		= blunt_on_probab
+tb_cutlery_sharp 	= blunt_on_probab
+tb_shovel_mili_sharp= blunt_on_probab
+tb_shovel_old_sharp = blunt_on_probab
+tb_grooming_sharp 	= force_blunt
+tb_kit 				= decrease
+	[helm_mask_content_helm_respirator]
+	succ = textile_patch_b
+	fail = outfit_waste_light
+	[helm_mask_content_helm_respirator_joker]
+	succ = textile_patch_b
+	fail = outfit_waste_light
+	[helm_mask_content_helm_respirator_heavy]
+	succ = textile_patch_b
+	fail = outfit_waste_heavy
+[all_helm_hard]
+give_const = welding_goggles
+[helm_hard_probabs]
+; Target-condition-based tiers amount.
+tier_amt = 4
+; Tier treshlods (with target condition value in descending order).
+tier_1_perc 	= 1
+tier_2_perc 	= 0.75
+tier_3_perc 	= 0.5
+tier_4_perc 	= 0.25
+; Base slot probab for each tier.
+tier_1_main_slot_probab = 80
+tier_2_main_slot_probab = 73
+tier_3_main_slot_probab = 67
+tier_4_main_slot_probab = 60
+; Base slot probab adjustment for each tool. This value will be added to base probab. Auxiliary tool boost will come on top of that.
+dp_hammer_inv 			= 4
+dp_crowbar 				= 4
+dp_shovel_old 			= 4
+dp_shovel_mili 			= 4
+dp_swiss_sharp 			= 6
+dp_cutlery_sharp 		= 6
+dp_shovel_mili_sharp 	= 15
+dp_shovel_old_sharp 	= 14
+dp_grooming_sharp 		= -4
+dp_kit 					= 10
+[helm_hard_aux_tool_dp_boost]
+; Additional probab boost for each auxiliary tool.
+dp_aux_add_wpn_knife_inv_4 	= 6
+dp_aux_add_wpn_knife_inv_3 	= 5
+dp_aux_add_wpn_knife_inv_5 	= 4
+dp_aux_add_wpn_knife_inv_2 	= 3
+dp_aux_add_wpn_knife_m 		= 2
+dp_aux_add_wpn_knife_inv 	= 1
+dp_aux_add_wpn_axe 			= 10
+[helm_hard_tool_bhv]
+tb_hammer_inv 		= keep 				 ; needs aux knife
+tb_crowbar 			= keep 				 ; needs aux knife
+tb_shovel_old 		= keep 				 ; needs aux knife
+tb_shovel_mili 		= keep 				 ; needs aux knife
+tb_swiss_sharp 		= blunt_on_probab 	 ; needs aux axe
+tb_cutlery_sharp 	= blunt_on_probab 	 ; needs aux axe
+tb_shovel_mili_sharp= force_blunt
+tb_shovel_old_sharp = force_blunt
+tb_grooming_sharp 	= force_blunt 		 ; needs aux axe
+tb_kit 				= decrease 			 ; needs aux axe
+	[helm_hard_content_helm_hardhat]
+	succ = textile_patch_m
+	fail = outfit_waste_light
+	[helm_hard_content_helm_hardhat_snag]
+	succ = textile_patch_m
+	fail = outfit_waste_light
+[all_helm_good]
+give_const = tech_waste
+[helm_good_probabs]
+; Target-condition-based tiers amount.
+tier_amt = 4
+; Tier treshlods (with target condition value in descending order).
+tier_1_perc 	= 1
+tier_2_perc 	= 0.75
+tier_3_perc 	= 0.5
+tier_4_perc 	= 0.25
+; Base slot probab for each tier.
+tier_1_main_slot_probab = 80
+tier_2_main_slot_probab = 70
+tier_3_main_slot_probab = 60
+tier_4_main_slot_probab = 50
+; Base slot probab adjustment for each tool. This value will be added to base probab. Auxiliary tool boost will come on top of that.
+dp_hammer_inv 			= 4
+dp_crowbar 				= 4
+dp_shovel_old 			= 4
+dp_shovel_mili 			= 4
+dp_swiss_sharp 			= 6
+dp_cutlery_sharp 		= 6
+dp_shovel_mili_sharp 	= 15
+dp_shovel_old_sharp 	= 14
+dp_grooming_sharp 		= -4
+dp_kit 					= 10
+[helm_good_aux_tool_dp_boost]
+; Additional probab boost for each auxiliary tool.
+dp_aux_add_wpn_knife_inv_4 	= 6
+dp_aux_add_wpn_knife_inv_3 	= 5
+dp_aux_add_wpn_knife_inv_5 	= 4
+dp_aux_add_wpn_knife_inv_2 	= 3
+dp_aux_add_wpn_knife_m 		= 2
+dp_aux_add_wpn_knife_inv 	= 1
+dp_aux_add_wpn_axe 			= 10
+[helm_good_tool_bhv]
+tb_hammer_inv 		= keep 				 ; needs aux knife
+tb_crowbar 			= keep 				 ; needs aux knife
+tb_shovel_old 		= keep 				 ; needs aux knife
+tb_shovel_mili 		= keep 				 ; needs aux knife
+tb_swiss_sharp 		= blunt_on_probab 	 ; needs aux axe
+tb_cutlery_sharp 	= blunt_on_probab 	 ; needs aux axe
+tb_shovel_mili_sharp= force_blunt
+tb_shovel_old_sharp = force_blunt
+tb_grooming_sharp 	= blunt_on_probab 	 ; needs aux axe
+tb_kit 				= decrease 			 ; needs aux axe
+	[helm_good_content_helm_protective]
+	succ1 = textile_patch_e
+	fail1 = outfit_waste_heavy
+	succ2 = headlamp
+	fail2 = batteries_ccell_empty
+	[helm_good_content_helm_tactic]
+	succ = textile_patch_e
+	fail = outfit_waste_heavy
+	always_give = batteries_empty
+	[helm_good_content_helm_battle]
+	succ = textile_patch_e
+	fail = outfit_waste_heavy
+	always_give = batteries_dead_empty
+[all_gauss_guns]
+;;;;;;;;;;;;;;;;
+;; GAUSS GUNS ;;
+;;;;;;;;;;;;;;;;
+; Don't use this 'all_*' section unless you're deliberately willing to combine give_const mechanism with fixed gauss_* spawning.
+[gauss_rifles]
+; Storyline gauss (pri_a17_gauss_rifle) is prevented from being dismantled. Attempting to do so will effect with decreasing its condition by percentage set here.
+storyline_gauss_con_decrease = 0.36
+; Normal gauss guns (wpn_gauss) can be dismantled, but producing outcome does not involve testing on probabs, the content is fixed. You can change the content by adding/removing content sections. It has to be minimum one line, named 'gauss_1'. Any following lines should have the numbers increasing by one. If you don't want any content to be spawned, leave 'gauss_1' only and enter 'skip' instead of content section.
+gauss_1 = tech_waste
+gauss_2 = wpn_waste_light
+
+[all_wpn_related]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; OTHER: WEAPON RELATED PROBABS, TOOL BHV AND CONTENT ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[all_xplo]
+[xplo_probabs]
+dp_main_ied_rpg = 46
+dp_main_ied 	= 40
+dp_main_mine 	= 34
+dp_swiss_sharp 		= 15
+dp_cutlery_sharp 	= 2
+dp_kit 				= 25
+[xplo_tool_bhv]
+tb_swiss_sharp 		= keep
+tb_cutlery_sharp 	= keep
+tb_grooming_sharp 	= keep
+tb_kit 				= decrease
+
+	[xplo_content_ied_rpg]
+	; Explosive targets' fails are events. Changing 'event' to anything else will cause buggy behaviour. In this case always-give items are in fact success items.
+	succ = skip
+	fail = event
+	always_give_multiple 	= true
+	always_give1 			= ammo_og-7b
+	always_give2 			= tech_waste
+	[xplo_content_ied]
+	; Explosive targets' fails are events. Changing 'event' to anything else will cause buggy behaviour. In this case always-give items are in fact success items.
+	succ = skip
+	fail = event
+	always_give_multiple 	= true
+	always_give1 			= explo_metalcan_powder
+	always_give2 			= tech_waste
+	always_give2_amt 		= 2
+	[xplo_content_mine]
+	; Explosive targets' fails are events. Changing 'event' to anything else will cause buggy behaviour. In this case always-give items are in fact success items.
+	succ = skip
+	fail = event
+	always_give_multiple 	= true
+	always_give1 			= explo_metalcan_powder
+	always_give2 			= tech_waste
+	always_give2_amt 		= 2
+[all_wpn_addon]
+[wpn_addon_grndlnch_probabs]
+dp_main 		= 80
+dp_hammer_inv 		= 7
+dp_crowbar 			= 7
+dp_shovel_old 		= 7
+dp_shovel_mili 		= 7
+dp_swiss_sharp 		= 5
+dp_cutlery_sharp 	= 5
+dp_shovel_mili_sharp= 4
+dp_shovel_old_sharp = 3
+dp_grooming_sharp 	= -3
+dp_kit 				= 18
+[wpn_addon_grndlnch_tool_bhv]
+tb_hammer_inv 			= keep
+tb_crowbar 				= keep
+tb_shovel_old 			= keep
+tb_shovel_mili 			= keep
+tb_swiss_sharp 			= blunt_on_probab
+tb_cutlery_sharp 		= blunt_on_probab
+tb_shovel_mili_sharp	= blunt_on_probab
+tb_shovel_old_sharp 	= blunt_on_probab
+tb_grooming_sharp 		= force_blunt
+tb_kit 					= decrease
+	[wpn_addon_grndlnch_for_all_content]
+	succ 		= spareparts_small
+	fail 		= wpn_waste_light
+[wpn_addon_nightscope_probabs]
+dp_main 		= 70
+dp_hammer_inv 		= -5
+dp_crowbar 			= -5
+dp_shovel_old 		= -5
+dp_shovel_mili 		= -5
+dp_swiss_sharp 		= 15
+dp_cutlery_sharp 	= 15
+dp_shovel_mili_sharp= -10
+dp_shovel_old_sharp = -12
+dp_grooming_sharp 	= 5
+dp_kit 				= 20
+[wpn_addon_nightscope_tool_bhv]
+tb_hammer_inv 			= keep
+tb_crowbar 				= keep
+tb_shovel_old 			= keep
+tb_shovel_mili 			= keep
+tb_swiss_sharp 			= keep
+tb_cutlery_sharp 		= keep
+tb_shovel_mili_sharp	= keep
+tb_shovel_old_sharp 	= keep
+tb_grooming_sharp 		= blunt_on_probab
+tb_kit 					= decrease
+	[wpn_addon_nightscope_for_all_content]
+	succ 		= batteries_dead
+	fail 		= batteries_dead_empty
+
+[all_outfit_related]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; OTHER: OUTFIT RELATED PROBABS, TOOL BHV AND CONTENT ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[all_outfitlike]
+[outfitlike_probabs]
+dp_main 		= 80
+dp_hammer_inv 		= -5
+dp_crowbar 			= -5
+dp_shovel_old 		= -5
+dp_shovel_mili		= -5
+dp_swiss_sharp 		= 15
+dp_cutlery_sharp 	= 8
+dp_shovel_mili_sharp= -3
+dp_shovel_old_sharp = -2
+dp_grooming_sharp 	= -5
+dp_kit 				= 20
+[outfitlike_aux_tool_dp_boost]
+; Additional probab boost for each auxiliary tool.
+dp_aux_add_wpn_knife_inv_4 	= 15
+dp_aux_add_wpn_knife_inv_3 	= 14
+dp_aux_add_wpn_knife_inv_5 	= 13
+dp_aux_add_wpn_knife_inv_2 	= 12
+dp_aux_add_wpn_knife_m 		= 12
+dp_aux_add_wpn_knife_inv 	= 11
+dp_aux_add_wpn_axe 			= 0
+[outfitlike_tool_bhv]
+tb_hammer_inv 			= keep 				 ; needs aux
+tb_crowbar 				= keep 				 ; needs aux
+tb_shovel_old 			= keep 				 ; needs aux
+tb_shovel_mili 			= keep 				 ; needs aux
+tb_swiss_sharp 			= force_blunt
+tb_cutlery_sharp 		= force_blunt
+tb_shovel_mili_sharp 	= blunt_on_probab
+tb_shovel_old_sharp 	= blunt_on_probab
+tb_grooming_sharp 		= kill 				 ; needs aux (not af_camelbak)
+tb_kit 					= decrease
+	[outfitlike_content_boots]
+	test1_amt 	= 2
+	succ1 		= textile_patch_m
+	test2_amt 	= 2
+	succ2 		= textile_patch_e
+	fail 		= outfit_waste_light
+	[outfitlike_content_itm_backpack]
+	succ1 		= textile_patch_b
+	succ2 		= textile_patch_m
+	succ2_amt 	= 2
+	succ3 		= textile_patch_e
+	fail 		= outfit_waste_light
+	always_give = af_frames
+	[outfitlike_content_af_camelbak]
+	succ 		= textile_patch_m
+	fail 		= outfit_waste_light
+	always_give = mineral_water3
+[all_electr_belt]
+[electr_belt_probabs]
+dp_main 		= 90
+dp_hammer_inv 		= 0
+dp_crowbar 			= 0
+dp_shovel_old 		= 0
+dp_shovel_mili 		= 0
+dp_swiss_sharp 		= 8
+dp_cutlery_sharp 	= 8
+dp_shovel_mili_sharp= -15
+dp_shovel_old_sharp = -20
+dp_grooming_sharp 	= -30
+dp_kit 				= 10
+[electr_belt_tool_bhv]
+tb_hammer_inv 		= keep
+tb_crowbar 			= keep
+tb_shovel_old 		= keep
+tb_shovel_mili 		= keep
+tb_swiss_sharp 		= blunt_on_probab
+tb_cutlery_sharp 	= blunt_on_probab
+tb_shovel_mili_sharp= keep
+tb_shovel_old_sharp = keep
+tb_grooming_sharp 	= kill
+tb_kit 				= decrease
+	[electr_belt_content_af_cooler]
+	succ 		= batteries_dead
+	fail 		= batteries_dead_empty
+	[electr_belt_content_geiger_dead]
+	succ 		= batteries
+	fail 		= batteries_empty
+	[electr_belt_content_af_surge]
+	succ 		= batteries
+	fail 		= batteries_empty
+	[electr_belt_content_af_freon]
+	succ 		= batteries_ccell
+	fail 		= batteries_ccell_empty
+
+[all_electric]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; OTHER: ELECTRIC DEVICES PROBABS, TOOL BHV AND CONTENT ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+give_const = tech_waste
+[all_detectors]
+[detectors_probabs_geiger]
+; Additional test for geiger content, common for all detectors.
+dp_geiger_main 			= 85
+dp_geiger_hammer_inv 		= 5
+dp_geiger_crowbar 			= 5
+dp_geiger_shovel_old 		= 5
+dp_geiger_shovel_mili 		= 5
+dp_geiger_swiss_sharp 		= 10
+dp_geiger_cutlery_sharp 	= 10
+dp_geiger_shovel_mili_sharp = 5
+dp_geiger_shovel_old_sharp 	= 4
+dp_geiger_grooming_sharp 	= 0
+dp_geiger_kit 				= 15
+	[detectors_geiger_for_all_content]
+	succ 		= geiger_dead
+	fail 		= skip
+[detectors_probabs]
+dp_main 		= 90
+dp_hammer_inv 		= 0
+dp_crowbar 			= 0
+dp_shovel_old 		= 0
+dp_shovel_mili 		= 0
+dp_swiss_sharp 		= 5
+dp_cutlery_sharp 	= 5
+dp_shovel_mili_sharp= 0
+dp_shovel_old_sharp = 0
+dp_grooming_sharp 	= 5
+dp_kit 				= 10
+[detectors_tool_bhv]
+tb_hammer_inv 		= keep
+tb_crowbar 			= keep
+tb_shovel_old 		= keep
+tb_shovel_mili 		= keep
+tb_swiss_sharp 		= blunt_on_probab
+tb_cutlery_sharp 	= blunt_on_probab
+tb_shovel_mili_sharp= keep
+tb_shovel_old_sharp = keep
+tb_grooming_sharp 	= kill
+tb_kit 				= decrease
+	[detectors_content_detector_simple]
+	succ 		= batteries_dead
+	fail 		= batteries_dead_empty
+	[detectors_content_detector_advanced]
+	succ 		= batteries
+	fail 		= batteries_empty
+	[detectors_content_detector_elite]
+	succ 		= batteries_ccell
+	fail 		= batteries_ccell_empty
+	[detectors_content_detector_scientific]
+	succ 		= batteries_ccell
+	fail 		= batteries_ccell_empty
+[all_electric1]
+[electric1_probabs]
+dp_main 		= 90
+dp_hammer_inv 		= 2
+dp_crowbar 			= 2
+dp_shovel_old 		= 1
+dp_shovel_mili 		= 1
+dp_swiss_sharp 		= 8
+dp_cutlery_sharp 	= 8
+dp_shovel_mili_sharp= 4
+dp_shovel_old_sharp = 4
+dp_grooming_sharp 	= -1
+dp_kit 				= 10
+[electric1_tool_bhv]
+tb_hammer_inv 		= keep
+tb_crowbar 			= keep
+tb_shovel_old 		= keep
+tb_shovel_mili 		= keep
+tb_swiss_sharp 		= blunt_on_probab
+tb_cutlery_sharp 	= blunt_on_probab
+tb_shovel_mili_sharp= keep
+tb_shovel_old_sharp = keep
+tb_grooming_sharp 	= kill
+tb_kit 				= decrease
+	[electric1_content_maps_kit]
+	succ = batteries_ccell
+	fail = batteries_ccell_empty
+	[electric1_content_headlamp]
+	succ = batteries_ccell
+	fail = batteries_ccell_empty
+	[electric1_content_wpn_binoc_inv]
+	; If set to true batteries will be given in condition tiers read from axr_battery.ltx. Setting false will disable giving batteries on tiers.
+	load_tiers_from_axr_battery = true
+	succ = skip
+	fail = skip
+[all_electric2]
+[electric2_probabs]
+dp_main 		= 75
+dp_hammer_inv 		= 5
+dp_crowbar 			= 5
+dp_shovel_old 		= 5
+dp_shovel_mili 		= 5
+dp_swiss_sharp 		= 10
+dp_cutlery_sharp 	= 10
+dp_shovel_mili_sharp= 5
+dp_shovel_old_sharp = 5
+dp_grooming_sharp 	= 0
+dp_kit 				= 25
+[electric2_tool_bhv]
+tb_hammer_inv 		= keep
+tb_crowbar 			= keep
+tb_shovel_old 		= keep
+tb_shovel_mili 		= keep
+tb_swiss_sharp 		= blunt_on_probab
+tb_cutlery_sharp 	= blunt_on_probab
+tb_shovel_mili_sharp= keep
+tb_shovel_old_sharp = keep
+tb_grooming_sharp 	= blunt_on_probab
+tb_kit 				= decrease
+	[electric2_content_radio]
+	succ = batteries_dead
+	fail = batteries_dead_empty
+	[electric2_content_radio2]
+	succ = batteries_dead
+	fail = batteries_dead_empty
+	[electric2_content_walkie]
+	succ = batteries_dead
+	fail = batteries_dead_empty
+[all_electric3]
+[electric3_probabs]
+dp_main 		= 50
+dp_hammer_inv 		= 0
+dp_crowbar 			= 0
+dp_shovel_old 		= 0
+dp_shovel_mili 		= 0
+dp_swiss_sharp 		= 0
+dp_cutlery_sharp 	= 0
+dp_shovel_mili_sharp= 0
+dp_shovel_old_sharp = 0
+dp_grooming_sharp 	= 0
+dp_kit 				= 12
+[electric3_tool_bhv]
+tb_hammer_inv 		= keep
+tb_crowbar 			= keep
+tb_shovel_old 		= keep
+tb_shovel_mili 		= keep
+tb_swiss_sharp 		= blunt_on_probab
+tb_cutlery_sharp 	= force_blunt
+tb_shovel_mili_sharp= keep
+tb_shovel_old_sharp = keep
+tb_grooming_sharp 	= force_blunt
+tb_kit 				= decrease
+	[electric3_content_flashlight_old]
+	succ = batteries
+	fail = batteries_empty
+	[electric3_content_flashlight_broken]
+	succ = batteries
+	fail = batteries_empty
+	[electric3_content_device_pda]
+	succ = batteries
+	fail = batteries_empty
+[all_electric4]
+[electric4_probabs]
+dp_main 		= 80
+dp_hammer_inv 		= 10
+dp_crowbar 			= 10
+dp_shovel_old 		= 10
+dp_shovel_mili 		= 10
+dp_swiss_sharp 		= 15
+dp_cutlery_sharp 	= 15
+dp_shovel_mili_sharp= 12
+dp_shovel_old_sharp = 12
+dp_grooming_sharp 	= 1
+dp_kit 				= 20
+[electric4_tool_bhv]
+tb_hammer_inv 		= keep
+tb_crowbar 			= keep
+tb_shovel_old 		= keep
+tb_shovel_mili 		= keep
+tb_swiss_sharp 		= blunt_on_probab
+tb_cutlery_sharp 	= blunt_on_probab
+tb_shovel_mili_sharp= blunt_on_probab
+tb_shovel_old_sharp = blunt_on_probab
+tb_grooming_sharp 	= kill
+tb_kit 				= decrease
+	[electric4_content_device_flashlight]
+	succ = skip
+	fail = skip
+	[electric4_content_device_torch_dummy]
+	succ = skip
+	fail = skip
+	[electric4_content_wpn_upd]
+	; If set to true batteries will be given in condition tiers read from axr_battery.ltx. Setting false will disable giving batteries on tiers.
+	load_tiers_from_axr_battery = true
+	succ = skip
+	fail = skip

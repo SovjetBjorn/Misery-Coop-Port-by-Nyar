@@ -1,0 +1,549 @@
+[up_sect_sv98_podavatel]
+cost = 10800
+value = +10
+misfire_start_condition = -0.01
+misfire_end_condition = -0.015
+condition_shot_dec = -0.0008
+
+[up_sv98_podavatel]
+scheme_index = 0, 0
+known = 1
+effects = vartree_sv98_zatvor
+section = up_sect_sv98_podavatel
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_podavatel_name
+description = st_up_sv98_podavatel_descr
+icon = ui_up_svd_podavatel
+;------------------------------------------svd_zatvor_balanser------------------------------------------
+
+[up_sect_sv98_zatvor_balanser]
+cost = 10800
+value = +20
+PDM_disp_base = -0.08
+cam_dispersion = -0.25
+zoom_cam_dispersion = -0.12
+zoom_cam_dispersion_inc = -0.1
+
+[up_sv98_zatvor_balanser]
+scheme_index = 1, 0
+known = 1
+effects = vartree_sv98_usm
+section = up_sect_sv98_zatvor_balanser
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_zatvor_balanser_name
+description = st_up_sv98_zatvor_balanser_descr
+icon = ui_up_svd_zatvor_balanser
+;------------------------------------------svd_zatvor_reliability------------------------------------------
+
+[up_sect_sv98_zatvor_reliability]
+cost = 10800
+value = +20
+misfire_end_condition = -0.04
+condition_shot_dec = -0.0015
+
+[up_sv98_zatvor_reliability]
+scheme_index = 1, 1
+known = 1
+effects = vartree_sv98_usm
+section = up_sect_sv98_zatvor_reliability
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_zatvor_reliability_name
+description = st_up_sv98_zatvor_reliability_descr
+icon = ui_up_svd_zatvor_reliability
+;------------------------------------------svd_usm_rpm------------------------------------------
+
+[up_sect_sv98_usm_rpm]
+cost = 10800
+value = +50
+rpm = +60
+misfire_start_condition = +0.1
+condition_shot_dec = +0.001
+PDM_disp_base = +0.1
+zoom_cam_dispersion = +0.05
+cam_dispersion = +0.05
+
+[up_sv98_usm_rpm]
+scheme_index = 2, 0
+known = 1
+effects = 
+section = up_sect_sv98_usm_rpm
+property = prop_rpm
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_usm_rpm_name
+description = st_up_sv98_usm_rpm_descr
+icon = ui_up_svd_usm_rpm
+;------------------------------------------svd_usm_accuracy------------------------------------------
+
+[up_sect_sv98_usm_accuracy]
+cost = 25200
+value = +30
+fire_dispersion_base = -0.02
+PDM_disp_base = -0.12
+PDM_disp_crouch = -0.1
+PDM_disp_vel_factor = -2
+PDM_disp_accel_factor = -2.5
+
+cam_dispersion_inc = -0.05
+cam_dispersion = -0.1
+
+zoom_cam_dispersion = -0.05
+zoom_cam_dispersion_inc = -0.05
+
+[up_sv98_usm_accuracy]
+scheme_index = 2, 1
+known = 1
+effects = 
+section = up_sect_sv98_usm_accuracy
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_usm_accuracy_name
+description = st_up_sv98_usm_accuracy_descr
+icon = ui_up_svd_usm_accuracy
+;------------------------------------------svd_usm_reliability------------------------------------------
+
+[up_sect_sv98_usm_reliability]
+cost = 10800
+value = +25
+misfire_start_condition = -0.1
+misfire_end_condition = -0.07
+misfire_start_prob = -0.0001
+misfire_end_prob = -0.001
+condition_shot_dec = -0.0020
+
+[up_sv98_usm_reliability]
+scheme_index = 2, 2
+known = 1
+effects = 
+section = up_sect_sv98_usm_reliability
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_usm_reliability_name
+description = st_up_sv98_usm_reliability_descr
+icon = ui_up_svd_usm_reliability
+;------------------------------------------svd_kompensator------------------------------------------
+
+[up_sect_sv98_kompensator]
+cost = 10800
+value = -15
+cam_dispersion = -0.3
+cam_dispersion_inc = -0.3
+
+PDM_disp_base = -0.05
+
+zoom_cam_dispersion = -0.15
+zoom_cam_dispersion_inc = -0.1
+
+[up_sv98_kompensator]
+scheme_index = 0, 1
+known = 1
+effects = vartree_sv98_tsevie
+section = up_sect_sv98_kompensator
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_kompensator_name
+description = st_up_sv98_kompensator_descr
+icon = ui_up_svd_kompensator
+;------------------------------------------svd_light_tsevie------------------------------------------
+
+[up_sect_sv98_light_tsevie]
+cost = 10800
+value = -0.5
+inv_weight              = -0.5
+control_inertion_factor =  -0.3
+crosshair_inertion = -2
+
+PDM_disp_base = +0.1
+
+[up_sv98_light_tsevie]
+scheme_index = 1, 2
+known = 1
+effects = vartree_sv98_barrel
+section = up_sect_sv98_light_tsevie
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_light_tsevie_name
+description = st_up_sv98_light_tsevie_descr
+icon = ui_up_svd_light_tsevie
+;------------------------------------------svd_gascam------------------------------------------
+
+[up_sect_sv98_gascam]
+cost = 25200
+value = +25
+PDM_disp_base = -0.03
+fire_distance = +100
+bullet_speed = +100
+cam_dispersion = -0.1
+
+[up_sv98_gascam]
+scheme_index = 1, 3
+known = 1
+effects = vartree_sv98_barrel
+section = up_sect_sv98_gascam
+property = prop_bullet_speed
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_gascam_name
+description = st_up_sv98_gascam_descr
+icon = ui_up_svd_gascam
+;------------------------------------------svd_barrel_reliability------------------------------------------
+
+[up_sect_sv98_barrel_reliability]
+cost = 10800
+value = +30
+misfire_start_condition = -0.1
+misfire_end_condition = -0.05
+misfire_start_prob = -0.0001
+misfire_end_prob = -0.001
+condition_shot_dec = -0.0022
+
+[up_sv98_barrel_reliability]
+scheme_index = 2, 3
+known = 1
+effects = 
+section = up_sect_sv98_barrel_reliability
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_barrel_reliability_name
+description = st_up_sv98_barrel_reliability_descr
+icon = ui_up_svd_barrel_reliability
+;------------------------------------------svd_barrel_accuracy------------------------------------------
+
+[up_sect_sv98_barrel_accuracy]
+cost = 25200
+value = +30
+fire_dispersion_base = -0.024
+PDM_disp_base = -0.15
+PDM_disp_vel_factor = -2
+crosshair_inertion = -1
+
+[up_sv98_barrel_accuracy]
+scheme_index = 2, 4
+known = 1
+effects = 
+section = up_sect_sv98_barrel_accuracy
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_barrel_accuracy_name
+description = st_up_sv98_barrel_accuracy_descr
+icon = ui_up_svd_barrel_accuracy
+;------------------------------------------svd_barrel_bullet_speed------------------------------------------
+
+[up_sect_sv98_barrel_bullet_speed]
+cost = 25200
+value = +30
+bullet_speed = +150
+PDM_disp_vel_factor = -1
+fire_distance = +100
+
+[up_sv98_barrel_bullet_speed]
+scheme_index = 2, 5
+known = 1
+effects = 
+section = up_sect_sv98_barrel_bullet_speed
+property = prop_bullet_speed
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_barrel_bullet_speed_name
+description = st_up_sv98_barrel_bullet_speed_descr
+icon = ui_up_svd_barrel_bullet_speed
+;------------------------------------------svd_tilnik------------------------------------------
+
+[up_sect_sv98_tilnik]
+cost = 10800
+value = -10
+cam_dispersion = -0.28
+cam_dispersion_inc = -0.25
+
+zoom_cam_dispersion = -0.08
+zoom_cam_dispersion_inc = -0.1
+
+[up_sv98_tilnik]
+scheme_index = 0, 2
+known = 1
+effects = vartree_sv98_priklad
+section = up_sect_sv98_tilnik
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_tilnik_name
+description = st_up_sv98_tilnik_descr
+icon = ui_up_svd_tilnik
+;------------------------------------------svd_sheka------------------------------------------
+
+[up_sect_sv98_sheka]
+cost = 10800
+value = -20
+cam_dispersion          = -0.7	
+cam_dispersion_inc		= -0.5
+cam_relax_speed         = +2
+
+zoom_cam_dispersion         = -0.3
+zoom_cam_dispersion_inc     = -0.2
+zoom_cam_relax_speed        = +0.2
+
+[up_sv98_sheka]
+scheme_index = 1, 4
+known = 1
+effects = vartree_sv98_pokritie
+section = up_sect_sv98_sheka
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_sheka_name
+description = st_up_sv98_sheka_descr
+icon = ui_up_svd_sheka
+;------------------------------------------svd_light_priklad------------------------------------------
+
+[up_sect_sv98_light_priklad]
+cost = 10800
+value = -1
+inv_weight              = -1
+control_inertion_factor =  -0.5
+
+zoom_cam_dispersion         = +0.1
+cam_dispersion          = +0.2
+
+PDM_disp_vel_factor = -1
+PDM_disp_accel_factor = -1
+
+[up_sv98_light_priklad]
+scheme_index = 1, 5
+known = 1
+effects = vartree_sv98_pokritie
+section = up_sect_sv98_light_priklad
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_light_priklad_name
+description = st_up_sv98_light_priklad_descr
+icon = ui_up_svd_light_priklad
+;------------------------------------------svd_pokritie------------------------------------------
+
+[up_sect_sv98_pokritie]
+cost = 10800
+value = +25
+condition_shot_dec = -0.0025
+fire_dispersion_condition_factor = -2
+
+[up_sv98_pokritie]
+scheme_index = 2, 6
+known = 1
+effects = 
+section = up_sect_sv98_pokritie
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_pokritie_name
+description = st_up_sv98_pokritie_descr
+icon = ui_up_svd_pokritie
+;------------------------------------------svd_sights------------------------------------------
+
+[up_sect_sv98_sights]
+cost = 10800
+value = 0
+crosshair_inertion = -1
+control_inertion_factor = -0.2
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_sv98_sights]
+scheme_index = 0, 3
+known = 1
+effects = 
+section = up_sect_sv98_sights
+property = prop_lightingsights
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_sights_name
+description = st_up_sv98_sights_descr
+icon = ui_up_svd_sights
+;------------------------------------------svd_plastic_mag------------------------------------------
+
+[up_sect_sv98_plastic_mag]
+cost = 16200
+value = -0.1
+inv_weight              = -0.1
+
+[up_sv98_plastic_mag]
+scheme_index = 1, 6
+known = 1
+effects = 
+section = up_sect_sv98_plastic_mag
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_plastic_mag_name
+description = st_up_sv98_plastic_mag_descr
+icon = ui_up_svd_plastic_mag
+;------------------------------------------svd_bayonet------------------------------------------
+
+[up_sect_sv98_bayonet]
+cost = 10800
+value = 0
+overriding_overriding_show_bones = knife
+
+inv_weight              = +0.2
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_sv98_bayonet]
+scheme_index = 2, 7
+known = 1
+effects = 
+section = up_sect_sv98_bayonet
+property = prop_bayonet
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_sv98_bayonet_name
+description = st_up_sv98_bayonet_descr
+icon = ui_up_svd_bayonet
+;------------------------------------------------------------------------------------
+
+[vartree_sv98_podavatel]
+elements = up_sv98_podavatel
+
+[vartree_sv98_zatvor]
+elements = up_sv98_zatvor_balanser, up_sv98_zatvor_reliability
+
+[vartree_sv98_usm]
+elements = up_sv98_usm_rpm, up_sv98_usm_accuracy, up_sv98_usm_reliability
+
+[vartree_sv98_kompensator]
+elements = up_sv98_kompensator
+
+[vartree_sv98_tsevie]
+elements = up_sv98_light_tsevie, up_sv98_gascam
+
+[vartree_sv98_barrel]
+elements = up_sv98_barrel_reliability, up_sv98_barrel_accuracy, up_sv98_barrel_bullet_speed
+
+[vartree_sv98_tilnik]
+elements = up_sv98_tilnik
+
+[vartree_sv98_priklad]
+elements = up_sv98_sheka, up_sv98_light_priklad
+
+[vartree_sv98_pokritie]
+elements = up_sv98_pokritie
+
+[vartree_sv98_sights]
+elements = up_sv98_sights
+
+[vartree_sv98_mag]
+elements = up_sv98_plastic_mag
+
+[vartree_sv98_knife]
+elements = up_sv98_bayonet

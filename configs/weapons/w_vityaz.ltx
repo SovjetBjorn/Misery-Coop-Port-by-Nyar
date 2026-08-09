@@ -1,0 +1,461 @@
+;; Misery_Coop_Port: repoint upgrade tree to sibling w_ak74u (tools\build_upgrade_variants.py)
+[wpn_vityaz]:identity_immunities,weapon_probability,default_weapon_params
+GroupControlSection     = spawn_group
+$spawn					= "weapons\vityaz"                ; option for Level Editor
+$npc                    = on                               ; option for Level Editor
+$prefetch               = 8
+scheduled               = off                                ; option for ALife Simulator
+cform                   = skeleton
+class                   = WP_VAL
+description             = st_wpn_vityaz_descr
+
+ef_main_weapon_type     = 3
+ef_weapon_type          = 7
+
+default_to_ruck         = false
+sprint_allowed       	= true
+
+;-------------------------------------------------------------------------------
+cost                    = 32500
+weapon_class            = assault_rifle        ; Type of the weapon
+inv_weight              = 2.9
+
+upgrades = vartree_ak74u_barrel, vartree_ak74u_tsevie, vartree_ak74u_mag45, vartree_ak74u_sights, vartree_ak74u_priklad, vartree_ak74u_handle, vartree_ak74u_lastochka
+vartree_vityaz_mag_fix, vartree_vityaz_zatvor, vartree_vityaz_rail, vartree_vityaz_handle, vartree_vityaz_sights, vartree_vityaz_mag20, vartree_vityaz_stock
+upgrade_scheme = upgrade_scheme_ak74u
+
+upgrade_scheme_mp5          = body2
+def_hide_bones          = sights, flash, wpn_silencer, laser, line, light, body1
+
+;-TTX-----------------------------------------------------------------------------
+hit_power				= 1
+hit_impulse				= 70
+hit_type				= fire_wound
+
+fire_distance           = 150
+bullet_speed            = 387
+rpm                     = 700
+rpm_empty_click         = 10
+
+use_aim_bullet          = false                ;Поддерживается ли первая суппер пуля
+time_to_aim             = 1.0
+;-------------------------------------------------------------------------------
+
+misfire_probability        = 0.005 ;вероятность осечки при максимальном износе  !!!old - now not working
+;изношенность, при которой появляется шанс осечки
+misfire_start_condition		= 0.6
+;изношеность при которой шанс осечки становится константным
+misfire_end_condition		= 0.1
+;шанс осечки при изношености больше чем misfireStartCondition
+misfire_start_prob	     	= 0.005
+;шанс осечки при изношености больше чем misfireEndCondition
+misfire_end_prob	     	= 0.063
+;увеличение изношености при одиночном выстреле
+condition_shot_dec      	= 0.0011
+;увеличение изношености при выстреле очередью
+condition_queue_shot_dec	= 0.0013
+
+ammo_elapsed            = 30
+ammo_mag_size           = 30
+
+ammo_class              = ammo_9x19_fmj, ammo_9x19_pbp
+fire_modes              = 1, -1
+launch_speed            = 0
+hand_dependence         = 1
+single_handed           = 0
+
+;-------------------------------------------------------------------------------
+;базовая дисперсия
+fire_dispersion_base    = 0.2;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor = 1.2f
+crosshair_inertion		= 6.10
+
+;отдача
+cam_return				= 0
+cam_relax_speed         = 3.5        ;скорость возврата в исходное положение
+cam_relax_speed_ai      = 360		;скорость возврата в исходное положение
+cam_dispersion          = 0.85;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc      = 0.32;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion_frac     = 0.8        ;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
+cam_max_angle           = 50.0        ;максимальный угол отдачи
+cam_max_angle_horz      = 50.0        ;(degree) maximum shot horizontal degree
+cam_step_angle_horz     = 1.5;(degree) size of step camera moved in horizontal position while shooting
+
+PDM_disp_base 				= 0.7
+PDM_disp_vel_factor 		= 1.4
+PDM_disp_accel_factor 		= 1.5
+PDM_disp_crouch	 			= 1.0
+PDM_disp_crouch_no_acc 		= 1.0
+
+zoom_cam_relax_speed        = 3.5    ; scope & ironsight
+zoom_cam_relax_speed_ai     = 120.75
+zoom_cam_dispersion         = 0.48
+zoom_cam_dispersion_inc     = 0.21
+zoom_cam_dispersion_frac    = 1.0
+zoom_cam_max_angle          = 50.0
+zoom_cam_max_angle_horz     = 50.0
+zoom_cam_step_angle_horz    = 1.44
+
+fire_dispersion_condition_factor = 10;увеличение дисперсии в процентах при максимальном износе
+
+;---DOF-------------------------------------------------------------------------
+;zoom_dof					= 0
+reload_dof					= 0
+;-------------------------------------------------------------------------------
+holder_range_modifier   = 2.0                       ; во сколько раз увеличивается eye_range
+holder_fov_modifier     = 1.0              ; во сколько раз увеличивается eye_fov
+
+min_radius              = 10
+max_radius              = 150
+
+hit_probability_gd_novice  = 1.0
+hit_probability_gd_stalker = 1.0
+hit_probability_gd_veteran = 1.0
+hit_probability_gd_master  = 1.0
+;-------------------------------------------------------------------------------
+hud                     = wpn_vityaz_hud
+
+slot                    = 2                ; // secondary
+animation_slot          = 8                ; type of the animation that will be used
+use_third_person_anims  = true               ; нужно ли использовать анимацию на мировой модели оружия / есть ли idle анимация
+
+inv_name                = st_wpn_vityaz
+inv_name_short          = st_wpn_vityaz
+
+inv_grid_width     = 4
+inv_grid_height    = 2
+inv_grid_x         = 25
+inv_grid_y         = 31
+
+
+
+
+upgr_icon_x			= 4454
+upgr_icon_y			= 794
+upgr_icon_width		= 215
+upgr_icon_height   	= 150
+
+kill_msg_x        		= 112
+kill_msg_y        		= 219
+kill_msg_width          = 90
+kill_msg_height      	= 29
+
+;---------------------------------------------------------------------------------
+position                = -0.026, -0.097, 0.0
+orientation             = 0, 0, 0
+
+position_new_anm        = -0.050, -0.073, 0.007
+orientation_new_anm     = 11, -5, 22
+
+fire_point              = 0.000000,0.137000,0.649000
+fire_point2             = 0.0, 0.097, 0.722
+
+;flame_particles        = weapons\generic_weapon05
+smoke_particles         = weapons\generic_shoot_00
+grenade_flame_particles = weapons\generic_weapon01
+
+shell_point             = -0.020000,0.167000,0.082000
+shell_dir               = 0.0, 0.0, 0.4
+shell_particles         = weapons\generic_shells_r
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+;под мишкой
+strap_position          = -0.26,-0.11,0.25                        	; position (offset) and orientation of the weapon when it is strapped
+strap_orientation       = -15,-9,110                                	; (3rd person view in degrees)
+strap_bone0             = bip01_spine2
+strap_bone1             = bip01_spine1
+
+startup_ammo            = 90
+visual                  = dynamics\weapons\wpn_vityaz\wpn_vityaz.ogf
+
+light_disabled			= true
+light_color             = 0.6,0.5,0.3
+light_range             = 0.01
+light_var_color         = 0.05
+light_var_range         = 0.5
+light_time              = 0.2
+
+ph_mass                 = 4
+
+;addons
+scope_status            = 0
+silencer_status         = 2
+grenade_launcher_status = 0
+
+scopes_sect =
+
+zoom_enabled			= true
+zoom_rotate_time		= 0.25
+scope_zoom_factor	    = 85
+
+silencer_name           = wpn_addon_silencer
+silencer_x                  = 166		; offset in inventory icon
+silencer_y                  = 11
+grenade_launcher_name   = wpn_addon_grenade_launcher_m203
+
+;звуки
+snd_draw                = weapons\val\mechanics\val_draw
+snd_holster             = weapons\ak74u\mechanics\ak74u_hide
+snd_shoot = weapons\extra\vityaz\f0
+
+
+snd_empty               = weapons\ak74u\mechanics\ak74u_dry_1
+snd_empty1              = weapons\ak74u\mechanics\ak74u_dry_2
+snd_empty2              = weapons\ak74u\mechanics\ak74u_dry_3
+snd_reload              = weapons\vityaz\vityaz_reload
+snd_reload_empty        = weapons\vityaz\vityaz_reload_empty
+snd_aim_start           = weapons\ak74\mechanics\ak74_aim_start
+snd_aim_end             = weapons\ak74\mechanics\ak74_aim_end
+snd_reload_jammed       = weapons\vityaz\vityaz_misfire
+snd_reload_jammed_last  = weapons\vityaz\vityaz_misfire
+snd_switch_firemode     = weapons\ak74\mechanics\ak74_firemode_1
+snd_switch_firemode1    = weapons\ak74\mechanics\ak74_firemode_2
+snd_jammed_click        = weapons\ak74u\mechanics\ak74u_check
+
+;silencer_flame_particles      = weapons\generic_weapon01
+silencer_smoke_particles       = weapons\generic_shoot_00
+
+snd_silncer_shot = weapons\extra\vityaz\s0
+
+;snd_shoot_start                = weapons\mp5\layers\mp5_shoot_a_1
+;snd_shoot_start1               = weapons\mp5\layers\mp5_shoot_a_2
+;snd_shoot_start2               = weapons\mp5\layers\mp5_shoot_a_3
+;snd_silencer_shoot_start       = weapons\mp5sd\layers\mp5sd_shoot_a_1
+;snd_silencer_shoot_start1      = weapons\mp5sd\layers\mp5sd_shoot_a_2
+;snd_silencer_shoot_start2      = weapons\mp5sd\layers\mp5sd_shoot_a_3
+
+;snd_shoot_loop                 = weapons\mp5\layers\mp5_loop_a
+;snd_shoot_loop_tail            = weapons\mp5\layers\mp5_tail_a_1
+;snd_shoot_loop_tail1           = weapons\mp5\layers\mp5_tail_a_2
+;snd_shoot_loop_tail2           = weapons\mp5\layers\mp5_tail_a_3
+
+;snd_silencer_shoot_loop        = weapons\mp5sd\layers\mp5sd_loop_a
+;snd_silencer_shoot_loop_tail   = weapons\mp5sd\layers\mp5sd_tail_a_1
+;snd_silencer_shoot_loop_tail1  = weapons\mp5sd\layers\mp5sd_tail_a_2
+;snd_silencer_shoot_loop_tail2  = weapons\mp5sd\layers\mp5sd_tail_a_3
+
+silencer_light_color    = 0.6,0.5,0.3
+silencer_light_range    = 0.01
+silencer_light_var_color= 0.05
+silencer_light_var_range= 0.5
+silencer_light_time     = 0.2
+
+wanm_idle_empty = idle
+wanm_shoot_last = shoot
+
+[wpn_vityaz_hud]:hud_base
+zoom_hide_crosshair	= true
+attach_place_idx	= 0
+item_visual		    = dynamics\weapons\wpn_vityaz\wpn_vityaz_hud.ogf
+
+hud_fov        = 0.85
+hud_fov_zoom   = 0.7
+
+zoom_dof_near  = 0
+zoom_dof_focus = 0
+
+
+hud_recalc_koef = 1.6
+
+inertion_pitch_offset_r = -0.008
+inertion_pitch_offset_n = -0.006
+inertion_pitch_offset_d = -0.001
+inertion_origin_offset = 0.06
+
+inertion_aim_origin_offset = 0.015
+inertion_aim_speed = 10
+
+hands_position				= -0.030500,0.031000,-0.350997
+hands_orientation			= 0.000000,0.000000,0.000000
+
+hands_position_16x9         = -0.030500,0.031000,-0.350997
+hands_orientation_16x9      = 0.000000,0.000000,0.000000
+
+aim_hud_offset_pos          = -0.007500,0.024000,0.031000
+aim_hud_offset_rot          = -0.003500,0.000000,0.000000
+
+aim_hud_offset_pos_16x9     = -0.007500,0.024000,0.031000
+aim_hud_offset_rot_16x9     = -0.003500,0.000000,0.000000
+
+item_position		= 0.0,0.0,0.0
+item_orientation	= 0.0,0.0,0.0
+
+gl_hud_offset_pos   = 0,0,0
+gl_hud_offset_rot	= 0,0,0
+
+lean_hud_offset_pos	= 0,0,0
+lean_hud_offset_rot	= 0,0,0
+
+grenade_bone    = grenade
+
+shell_point		= 0.0,-9.0,0.0
+shell_dir       = 0.0, 0.0, 0.0
+shell_bone		= wpn_body
+
+fire_point		= 0.0,-0.01,0.532
+fire_bone      	= wpn_body
+fire_point2		= 0.0,-0.01,0.532
+fire_bone2		= wpn_body
+
+disable_bore    = true                                            ;отключение анимации скуки
+
+;Доставание///////////////////////////////////////////////////
+anm_show                   = vityaz_draw
+anm_show_empty             = vityaz_draw, reload_empty
+anm_show_jammed            = vityaz_draw, idle_jammed
+
+;Убирание/////////////////////////////////////////////////////
+anm_hide                   = vityaz_hide
+anm_hide_empty             = vityaz_hide, reload_empty
+anm_hide_jammed            = vityaz_hide, idle_jammed
+
+;Бездействие//////////////////////////////////////////////////
+anm_idle                            = vityaz_idle, idle
+anm_idle_empty                      = vityaz_idle, reload_empty
+anm_idle_jammed                     = vityaz_idle, idle_jammed
+
+;Бездействие в прицеливании///////////////////////////////////
+anm_idle_aim_start             = vityaz_aim_start, idle
+anm_idle_aim_start_empty       = vityaz_aim_start, reload_empty
+anm_idle_aim_start_jammed      = vityaz_aim_start, idle_jammed
+
+anm_idle_aim                   = vityaz_aim, idle
+anm_idle_aim_empty             = vityaz_aim, reload_empty
+anm_idle_aim_jammed            = vityaz_aim, idle_jammed
+anm_idle_aim_scope             = vityaz_aim, idle
+anm_idle_aim_scope_empty       = vityaz_aim, reload_empty
+anm_idle_aim_scope_jammed      = vityaz_aim, idle_jammed
+
+anm_idle_aim_end               = vityaz_aim_end, idle
+anm_idle_aim_end_empty         = vityaz_aim_end, reload_empty
+anm_idle_aim_end_jammed        = vityaz_aim_end, idle_jammed
+
+enable_directions_anm_idle_aim = true
+
+;Ходьба ВПЕРЕД//////////////////////////////////////////////////////////////////////////
+anm_idle_moving 					    = vityaz_walk, idle
+anm_idle_moving_jammed 					= vityaz_walk, idle_jammed
+anm_idle_moving_empty					= vityaz_walk, reload_empty
+
+;Ходьба медленная (SHIFT) ВПЕРЕД//////////////////////////////////////////////////////////////////////////
+anm_idle_moving_slow 					= vityaz_walk_slow, idle
+anm_idle_moving_slow_jammed 			= vityaz_walk_slow, idle_jammed
+anm_idle_moving_slow_empty				= vityaz_walk_slow, reload_empty
+
+;Ходьба в полуприсяди (CTRL) ВПЕРЕД//////////////////////////////////////////////////////////////////////////
+anm_idle_moving_crouch 					        = vityaz_walk_slow_down, idle
+anm_idle_moving_crouch_jammed 					= vityaz_walk_slow_down, idle_jammed
+anm_idle_moving_crouch_empty					= vityaz_walk_slow_down, reload_empty
+
+;Ходьба в присяде (CTRL+SHIFT) ВПЕРЕД/////////////////////////////////////////////////////////////////////////
+anm_idle_moving_crouch_slow 					= vityaz_walk_slow_super, idle
+anm_idle_moving_crouch_slow_jammed 				= vityaz_walk_slow_super, idle_jammed
+anm_idle_moving_crouch_slow_empty				= vityaz_walk_slow_super, reload_empty
+
+;ходьба в прицеливании ВПЕРЕД//////////////////////////////////////////////////////////////////
+anm_idle_aim_moving_forward                   = vityaz_aim_walk, idle
+anm_idle_aim_moving_forward_empty             = vityaz_aim_walk, reload_empty
+anm_idle_aim_moving_forward_jammed            = vityaz_aim_walk, idle_jammed
+
+;ходьба в прицеливании НАЗАД//////////////////////////////////////////////////////////////////
+anm_idle_aim_moving_back                   = vityaz_aim_walk, idle
+anm_idle_aim_moving_back_empty             = vityaz_aim_walk, reload_empty
+anm_idle_aim_moving_back_jammed            = vityaz_aim_walk, idle_jammed
+
+
+;ходьба в прицеливании ВЛЕВО//////////////////////////////////////////////////////////////////
+anm_idle_aim_moving_left                   = vityaz_aim_walk_left, idle
+anm_idle_aim_moving_left_empty             = vityaz_aim_walk_left, reload_empty
+anm_idle_aim_moving_left_jammed            = vityaz_aim_walk_left, idle_jammed
+
+
+;ходьба в прицеливании ВПРАВО//////////////////////////////////////////////////////////////////
+anm_idle_aim_moving_right                   = vityaz_aim_walk_right, idle
+anm_idle_aim_moving_right_empty             = vityaz_aim_walk_right, reload_empty
+anm_idle_aim_moving_right_jammed            = vityaz_aim_walk_right, idle_jammed
+ 
+
+;ходьба в прицеливании ВПЕРЕД+ВЛЕВО////////////////////////////////////////////////////////////
+anm_idle_aim_moving_forward_left                   = vityaz_aim_walk_left, idle
+anm_idle_aim_moving_forward_left_empty             = vityaz_aim_walk_left, reload_empty
+anm_idle_aim_moving_forward_left_jammed            = vityaz_aim_walk_left, idle_jammed
+
+
+;ходьба в прицеливании ВПЕРЕД+ВПРАВО///////////////////////////////////////////////////////////
+anm_idle_aim_moving_forward_right                   = vityaz_aim_walk_right, idle
+anm_idle_aim_moving_forward_right_empty             = vityaz_aim_walk_right, reload_empty
+anm_idle_aim_moving_forward_right_jammed            = vityaz_aim_walk_right, idle_jammed
+
+
+;ходьба в прицеливании НАЗАД+ВЛЕВО/////////////////////////////////////////////////////////////
+anm_idle_aim_moving_back_left                   = vityaz_aim_walk_left, idle
+anm_idle_aim_moving_back_left_empty             = vityaz_aim_walk_left, reload_empty
+anm_idle_aim_moving_back_left_jammed            = vityaz_aim_walk_left, idle_jammed
+
+;ходьба в прицеливании НАЗАД+ВПРАВО////////////////////////////////////////////////////////////
+anm_idle_aim_moving_back_right                   = vityaz_aim_walk_right, idle
+anm_idle_aim_moving_back_right_empty             = vityaz_aim_walk_right, reload_empty
+anm_idle_aim_moving_back_right_jammed            = vityaz_aim_walk_right, idle_jammed
+
+;ходьба в прицеливании при надетом прицеле////////////////////////////////////////////////////
+anm_idle_aim_scope_moving	              = vityaz_aim_walk, idle
+anm_idle_aim_scope_moving_empty		      = vityaz_aim_walk, reload_empty
+anm_idle_aim_scope_moving_jammed	      = vityaz_aim_walk, idle_jammed
+
+
+;Бег//////////////////////////////////////////////////////////////////
+anm_idle_sprint_start             = vityaz_sprint_start, idle
+anm_idle_sprint_start_empty       = vityaz_sprint_start, reload_empty
+anm_idle_sprint_start_jammed      = vityaz_sprint_start, idle_jammed
+
+
+anm_idle_sprint                   = vityaz_sprint, idle
+anm_idle_sprint_empty             = vityaz_sprint, reload_empty
+anm_idle_sprint_jammed            = vityaz_sprint, idle_jammed
+
+anm_idle_sprint_end             = vityaz_sprint_end, idle
+anm_idle_sprint_end_empty       = vityaz_sprint_end, reload_empty
+anm_idle_sprint_end_jammed      = vityaz_sprint_end, idle_jammed
+
+
+;Скука////////////////////////////////////////////////////////////////////
+anm_bore                   = vityaz_draw, idle
+anm_bore_empty             = vityaz_draw, reload_empty
+anm_bore_jammed            = vityaz_draw, idle_jammed
+
+;Выстрелы обычными патронами/////////////////////////////////////////////////////////////////////
+anm_shoot                = vityaz_shoot, shoot
+anm_shoot_jammed	     = vityaz_shoot, idle_jammed
+anm_shoot_last           = vityaz_shoot, shoot
+anm_shoot_aim            = vityaz_aim_shoot, shoot
+anm_shoot_aim_jammed	 = vityaz_aim_shoot, shoot
+anm_shoot_aim_last       = vityaz_aim_shoot, shoot
+anm_shoot_aim_scope      = vityaz_aim_shoot, shoot
+anm_shoot_aim_scope_last = vityaz_aim_shoot, shoot
+anm_shoot_aim_scope_jammed   = vityaz_aim_shoot, idle_jammed
+
+;Осечка//////////////////////////////////////////////////
+anm_fakeshoot_empty          = vityaz_dry_empty, reload_empty
+anm_fakeshoot_aim_empty      = vityaz_dry_empty, reload_empty
+anm_fakeshoot_jammed         = vityaz_dry, idle_jammed
+anm_fakeshoot_aim_jammed     = vityaz_dry, idle_jammed
+
+;Перезарядка/////////////////////////////////////////////////////////////////////
+anm_reload                           = vityaz_reload, reload
+anm_reload_empty                     = vityaz_reload_empty, reload_empty
+anm_reload_jammed                    = vityaz_revival, revival
+anm_reload_jammed_last               = vityaz_revival, revival
+
+;Смена режима огня//////////////////////////////////////////////////////////////////////////
+use_firemode_change_anim = true
+
+;из одиночных в автоматический
+anm_changefiremode_from_1_to_-1			         = vityaz_firemode, idle
+anm_changefiremode_from_1_to_-1_jammed		     = vityaz_firemode, idle_jammed
+anm_changefiremode_from_1_to_-1_empty		     = vityaz_firemode, reload_empty
+
+
+;из автоматического в одиночные
+anm_changefiremode_from_-1_to_1			         = vityaz_firemode, idle
+anm_changefiremode_from_-1_to_1_jammed		     = vityaz_firemode, idle_jammed
+anm_changefiremode_from_-1_to_1_empty		     = vityaz_firemode, reload_empty

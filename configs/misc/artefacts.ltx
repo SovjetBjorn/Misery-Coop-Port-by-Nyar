@@ -1,0 +1,143 @@
+;; Misery_Coop_Port reduced copy of XRAY patches\configs\misc\artefacts.ltx - sections now owned by Misery item subfiles removed: 57 (tools\build_items.py)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Artefacts
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;-------------------------------------------------------------------------------
+;Лист всех существующих моделей
+;-------------------------------------------------------------------------------
+;dynamics\artefacts\af_baloon.ogf
+;dynamics\artefacts\af_blood.ogf
+;dynamics\artefacts\af_cristall.ogf
+;dynamics\artefacts\af_cristall_flower.ogf
+;dynamics\artefacts\af_dummy_battery.ogf
+;dynamics\artefacts\af_dummy_dummy.ogf
+;dynamics\artefacts\af_dummy_glassbeads.ogf
+;dynamics\artefacts\af_electra_flash.ogf
+;dynamics\artefacts\af_electra_moonlight.ogf
+;dynamics\artefacts\af_electra_sparkler.ogf
+;dynamics\artefacts\af_eye.ogf
+;dynamics\artefacts\af_fire.ogf
+;dynamics\artefacts\af_fireball.ogf
+;dynamics\artefacts\af_fuzz_kolobok.ogf
+;dynamics\artefacts\af_glass.ogf
+;dynamics\artefacts\af_gold_fish.ogf
+;dynamics\artefacts\af_gravi.ogf
+;dynamics\artefacts\af_ice.ogf
+;dynamics\artefacts\af_medusa.ogf
+;dynamics\artefacts\af_mincer_meat.ogf
+;dynamics\artefacts\af_night_star.ogf
+;dynamics\artefacts\af_soul.ogf
+;dynamics\artefacts\af_vyvert.ogf
+;dynamics\artefacts\artefact_electra_blue.ogf
+;dynamics\artefacts\artefact_electra_green.ogf
+;-------------------------------------------------------------------------------
+
+;Артефакты, которые при активизации создают аномальные зоны
+;формат: {секция_артефакта} = {секция_зоны},Radius,Power
+[af_mica]:af_base
+$spawn 				= "artefacts\acidic_7_mica"
+class   			= ARTEFACT
+
+visual				= dynamics\artefacts\af_mica.ogf
+description			= st_af_mica_descr
+inv_name			= st_af_mica_name
+inv_name_short		= st_af_mica_name
+inv_weight			= 0.5
+
+inv_grid_x			= 13
+inv_grid_y			= 0
+cost				= 5000
+jump_height			= .1
+
+particles				= artefact\af_acidic_idle
+det_show_particles		= artefact\af_acidic_show
+det_hide_particles		= artefact\af_acidic_hide
+
+af_rank				= 3
+
+lights_enabled = true
+
+trail_light_color 		= 0.6,0.7,0.6
+trail_light_range 		= 1.0
+
+
+;скорости увеличения (уменьшения)
+health_restore_speed		= 0.0
+radiation_restore_speed		= 0.0
+satiety_restore_speed		= 0.0
+power_restore_speed			= 0.0
+bleeding_restore_speed		= 0.12
+
+additional_inventory_weight		= 0
+additional_inventory_weight2	= 0
+
+hit_absorbation_sect = af_mica_absorbation
+
+[af_mica_absorbation]
+burn_immunity 			= -0.001				;коэффициенты иммунитета
+strike_immunity 		= 0
+shock_immunity 			= 0
+wound_immunity 			= 0
+radiation_immunity 		= 0
+telepatic_immunity 		= 0
+chemical_burn_immunity 	= -0.001
+explosion_immunity 		= 0
+fire_wound_immunity  	= 0
+
+;------------------------------------------------------------------------------------------
+;------------------ Артефакты для электрической аномалии ----------------------------------
+;------------------------------------------------------------------------------------------
+
+[af_compass1]:af_base
+$spawn 				= "artefacts\compass1"
+class   			= SCRPTART
+
+visual				= dynamics\artefacts\af_compass.ogf
+description			= st_compass_descr
+inv_name			= st_compass
+inv_name_short		= st_compass
+inv_weight			= 0.5
+
+inv_grid_x			= 12
+inv_grid_y			= 1
+jump_height			= .2
+
+cost				= 22000	;200
+
+particles				= artefact\af_electra_idle
+det_show_particles		= artefact\af_electra_show
+det_hide_particles		= artefact\af_electra_hide
+
+af_rank				= 0
+
+lights_enabled = true
+
+trail_light_color 		= 1.0,1.0,0.75 ;1.0,0.9,0.5
+trail_light_range 		= 2.0
+
+can_trade			= false
+
+quest_item 			= false
+
+;скорости увеличения (уменьшения)
+health_restore_speed = 0
+radiation_restore_speed = 0
+satiety_restore_speed = 0
+power_restore_speed = 0.01
+bleeding_restore_speed = 0
+hit_absorbation_sect = af_compass_absorbation1
+
+[af_compass_absorbation1]
+burn_immunity 	= 0.02				;коэффициенты иммунитета
+strike_immunity = 0
+shock_immunity 	= 0.05
+wound_immunity 	= 0
+radiation_immunity = 0
+telepatic_immunity = 0.01
+chemical_burn_immunity = 0.02
+explosion_immunity = 0
+fire_wound_immunity  = 1
+
+;------------------------------------------------------------------------------------------
+

@@ -1,0 +1,305 @@
+-- mc_player_state.script
+-- Misery Coop Port: per-player persistent state.
+-- PORT_NOTES: new file. Server keeps {player_key -> vars}; persisted via the
+-- port-layer game_sv.script shadow (save/load appended after num_saves byte).
+-- Clients cache their own vars, mirror them into the local actor's pstor so
+-- ported Misery code reading xr_logic.pstor_retrieve(actor, name) works
+-- unchanged, and push dirty vars to the server every FLUSH_PERIOD ms.
+-- Reconnect/late-join restore rides the HELLO handshake (GM_MC_STATE_RESTORE),
+-- not PackStartGameInfo.
+
+local FLUSH_PERIOD = 10000 -- ms
+-- Max per-player vars written into ONE reliable net message. The xrMPE reliable
+-- packet has a hard size cap (see docs/ENGINE_SURFACE.md); STATE_RESTORE/PUSH are
+-- chunked into >=1 messages of at most CHUNK vars each so Phase 4's per-player var
+-- set can grow without overflowing a single packet. ~25 bytes/var * 48 ~= 1.2 KB.
+local CHUNK = 48
+
+----------------------------------------------------------------------
+-- Server side
+----------------------------------------------------------------------
+
+-- players[player_key] = { vars = {name=value}, last_actor_id = n }
+local players = {}
+-- session_map[actor_id] = player_key  (server-authoritative key for each session)
+local session_map = {}
+
+-- True if `k` is currently bound to a DIFFERENT live actor than `this_actor`.
+-- Used to disambiguate nickname collisions so two same-named players never share
+-- one state bucket.
+local function key_held_by_other(k, this_actor)
+	local e = players[k]
+	return e ~= nil and e.last_actor_id ~= nil and e.last_actor_id ~= this_actor
+		and db.mp_actors[e.last_actor_id] ~= nil
+end
+
+function sv_on_hello(packet)
+	local actor_id = packet:r_u16()
+	local key = packet:r_stringZ()
+	local proto = packet:r_u8()
+
+	if proto ~= mc_core.MC_PROTO_VERSION then
+		mc_core.mc_log("! hello proto mismatch: got %s want %s", tostring(proto), tostring(mc_core.MC_PROTO_VERSION))
+		return
+	end
+
+	-- player_key() is the nickname -- the only identity stable across reconnect on
+	-- this engine (no exposed account/GameID for private coop). To stop two players
+	-- with the SAME nickname from silently merging state, the server disambiguates a
+	-- LIVE collision: the first holder keeps the plain nickname (and its persistence
+	-- + reconnect-restore); a concurrent duplicate gets a session-isolated key.
+	local eff_key = key
+	if key_held_by_other(eff_key, actor_id) then
+		local suffix = 1
+		repeat
+			suffix = suffix + 1
+			eff_key = key .. "#" .. tostring(suffix)
+		until not key_held_by_other(eff_key, actor_id)
+		mc_core.mc_log("! nickname '%s' already live -> isolating actor %s as '%s'", key, tostring(actor_id), eff_key)
+	end
+
+	if players[eff_key] == nil then
+		players[eff_key] = { vars = {} }
+	end
+	players[eff_key].last_actor_id = actor_id
+	session_map[actor_id] = eff_key
+
+	mc_core.mc_log("hello: actor %s key '%s'", tostring(actor_id), eff_key)
+	send_restore(actor_id, eff_key)
+end
+
+function sv_on_state_push(packet)
+	local actor_id = packet:r_u16()
+	local cli_key = packet:r_stringZ()
+	local n = packet:r_u16()
+
+	-- the server is authoritative on the key (set at HELLO, with collision
+	-- disambiguation); trust session_map over the client-sent nickname so a
+	-- disambiguated duplicate pushes into its own isolated bucket. Fall back to the
+	-- client key only if no HELLO was seen for this actor yet.
+	local key = session_map[actor_id]
+	if key == nil then
+		key = cli_key
+		if players[key] == nil then
+			players[key] = { vars = {}, last_actor_id = actor_id }
+		end
+		session_map[actor_id] = key
+	end
+
+	local vars = players[key].vars
+	for i = 1, n do
+		local name = packet:r_stringZ()
+		vars[name] = mc_core.read_typed_value(packet)
+	end
+
+	mc_core.mc_log("push: %s vars from actor %s key '%s'", tostring(n), tostring(actor_id), key)
+end
+
+function send_restore(actor_id, key)
+	local entry = players[key]
+	if entry == nil then
+		return
+	end
+
+	-- order vars into an array so chunk boundaries are deterministic
+	local names = {}
+	for name in pairs(entry.vars) do
+		names[#names + 1] = name
+	end
+	local total = #names
+
+	-- emit ceil(total/CHUNK) messages (>=1, so an empty set still sends a terminal
+	-- chunk that flips the client's `restored` flag). last==1 marks the final chunk.
+	local i = 1
+	repeat
+		local this = total - i + 1
+		if this > CHUNK then this = CHUNK end
+		if this < 0 then this = 0 end
+		local last = (i + this > total) and 1 or 0
+		local packet = mc_net.new_message(mc_core.GM_MC_STATE_RESTORE)
+		packet:w_u8(mc_core.MC_PROTO_VERSION)
+		packet:w_u8(last)
+		packet:w_u16(this)
+		for j = i, i + this - 1 do
+			local name = names[j]
+			packet:w_stringZ(name)
+			mc_core.write_typed_value(packet, entry.vars[name])
+		end
+		mc_net.send_to_client(packet, actor_id)
+		i = i + this
+	until i > total
+
+	mc_core.mc_log("restore sent: %s vars to actor %s key '%s' (chunked)", tostring(total), tostring(actor_id), key)
+end
+
+-- Persistence: called from the port-layer game_sv.script shadow.
+function save(packet)
+	packet:w_u8(mc_core.MC_SAVE_VERSION)
+
+	local count = 0
+	for _ in pairs(players) do
+		count = count + 1
+	end
+	packet:w_u16(count)
+
+	for key, entry in pairs(players) do
+		packet:w_stringZ(key)
+		local n = 0
+		for _ in pairs(entry.vars) do
+			n = n + 1
+		end
+		packet:w_u16(n)
+		for name, val in pairs(entry.vars) do
+			packet:w_stringZ(name)
+			mc_core.write_typed_value(packet, val)
+		end
+	end
+
+	mc_core.mc_log("save: %s players", tostring(count))
+end
+
+function load(packet)
+	local version = packet:r_u8()
+	if version ~= mc_core.MC_SAVE_VERSION then
+		mc_core.mc_log("! save version mismatch: got %s want %s - skipping", tostring(version), tostring(mc_core.MC_SAVE_VERSION))
+		return
+	end
+
+	players = {}
+	session_map = {}
+
+	local count = packet:r_u16()
+	for i = 1, count do
+		local key = packet:r_stringZ()
+		local entry = { vars = {} }
+		local n = packet:r_u16()
+		for j = 1, n do
+			local name = packet:r_stringZ()
+			entry.vars[name] = mc_core.read_typed_value(packet)
+		end
+		players[key] = entry
+	end
+
+	mc_core.mc_log("load: %s players", tostring(count))
+end
+
+----------------------------------------------------------------------
+-- Client side
+----------------------------------------------------------------------
+
+local client_vars = {}
+local dirty = {}
+local has_dirty = false
+local last_flush = 0
+local restored = false
+
+local function mirror_to_pstor(name, val)
+	local actor = mc_core.local_actor()
+	if actor ~= nil then
+		xr_logic.pstor_store(actor, name, val)
+	end
+end
+
+function set(name, val)
+	client_vars[name] = val
+	dirty[name] = true
+	has_dirty = true
+	mirror_to_pstor(name, val)
+end
+
+function get(name, def)
+	local val = client_vars[name]
+	if val == nil then
+		return def
+	end
+	return val
+end
+
+function is_restored()
+	return restored
+end
+
+function cl_on_state_restore(packet)
+	local proto = packet:r_u8()
+	if proto ~= mc_core.MC_PROTO_VERSION then
+		mc_core.mc_log("! restore proto mismatch: got %s", tostring(proto))
+		return
+	end
+
+	local last = packet:r_u8()
+	local n = packet:r_u16()
+	for i = 1, n do
+		local name = packet:r_stringZ()
+		local val = mc_core.read_typed_value(packet)
+		client_vars[name] = val
+		mirror_to_pstor(name, val)
+	end
+
+	-- restore arrives as >=1 chunks; only the final chunk (last==1) marks complete
+	if last == 1 then
+		restored = true
+		mc_core.mc_log("restore complete (final chunk had %s vars)", tostring(n))
+	end
+end
+
+function send_hello()
+	local key = mc_core.player_key()
+	if key == nil then
+		return false
+	end
+
+	local packet = mc_net.new_message(mc_core.GM_MC_CLIENT_HELLO)
+	packet:w_u16(LocalActor())
+	packet:w_stringZ(key)
+	packet:w_u8(mc_core.MC_PROTO_VERSION)
+	mc_net.send_to_server(packet)
+
+	mc_core.mc_log("hello sent: actor %s key '%s'", tostring(LocalActor()), key)
+	return true
+end
+
+function flush(force)
+	if not has_dirty then
+		return
+	end
+
+	local now = time_global()
+	if not force and now - last_flush < FLUSH_PERIOD then
+		return
+	end
+	last_flush = now
+
+	local key = mc_core.player_key()
+	if key == nil then
+		return
+	end
+
+	-- order dirty vars into an array, then push in CHUNK-sized messages (same cap
+	-- reasoning as send_restore). Each push chunk is independent server-side.
+	local names = {}
+	for name in pairs(dirty) do
+		names[#names + 1] = name
+	end
+	local total = #names
+
+	local i = 1
+	while i <= total do
+		local this = total - i + 1
+		if this > CHUNK then this = CHUNK end
+		local packet = mc_net.new_message(mc_core.GM_MC_STATE_PUSH)
+		packet:w_u16(LocalActor())
+		packet:w_stringZ(key)
+		packet:w_u16(this)
+		for j = i, i + this - 1 do
+			local name = names[j]
+			packet:w_stringZ(name)
+			mc_core.write_typed_value(packet, client_vars[name])
+		end
+		mc_net.send_to_server(packet)
+		i = i + this
+	end
+
+	dirty = {}
+	has_dirty = false
+	mc_core.mc_log("flush: %s vars pushed (chunked)", tostring(total))
+end

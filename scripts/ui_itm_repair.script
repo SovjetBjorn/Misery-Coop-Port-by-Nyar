@@ -1,0 +1,1048 @@
+-- PORT_NOTES (Misery_Coop_Port, tools/build_cooking.py) -- coop-adapted
+-- Misery repair UI, coop. Same shape as the cook UI (parses the deployed
+-- ui_itm_main.xml, runs client-side reading the local player's inventory +
+-- item conditions). The REPAIR itself is obj:set_condition() = CLIENT-side and
+-- PERSISTS in coop (proven: axr_battery/death_manager/fallout_manager all
+-- set_condition on the client). The only server ops are the tool charge-down
+-- (the LOCAL give() = alife:create) and the part/tool consume (alife:release)
+-- -> routed through the mc_cooking item-wear RPC. blanket: db.actor->
+-- getLocalActor, alife():object->level.object_by_id, :section_name->:section.
+
+-- ui_itm_repair -- Alundaio -- ponney68
+-- Copyright (C) 2012 Alundaio   This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
+-- Items Refunct Mod, Plaargath
+-----------------------------------------------------------------
+class "load_item" (CUIListBoxItem)
+function load_item:__init(height) super(height)
+	self.file_name		= "filename"
+	self:SetTextColor(GetARGB(255, 170, 170, 170))
+	self.fn = self:GetTextItem()
+	self.fn:SetFont(GetFontLetterica18Russian())
+	self.fn:SetEllipsis(true)
+end
+function load_item:__finalize()
+end
+-----------------------------------------------------------------
+class "repair_ui" (CUIScriptWnd)
+
+function repair_ui:__init(owner,section) super()
+	self.owner = owner
+	self.section = section
+
+	self.min_condition = alun_utils.read_from_ini(nil,section,"repair_min_condition","float",0)
+	self.max_condition = alun_utils.read_from_ini(nil,section,"repair_max_condition","float",0)
+	self.add_condition = alun_utils.read_from_ini(nil,section,"repair_add_condition","float",0)
+	self.part_bonus = alun_utils.read_from_ini(nil,section,"repair_part_bonus","float",0)
+	self.use_parts = alun_utils.read_from_ini(nil,section,"repair_use_parts","bool",false)
+	self.repair_type = alun_utils.read_from_ini(nil,section,"repair_type","string","weapon")
+
+	self.repair_only = alun_utils.parse_list(nil,section,"repair_only",true)
+	self.repair_refuse = alun_utils.parse_list(nil,section,"repair_refuse",true)
+
+	self.parts_include = alun_utils.parse_list(nil,section,"repair_parts_include",true)
+	self.parts_exclude = alun_utils.parse_list(nil,section,"repair_parts_exclude",true)
+	
+	self.repair_ammo = alun_utils.parse_list(nil,section,"repair_ammo",true) -- KCS - new value readed from "items_repair.ltx"
+
+	self.use_actor_effects = alun_utils.read_from_ini(nil,section,"repair_use_actor_effects","bool",false)
+
+	-- Items refunct mod, Plaargath
+	local ini = ini_file("plugins\\itms_manager.ltx")
+	self.sharpening_tools = alun_utils.collect_section(ini,"sharpening_tools",true)
+	self.knives_list = alun_utils.collect_section(ini,"sharpen_knives_list",true)
+	self.axes_list = alun_utils.collect_section(ini,"sharpen_axes_list",true)
+	self.noncon_targets = alun_utils.collect_section(ini,"noncon_sharpening_targets_list",true)
+	self.sharpen_1use_targets = alun_utils.collect_section(ini,"sharpen_1use_targets",true)
+	self.sharpen_2use_targets = alun_utils.collect_section(ini,"sharpen_2use_targets",true)
+	self:LoadKogotProbabsFromConfig()
+	self.empty_kits_enabled = alun_utils.read_from_ini(ini,"items_refunct_mod","empty_kits_enable","bool",true)
+	-- end Plaargath
+
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function repair_ui:__finalize()
+end
+
+function repair_ui:LoadKogotProbabsFromConfig() -- Items refunct mod, Plaargath
+	local function read_float_from_line(line)
+		return ini_file("plugins\\itms_manager.ltx"):r_float("sharpening_config",line)
+	end
+	-- (1) Read probability (in %) of keeping the chimera_kogot tool intact after sharpening target:
+
+	-- NON CONDITION TARGETS (TOOLS)
+	-- uses x1 targets
+	self.kogot_swiss_probab = read_float_from_line("kogot_swiss_probab")
+	self.kogot_cutlery_probab = read_float_from_line("kogot_cutlery_probab")
+	self.kogot_grooming_probab = read_float_from_line("kogot_grooming_probab")
+	-- uses x2 targets
+	self.kogot_shovel_mili_probab = read_float_from_line("kogot_shovel_mili_probab")
+	self.kogot_shovel_old_probab = read_float_from_line("kogot_shovel_old_probab")
+
+	-- CONDITION TARGETS (KNIVES AND AXES)
+	-- Quick help:
+	-- target with   0% con will get probab == base - limit
+	-- target with  50% con will get probab == base
+	-- target with 100% con will get probab == base + limit
+	-- targets between 0% to 50% and between 50% to 100% will get their probabs proportionately
+
+	-- base probabs
+	self.kogot_knife_probab = read_float_from_line("kogot_knife_probab")
+	self.kogot_axe_probab = read_float_from_line("kogot_axe_probab")
+	-- variation limit
+	self.kogot_knife_probab_variation_limit = read_float_from_line("kogot_knife_probab_variation_limit")
+	self.kogot_axe_probab_variation_limit = read_float_from_line("kogot_axe_probab_variation_limit")
+
+	-- Read amount of condition gained on sharpening fail - when kogot breaks
+	self.kogot_break_consolation_gain = read_float_from_line("kogot_break_consolation_gain")
+end
+
+function repair_ui:FillList()
+	self.list_box:RemoveAll()
+	-- KCS - rewritten function to fill list of weapons/outfits that can be repaired with tool in new way to check ammo type instead of weapon list that is allowed to repair
+	local function fill_list(actor,obj)
+		if (obj) and (self.repair_type == "weapon" and alun_utils.item_is_fa(obj) or ((self.repair_type == "outfit") and (alun_utils.item_is_outfit(obj) or obj:clsid() == 69))) then
+			-- alun_utils.printf("weapon or outfit detected")
+			local con = obj:condition()
+			-- new fill of weapons list
+			if (obj) and self.repair_type == "weapon" and alun_utils.item_is_fa(obj) then
+				-- alun_utils.printf("weapon detected")
+				
+				local item_by_id = level.object_by_id(obj:id())
+				local trgt = level.object_by_id(item_by_id:id())				
+				local w_ammo = system_ini():r_string(trgt:section(), "ammo_class") -- OK - gives list of all ammo types separated with ","
+				local ammo_tbl = alun_utils.str_explode(w_ammo,",") -- creating table from list of ammo types - for easier comparison
+								
+				-- ------------------------------------------
+				-- any melle weapon must be in repair_only section
+				if (self.repair_ammo["melee"] ~= nil) then
+					-- alun_utils.printf("melee tool detected")
+					
+					-- if weapon is listed in repair only list and have proper condition level then it is filled on list and no further checks is allowed
+					if (self.repair_only and self.repair_only[obj:section()]) then
+						-- alun_utils.printf("melee repair only detected")
+						if (con and con >= self.min_condition and con <= self.max_condition) then
+							self:AddItemToList(obj,self.list_box,con,"list_trgts")
+						end
+					end
+					return -- to prevent further detection elsewhere in function
+				end
+				
+				-- lines for debug purposes only
+				-- alun_utils.printf("Tool ammo is %s",self.repair_ammo[ammo_tbl[1]])
+				-- alun_utils.printf("Weapon ammo is %s",ammo_tbl[1])
+				-- if (self.repair_refuse ~= nil) then
+					-- alun_utils.printf("Refuse item is %s",self.repair_refuse[obj:section()]) -- CTD due to nil value
+				-- end
+				
+				
+				-- for oils and other universal items for all weapons we can use "all" in config files without need to enumerate each ammo type
+				-- checks if word "all" exist in tool or ammo type from weapon exist in table from repair tool. also still checks refuse list for UPD, lighter and such in case of "all" ammo types
+				if ((self.repair_ammo["all"] ~= nil) or (self.repair_ammo[ammo_tbl[1]] ~= nil)) and ((self.repair_refuse == nil) or (self.repair_refuse[obj:section()] == nil)) then 
+					-- alun_utils.printf("all tool detected")
+					if (con and con >= self.min_condition and con <= self.max_condition) then
+						self:AddItemToList(obj,self.list_box,con,"list_trgts")
+					end
+					return
+				end
+				
+			end
+			
+			-- checking outfits
+			if (obj) and (((self.repair_type == "outfit") and (alun_utils.item_is_outfit(obj) or obj:clsid() == 69))) then
+			    -- outfits use same conditions as before, to check repair only and repair refuse list in config file for outfiot tool
+				if (obj) and (self.repair_only and self.repair_only[obj:section()]) or (self.repair_refuse == nil) or (self.repair_refuse[obj:section()] == nil) then
+					if (con and con >= self.min_condition and con <= self.max_condition) then
+						self:AddItemToList(obj,self.list_box,con,"list_trgts")
+					end
+				end
+			end
+			
+		end
+		
+	end -- end of local function
+	
+	getLocalActor():iterate_inventory(fill_list,getLocalActor())
+
+	-- Items refunct mod, Plaargath
+	local function fill_list_noncon_targets(actor,obj)
+		if obj then
+			if self.sharpening_tools[self.section] then
+				if self.noncon_targets[obj:section()] then
+					self:AddItemToList(obj,self.list_box,nil,"list_trgts")
+				end
+			end
+		end
+	end
+	getLocalActor():iterate_inventory(fill_list_noncon_targets,getLocalActor())
+
+	if string.find(self.section,"gun_oil")
+	or string.find(self.section,"solvent")
+	or string.find(self.section,"cleaning_kit")
+	or string.find(self.section,"toolkit_p")
+	or string.find(self.section,"toolkit_s")
+	or string.find(self.section,"toolkit_r") then
+		self.caption_repair:SetText(game.translate_string("st_repair_hint_wpn"))
+	elseif string.find(self.section,"sharpening_stones") then
+		self.caption_repair:SetText(game.translate_string("st_repair_hint_obj"))
+	elseif string.find(self.section,"mutant_part_crow_beak") then
+		self.caption_repair:SetText(game.translate_string("st_repair_hint_obj"))
+	elseif string.find(self.section,"mutant_part_chimera_kogot") then
+		self.caption_repair:SetText(game.translate_string("st_repair_hint_obj"))
+	elseif string.find(self.section,"helmet_repair_kit") then
+		self.caption_repair:SetText(game.translate_string("st_repair_hint_helm"))
+	elseif string.find(self.section,"sewing_kit")
+	or string.find(self.section,"glue")
+	or string.find(self.section,"armor_repair")
+	or string.find(self.section,"toolkit_u") then
+		self.caption_repair:SetText(game.translate_string("st_repair_hint_gear"))
+	end
+
+	if self.list_box:GetSize() == 0 then
+		self.caption_repair:SetText(game.translate_string("st_repair_hint_no_target"),25)
+		self.feedback_no_target = true
+	end
+	-- end Plaargath
+end
+
+function repair_ui:FillPartsList()
+	self.list_box_parts:RemoveAll()
+	if self.list_box:GetSize()==0 then return end
+	local item = self.list_box:GetSelectedItem()
+	if not (item) then return end
+
+	local obj = level.object_by_id(item.item_id)
+	local function fill_list(actor,itm)
+		if (itm and itm:id() ~= item.item_id) then
+			--if (self.parts_include and self.parts_include[itm:section()]) or (self.parts_exclude == nil and string.find(obj:section(),itm:section())) or (self.parts_exclude and self.parts_exclude[itm:section()] == nil and string.find(obj:section(),itm:section())) then
+			if (self.parts_include and self.parts_include[itm:section()])  then -- KCS - exclude parts no longer used to avoid need to enlist each weapon in game to exclude list
+				self:AddItemToList(itm,self.list_box_parts,alun_utils.read_from_ini(nil,itm:section(),"repair_part_bonus","float",nil) or self.part_bonus,"list_parts")
+			end
+		end
+	end
+	getLocalActor():iterate_inventory(fill_list,getLocalActor())
+
+	-- Items refunct mod, Plaargath
+	if self.list_box_parts:GetSize() == 0 then
+		self.caption_parts:SetText(game.translate_string("st_repair_support_no"))
+	else
+		self.caption_parts:SetText(game.translate_string("st_repair_support"))
+	end
+	-- end Plaargath
+end
+
+function repair_ui:InitControls()
+	self:SetWndRect(Frect():set(0,0,1024,768))
+	self:SetAutoDelete(true)
+	self.xml = CScriptXmlInit()
+	local ctrl
+	self.xml:ParseFile("ui_itm_main.xml")
+	ctrl = CUIWindow()
+	self.xml:InitWindow("itm_repair:file_item:main",0,ctrl)
+	self.file_item_main_sz = vector2():set(ctrl:GetWidth(),ctrl:GetHeight())
+	self.xml:InitWindow("itm_repair:file_item:fn",0,ctrl)
+	self.file_item_fn_sz = vector2():set(ctrl:GetWidth(),ctrl:GetHeight())
+	self.xml:InitWindow("itm_repair:file_item:fd",0,ctrl)
+	self.file_item_fd_sz = vector2():set(ctrl:GetWidth(),ctrl:GetHeight())
+	self.form = self.xml:InitStatic("itm_repair:form",self)
+	self.form:SetWndPos(vector2():set(0, 0))
+
+	-- Items icons
+	self.picture = self.xml:InitStatic("itm_repair:form:icon",self.form)
+	self.picture_parts = self.xml:InitStatic("itm_repair:form:icon_parts",self.form)
+	-- Repair tool icon
+	self.pic = self.xml:InitStatic("itm_repair:form:icon_tool",self.form)
+
+	local inv_grid_width = alun_utils.read_from_ini(ini,self.section,"inv_grid_width","float",0)
+	local inv_grid_height = alun_utils.read_from_ini(ini,self.section,"inv_grid_height","float",0)
+	local inv_grid_x = alun_utils.read_from_ini(ini,self.section,"inv_grid_x","float",0)
+	local inv_grid_y = alun_utils.read_from_ini(ini,self.section,"inv_grid_y","float",0)
+	local x1 = inv_grid_x*50
+	local y1 = inv_grid_y*50
+	local w = inv_grid_width*50
+	local h = inv_grid_height*50
+	local x2 = x1 + w
+	local y2 = y1 + h
+	local w,h = w,h
+	if (utils.is_widescreen()) then
+		w,h = w/1.5,h/1.2
+	else
+		w,h = w/1.3,h/1.3
+	end
+	self.pic:InitTexture("ui\\ui_icon_equipment")
+	self.pic:SetTextureRect(Frect():set(x1,y1,x2,y2))
+	self.pic:SetWndSize(vector2():set(w,h))
+
+	if not (self.pic.x) then
+		local pos = self.pic:GetWndPos()
+		local posform = self.form:GetWndPos()
+		self.pic.x = pos.x + posform.x
+		self.pic.y = pos.y + posform.y
+	end
+
+	self.pic:SetWndPos(vector2():set(self.pic.x-w/2, self.pic.y-h/2))
+
+	-- Caption
+	self.caption_parts = self.xml:InitTextWnd("itm_repair:form:caption_parts",self.form)
+	self.caption_repair = self.xml:InitTextWnd("itm_repair:form:caption_repair",self.form)
+	-- List Box
+	self.xml:InitFrame("itm_repair:form:list_frame",self.form)
+	self.list_box = self.xml:InitListBox("itm_repair:form:list",self.form)
+	self.list_box:ShowSelectedItem(true)
+	self:Register(self.list_box, "list_window")
+
+	-- Parts List Box
+	if (self.use_parts) then
+		self.list_pos = self.list_box:GetWndPos()
+		self.list_box_parts = self.xml:InitListBox("itm_repair:form:list_parts",self.form)
+		local frame = self.xml:InitFrame("itm_repair:form:list_frame_parts",self.form)
+		self.list_box_parts:ShowSelectedItem(true)
+		self:Register(self.list_box_parts, "list_window_parts")
+	end
+
+	-- Buttons
+	ctrl = self.xml:Init3tButton("itm_repair:form:btn_repair",	self.form)
+	self:Register(ctrl, "button_repair")
+	ctrl = self.xml:Init3tButton("itm_repair:form:btn_cancel",	self.form)
+	self:Register(ctrl, "button_back")
+
+	-- Items refunct mod, Plaargath
+	-- Mixing Sharpening Tools
+	-- -- Hint caption
+	self.caption_mixtool = self.xml:InitTextWnd("itm_repair:form:caption_mixtool",self.form)
+	-- -- Background Square
+	self.uiic_mixtool_bg = self.xml:InitStatic("itm_repair:form:mix_tool_bckgrnd",self.form)
+	self.uiic_mixtool_bg:Show(false)
+	-- -- Additional Tool Icon
+	self.uiic_mixtool_s4 = self.xml:InitStatic("itm_repair:form:icon_mixtool_s4",self.form)
+	self.uiic_mixtool_s4:Show(false)
+	self.uiic_mixtool_beak = self.xml:InitStatic("itm_repair:form:icon_mixtool_beak",self.form)
+	self.uiic_mixtool_beak:Show(false)
+	-- end Plaargath
+end
+
+function repair_ui:InitCallBacks()
+	self:AddCallback("button_repair",		ui_events.BUTTON_CLICKED,			self.OnButton_repair,			self)
+	self:AddCallback("button_back",			ui_events.BUTTON_CLICKED,			self.OnButton_back_clicked,		self)
+	self:AddCallback("list_window",			ui_events.LIST_ITEM_CLICKED,		self.OnListItemClicked,			self)
+	self:AddCallback("list_window",			ui_events.WINDOW_LBUTTON_DB_CLICK,	self.OnListItemDbClicked,		self)
+	self:AddCallback("list_window_parts",	ui_events.LIST_ITEM_CLICKED, 		self.OnPartsListItemClicked,	self)
+	self:AddCallback("list_window_parts",	ui_events.WINDOW_LBUTTON_DB_CLICK,	self.OnPartsListItemDbClicked,	self)
+end
+
+function repair_ui:OnPartsListItemClicked()
+	if self.list_box_parts:GetSize()==0 then return end
+
+	local item = self.list_box_parts:GetSelectedItem()
+	if not (item) then
+		self.picture_parts:SetTextureRect(Frect():set(0,0,0,0))
+		self.caption_parts:SetText("")
+		return
+	end
+
+	local se_item = item.item_id and level.object_by_id(item.item_id)
+	if (se_item == nil or not getLocalActor():object(se_item:section())) then
+		self.list_box_parts:RemoveItem(item)
+		return
+	end
+
+	local sec = se_item:section()
+	local part_bonus = alun_utils.read_from_ini(nil,sec,"repair_part_bonus","float",nil) or self.part_bonus
+	local con = math.floor((self.add_condition + part_bonus)*100)
+
+	-- Items refunct mod, Plaargath
+	if self.trgt_is_axe then
+		self.caption_repair:SetText(game.translate_string("st_repair_iru2").."+"..con.."%")
+	else
+		self.caption_repair:SetText("+"..con.."%")
+	end
+	-- end Plaargath
+
+	local w,h = item.width,item.height
+	if (utils.is_widescreen()) then
+		w,h = item.width/1.5,item.height/1.2
+	else
+		w,h = item.width/1.2,item.height/1.2
+	end
+	self.picture_parts:InitTexture("ui\\ui_icon_equipment")
+	self.picture_parts:SetTextureRect(Frect():set(item.x1,item.y1,item.x2,item.y2))
+	self.picture_parts:SetWndSize(vector2():set(w,h))
+
+	if not (self.picture_parts.x) then
+		local pos = self.picture_parts:GetWndPos()
+		self.picture_parts.x = pos.x
+		self.picture_parts.y = pos.y
+	end
+
+	self.picture_parts:SetWndPos(vector2():set(self.picture_parts.x-w/2, self.picture_parts.y-h/2))
+	self.caption_parts:SetText(game.translate_string("st_repair_utilize"))
+end
+
+function repair_ui:OnPartsListItemDbClicked()
+	self:OnButton_repair()
+end
+
+function repair_ui:OnListItemClicked()
+	if self.list_box:GetSize()==0 then return end
+
+	local item = self.list_box:GetSelectedItem()
+
+	if not (item) then
+		self.picture:SetTextureRect(Frect():set(0,0,0,0))
+		return
+	end
+
+	local se_item = level.object_by_id(item.item_id)
+	if (se_item == nil or not getLocalActor():object(se_item:section())) then
+		self.list_box:RemoveItem(item)
+		return
+	end
+
+	-- Items refunct mod, Plaargath
+	if self.list_box_parts then self.list_box_parts:RemoveAll() end
+
+	if self.uiic_mixtool_bg:IsShown() then self.uiic_mixtool_bg:Show(false) end
+	if self.uiic_mixtool_beak:IsShown() then self.uiic_mixtool_beak:Show(false) end
+	if self.uiic_mixtool_s4:IsShown() then self.uiic_mixtool_s4:Show(false) end
+	self.picture_parts:SetTextureRect(Frect():set(0,0,0,0))
+	self.caption_parts:SetText("")
+	self.caption_mixtool:SetText("")
+
+	local trgt_sec = se_item:section()
+	local trgt_is_1use, trgt_is_2uses, trgt_is_shovel
+	self.trgt_is_axe = nil
+	self.mixtool_is_stones = nil
+	self.mixtool_is_beak = nil
+	self.mixtool_is_missing = nil
+
+	if self.sharpen_1use_targets[trgt_sec] then
+		trgt_is_1use = true
+	elseif (self.sharpen_2use_targets[trgt_sec] and not self.axes_list[trgt_sec]) then
+		trgt_is_shovel = true
+		trgt_is_2uses = true
+	elseif self.axes_list[trgt_sec] then
+		self.trgt_is_axe = true
+		trgt_is_2uses = true
+	end
+
+	local no_parts_in_mix
+	self.add_condition = alun_utils.read_from_ini(nil,self.section,"repair_add_condition","float",0)
+	if self.trgt_is_axe then
+		local beak_add_con = alun_utils.read_from_ini(nil,"mutant_part_crow_beak","repair_add_condition","float",0)
+		local stones_add_con = alun_utils.read_from_ini(nil,"sharpening_stones4","repair_add_condition","float",0)
+
+		if self.section == "sharpening_stones4" then
+			if itms_refunct.how_many_items("sharpening_stones4") < 1 then
+				no_parts_in_mix = true
+				self.add_condition = (self.add_condition + beak_add_con) / 2
+			end
+		end
+
+		if self.section == "mutant_part_crow_beak" then
+			if itms_refunct.how_many_items("mutant_part_crow_beak") < 1 then
+				self.add_condition = (self.add_condition + stones_add_con) / 2
+			end
+		end
+
+		if self.section == "mutant_part_chimera_kogot" then
+			self.add_condition = self.add_condition / 2
+		end
+	end
+
+	if trgt_is_2uses then
+
+		local allow_mix_on_min_con_condition
+		if self.trgt_is_axe then
+			local stones_mincon = system_ini():r_float("sharpening_stones","repair_min_condition")
+			local beak_mincon = system_ini():r_float("mutant_part_crow_beak","repair_min_condition")
+			local mean_mincon = (stones_mincon + beak_mincon) / 2
+			local trgt_obj = item and level.object_by_id(item.item_id)
+			if not (trgt_obj) then return end
+			local trgt_con = trgt_obj:condition()
+			if trgt_con >= mean_mincon then
+				allow_mix_on_min_con_condition = true
+			end
+		end
+
+		if self.section =="sharpening_stones4" then
+			if getLocalActor():object(self.section) then
+				self.mixtool_is_stones = true
+			elseif getLocalActor():object("mutant_part_crow_beak") then
+				if allow_mix_on_min_con_condition then
+					self.mixtool_is_beak = true
+				else
+					self.mixtool_is_missing = true
+				end
+			else
+				self.mixtool_is_missing = true
+			end
+		end
+		if self.section =="mutant_part_crow_beak" then
+			if getLocalActor():object(self.section) then
+				self.mixtool_is_beak = true
+			elseif getLocalActor():object("sharpening_stones4") then
+				if allow_mix_on_min_con_condition then
+					self.mixtool_is_stones = true
+				else
+					self.mixtool_is_missing = true
+				end
+			else
+				self.mixtool_is_missing = true
+			end
+		end
+	end
+
+	if self.mixtool_is_stones then
+		self.uiic_mixtool_bg:Show(true)
+		self.uiic_mixtool_s4:Show(true)
+		self.caption_mixtool:SetText(game.translate_string("st_repair_hint_using_mixtool"))
+	elseif self.mixtool_is_beak then
+		self.uiic_mixtool_bg:Show(true)
+		self.uiic_mixtool_beak:Show(true)
+		self.caption_mixtool:SetText(game.translate_string("st_repair_hint_using_mixtool"))
+	elseif self.mixtool_is_missing then
+		self.uiic_mixtool_bg:Show(true)
+		self.caption_mixtool:SetText(game.translate_string("st_repair_hint_no_mixtool")) 
+	end
+	-- end Plaargath
+
+	local w,h = item.width,item.height
+	if (utils.is_widescreen()) then
+		w,h = item.width/1.5,item.height/1.2
+	else
+		w,h = item.width/1.2,item.height/1.2
+	end
+	self.picture:InitTexture("ui\\ui_icon_equipment")
+	self.picture:SetTextureRect(Frect():set(item.x1,item.y1,item.x2,item.y2))
+	self.picture:SetWndSize(vector2():set(w,h))
+	if not (self.picture.x) then
+		local pos = self.picture:GetWndPos()
+		self.picture.x = pos.x
+		self.picture.y = pos.y
+	end
+	self.picture:SetWndPos(vector2():set(self.picture.x-w/2, self.picture.y-h/2))
+
+	local con = self.add_condition*100
+
+	-- Items refunct mod, Plaargath
+	if trgt_is_1use then
+		self.caption_repair:SetText(game.translate_string("st_repair_iru1"))
+	elseif trgt_is_shovel then
+		self.caption_repair:SetText(game.translate_string("st_repair_iru2"))
+	elseif self.trgt_is_axe then
+		if self.section ~= "mutant_part_chimera_kogot" then
+			self.caption_repair:SetText(game.translate_string("st_repair_iru2").."+"..math.floor(con).."%")
+		else
+			self.caption_repair:SetText("+"..math.floor(con).."%")
+		end
+	else
+		self.caption_repair:SetText("+"..con.."%")
+	end
+
+	if self.section == "mutant_part_chimera_kogot" then
+		if self.noncon_targets[trgt_sec] then
+			self.caption_repair:SetText(game.translate_string(""))
+		end
+	end
+
+	if (not trgt_is_1use and not trgt_is_shovel and not no_parts_in_mix) and (self.use_parts) then
+		-- end Plaargath
+		self.picture_parts:SetTextureRect(Frect():set(0,0,0,0))
+		self.caption_parts:SetText("")
+		self:FillPartsList()
+	end
+end
+
+function repair_ui:OnListItemDbClicked()
+	self:OnButton_repair()
+end
+
+function repair_ui:OnButton_back_clicked()
+	give(self.section)
+	if self:IsShown() then self:HideDialog() end
+	-- Items refunct mod, Plaargath
+	self.feedback_no_target = nil
+	self.trgt_is_axe = nil
+	self.mixtool_is_stones = nil
+	self.mixtool_is_beak = nil
+	self.mixtool_is_missing = nil
+	-- end Plaargath
+end
+
+function repair_ui:OnKeyboard(dik, keyboard_action)
+-- Plaargath input convenience addition
+	local bind = dik_to_bind(dik)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if (keyboard_action == ui_events.WINDOW_KEY_PRESSED) then
+		if (bind ~= key_bindings.kUSE) and (dik ~= nil) and (dik ~= DIK_keys.MOUSE_1) then
+			self:OnButton_back_clicked()
+		elseif (bind == key_bindings.kUSE) then
+			self:OnButton_repair()
+		end
+	end
+	return true
+end
+
+function repair_ui:OnButton_repair()
+	-- legibility tweak, Plaargath
+	if self.feedback_no_target then
+		self:OnButton_back_clicked()
+		get_hud():HideActorMenu()
+		itms_manager.show_message(game.translate_string("st_repair_screen_no_target"),35)
+		return
+	end
+	if self.mixtool_is_missing then
+		self:OnButton_back_clicked()
+		get_hud():HideActorMenu()
+		itms_manager.show_message(game.translate_string("st_repair_screen_no_mixtool"),35)
+		return
+	end
+	-- end Plaargath
+
+	local index = self.list_box:GetSelectedIndex()
+	if index == -1 then return end
+	local item  = self.list_box:GetItemByIndex(index)
+
+	local obj = item and level.object_by_id(item.item_id)
+	if not (obj) then return end
+	local con = obj:condition()
+	-- Items refunct mod,  Plaargath
+	local initial_con = con
+	local print_initial_con = math.floor(con*100)
+	local tool = self.section
+	local target = obj:section()
+	-- end Plaargath
+
+	local bonus = 0
+	if (self.list_box_parts) then
+		-- ponney68 repair item multi usage, Plaargath (slim down, empties)
+		-- WEAPON REPAIR ITEMS
+		if tool == "gun_oil" then give("gun_oil2") end
+		if tool == "gun_oil_ru_d" then give("gun_oil_ru_d2") end
+		if tool == "gun_oil_ru" then give("gun_oil_ru2") end
+		if tool == "solvent" then give("solvent2") end
+		if tool == "steel_wool" then give("steel_wool2") end
+		if tool == "grease" then give("grease2") end
+
+		if tool == "cleaning_kit_p" then give("cleaning_kit_p2") end
+		if tool == "cleaning_kit_p2" then give("cleaning_kit_p3") end
+		if tool == "cleaning_kit_s" then give("cleaning_kit_s2") end
+		if tool == "cleaning_kit_s2" then give("cleaning_kit_s3") end
+		if tool == "cleaning_kit_r5" then give("cleaning_kit_r5_2") end
+		if tool == "cleaning_kit_r5_2" then give("cleaning_kit_r5_3") end
+		if tool == "cleaning_kit_r7" then give("cleaning_kit_r7_2") end
+		if tool == "cleaning_kit_r7_2" then give("cleaning_kit_r7_3") end
+		if tool == "cleaning_kit_u" then give("cleaning_kit_u2") end
+		if tool == "cleaning_kit_u2" then give("cleaning_kit_u3") end
+
+		if tool == "toolkit_p" then give("toolkit_p2") end
+		if tool == "toolkit_p2" then give("toolkit_p3") end
+		if tool == "toolkit_p3" then give("toolkit_p4") end
+		if tool == "toolkit_p4" and self.empty_kits_enabled then give("toolkit_p_empty") end
+		if tool == "toolkit_s" then give("toolkit_s2") end
+		if tool == "toolkit_s2" then give("toolkit_s3") end
+		if tool == "toolkit_s3" then give("toolkit_s4") end
+		if tool == "toolkit_s4" and self.empty_kits_enabled then give("toolkit_s_empty") end
+		if tool == "toolkit_r5" then give("toolkit_r5_2") end
+		if tool == "toolkit_r5_2" then give("toolkit_r5_3") end
+		if tool == "toolkit_r5_3" then give("toolkit_r5_4") end
+		if tool == "toolkit_r5_4" and self.empty_kits_enabled then give("toolkit_r5_empty") end
+		if tool == "toolkit_r7" then give("toolkit_r7_2") end
+		if tool == "toolkit_r7_2" then give("toolkit_r7_3") end
+		if tool == "toolkit_r7_3" then give("toolkit_r7_4") end
+		if tool == "toolkit_r7_4" and self.empty_kits_enabled then give("toolkit_r7_empty") end
+
+		-- ARMOR REPAIR ITEMS
+		if tool == "sewing_kit_b" then give("sewing_kit_b2") end
+		if tool == "sewing_kit_b2" then give("sewing_kit_b3") end
+		if tool == "sewing_kit_b3" then give("sewing_kit_b4") end
+		if tool == "sewing_kit_a" then give("sewing_kit_a2") end
+		if tool == "sewing_kit_a2" then give("sewing_kit_a3") end
+		if tool == "sewing_kit_a3" then give("sewing_kit_a4") end
+		if tool == "sewing_kit_h" then give("sewing_kit_h2") end
+		if tool == "sewing_kit_h2" then give("sewing_kit_h3") end
+		if tool == "sewing_kit_h3" then give("sewing_kit_h4") end
+
+		if tool == "glue_b" then give("glue_b2") end
+		if tool == "glue_a" then give("glue_a2") end
+		if tool == "glue_e" then give("glue_e2") end
+
+		if tool == "armor_repair_fa" then give("armor_repair_fa2") end
+		if tool == "helmet_repair_kit" then give("helmet_repair_kit2") end
+		if tool == "helmet_repair_kit2" then give("helmet_repair_kit3") end
+		if tool == "helmet_repair_kit3" and self.empty_kits_enabled then give("helmet_repair_kit_empty") end
+		if tool == "armor_repair_pro" then give("armor_repair_pro2") end
+		if tool == "armor_repair_pro2" then give("armor_repair_pro3") end
+		if tool == "armor_repair_pro3" then give("armor_repair_pro4") end
+		if tool == "armor_repair_pro4" and self.empty_kits_enabled then give("armor_repair_pro_empty") end
+		if tool == "toolkit_u" then give("toolkit_u2") end
+		if tool == "toolkit_u2" then give("toolkit_u3") end
+		if tool == "toolkit_u3" then give("toolkit_u4") end
+		if tool == "toolkit_u4" and self.empty_kits_enabled then give("toolkit_u_empty") end
+		-- End ponney68, Plaargath
+
+		index = self.list_box_parts:GetSelectedIndex()
+		if (index ~= -1) then
+			item = self.list_box_parts:GetItemByIndex(index)
+			local se_parts = item and item.item_id and level.object_by_id(item.item_id)
+			if (se_parts) then
+				local part = se_parts:section()
+				bonus = alun_utils.read_from_ini(nil,part,"repair_part_bonus","float",nil) or self.part_bonus
+
+				-- ponney68 repair optional parts multi usage, Plaargath (slim down, empties)
+				-- IMPORTED DRINK
+				if part == "vodka" then give("vodka_2") end
+				if part == "vodka_2" then give("vodka_3") end
+				if part == "vodka2" then give("vodka2_2") end
+				if part == "vodka2_2" then give("vodka2_3") end
+				if part == "vodka_quality" then give("vodka_quality2") end
+				if part == "vodka_quality2" then give("vodka_quality3") end
+				if part == "mineral_water" then give("mineral_water2") end
+				if part == "mineral_water2" then give("mineral_water3") end
+
+				-- ZONE-PRODUCED DRINK
+				if part == "bottle_metal" then give("bottle_metal2") end
+				if part == "bottle_metal2" then give("bottle_metal3") end
+				if part == "flask" then give("flask2") end
+				if part == "flask2" then give("flask3") end
+
+				-- WEAPON REPAIR ITEMS
+				if part == "swiss" then give("swiss") end
+				if part == "swiss_sharp" then give("swiss") end
+				if part == "hammer_inv" then give("hammer_inv") end
+				if part == "crowbar" then give("crowbar") end
+
+				if part == "gun_oil" then give("gun_oil2") end
+				if part == "gun_oil_ru_d" then give("gun_oil_ru_d2") end
+				if part == "gun_oil_ru" then give("gun_oil_ru2") end
+				if part == "solvent" then give("solvent2") end
+				if part == "steel_wool" then give("steel_wool2") end
+				if part == "grease" then give("grease2") end
+
+				if part == "cleaning_kit_p" then give("cleaning_kit_p2") end
+				if part == "cleaning_kit_p2" then give("cleaning_kit_p3") end
+				if part == "cleaning_kit_s" then give("cleaning_kit_s2") end
+				if part == "cleaning_kit_s2" then give("cleaning_kit_s3") end
+				if part == "cleaning_kit_r5" then give("cleaning_kit_r5_2") end
+				if part == "cleaning_kit_r5_2" then give("cleaning_kit_r5_3") end
+				if part == "cleaning_kit_r7" then give("cleaning_kit_r7_2") end
+				if part == "cleaning_kit_r7_2" then give("cleaning_kit_r7_3") end
+				if part == "cleaning_kit_u" then give("cleaning_kit_u2") end
+				if part == "cleaning_kit_u2" then give("cleaning_kit_u3") end
+
+				if part == "toolkit_p" then give("toolkit_p2") end
+				if part == "toolkit_p2" then give("toolkit_p3") end
+				if part == "toolkit_p3" then give("toolkit_p4") end
+				if part == "toolkit_p4" and self.empty_kits_enabled then give("toolkit_p_empty") end
+				if part == "toolkit_s" then give("toolkit_s2") end
+				if part == "toolkit_s2" then give("toolkit_s3") end
+				if part == "toolkit_s3" then give("toolkit_s4") end
+				if part == "toolkit_s4" and self.empty_kits_enabled then give("toolkit_s_empty") end
+				if part == "toolkit_r5" then give("toolkit_r5_2") end
+				if part == "toolkit_r5_2" then give("toolkit_r5_3") end
+				if part == "toolkit_r5_3" then give("toolkit_r5_4") end
+				if part == "toolkit_r5_4" and self.empty_kits_enabled then give("toolkit_r5_empty") end
+				if part == "toolkit_r7" then give("toolkit_r7_2") end
+				if part == "toolkit_r7_2" then give("toolkit_r7_3") end
+				if part == "toolkit_r7_3" then give("toolkit_r7_4") end
+				if part == "toolkit_r7_4" and self.empty_kits_enabled then give("toolkit_r7_empty") end
+
+				-- ARMOR REPAIR ITEMS
+				if part == "sewing_kit_b" then give("sewing_kit_b2") end
+				if part == "sewing_kit_b2" then give("sewing_kit_b3") end
+				if part == "sewing_kit_b3" then give("sewing_kit_b4") end
+				if part == "sewing_kit_a" then give("sewing_kit_a2") end
+				if part == "sewing_kit_a2" then give("sewing_kit_a3") end
+				if part == "sewing_kit_a3" then give("sewing_kit_a4") end
+				if part == "sewing_kit_h" then give("sewing_kit_h2") end
+				if part == "sewing_kit_h2" then give("sewing_kit_h3") end
+				if part == "sewing_kit_h3" then give("sewing_kit_h4") end
+
+				if part == "glue_b" then give("glue_b2") end
+				if part == "glue_a" then give("glue_a2") end
+				if part == "glue_e" then give("glue_e2") end
+				if part == "armor_repair_fa" then give("armor_repair_fa2") end
+
+				if part == "helmet_repair_kit" then give("helmet_repair_kit2") end
+				if part == "helmet_repair_kit2" then give("helmet_repair_kit3") end
+				if part == "helmet_repair_kit3" and self.empty_kits_enabled then give("helmet_repair_kit_empty") end
+
+				if part == "armor_repair_pro" then give("armor_repair_pro2") end
+				if part == "armor_repair_pro2" then give("armor_repair_pro3") end
+				if part == "armor_repair_pro3" then give("armor_repair_pro4") end
+				if part == "armor_repair_pro4" and self.empty_kits_enabled then give("armor_repair_pro_empty") end
+
+				if part == "toolkit_u" then give("toolkit_u2") end
+				if part == "toolkit_u2" then give("toolkit_u3") end
+				if part == "toolkit_u3" then give("toolkit_u4") end
+				if part == "toolkit_u4" and self.empty_kits_enabled then give("toolkit_u_empty") end
+
+				-- FUEL
+				if part == "kerosene" then give("kerosene2") end
+				if part == "kerosene2" then give("kerosene3") end
+				if part == "kerosene3" then give("kerosene4") end
+				if part == "kerosene4" then give("kerosene5") end
+
+				if part == "explo_jerrycan_fuel" then give("explo_jerrycan_fuel2") end
+				if part == "explo_jerrycan_fuel2" then give("explo_jerrycan_fuel3") end
+				if part == "explo_jerrycan_fuel3" then give("explo_jerrycan_fuel4") end
+				if part == "explo_jerrycan_fuel4" then give("explo_jerrycan_fuel5") end
+				if part == "explo_jerrycan_fuel5" then give("explo_jerrycan_fuel6") end
+				if part == "explo_jerrycan_fuel6" then give("explo_jerrycan_fuel7") end
+				if part == "explo_jerrycan_fuel7" then give("explo_jerrycan_fuel8") end
+
+				-- DISMANTLE KITS
+				if part == "outfit_dismantler" then give("outfit_dismantler2") end
+				if part == "outfit_dismantler2" then give("outfit_dismantler3") end
+				if part == "outfit_dismantler3" then give("outfit_dismantler4") end
+				if part == "outfit_dismantler4" then give("outfit_dismantler5") end
+				if part == "outfit_dismantler5" and self.empty_kits_enabled then give("outfit_dismantler_empty") end
+				if part == "wpn_dismantler" then give("wpn_dismantler2") end
+				if part == "wpn_dismantler2" then give("wpn_dismantler3") end
+				if part == "wpn_dismantler3" then give("wpn_dismantler4") end
+				if part == "wpn_dismantler4" then give("wpn_dismantler5") end
+				if part == "wpn_dismantler5" and self.empty_kits_enabled then give("wpn_dismantler_empty") end
+				-- End ponney68, Plaargath
+
+				mc_cooking.itemop_release(se_parts and se_parts:id() or 0)
+			end
+		end
+	end
+
+	-- Items refunct mod, Plaargath
+	if self.sharpen_2use_targets[target] then
+		if tool == "sharpening_stones" then give("sharpening_stones3") end
+		if tool == "sharpening_stones2" then give("sharpening_stones4") end
+		if self.mixtool_is_beak then
+			local getrid = (getLocalActor():object("mutant_part_crow_beak"))
+			mc_cooking.itemop_release(getrid:id())
+		end
+		if self.mixtool_is_stones then
+			local getrid = (getLocalActor():object("sharpening_stones4"))
+			mc_cooking.itemop_release(getrid:id())
+		end
+	else
+		if tool =="sharpening_stones" then give("sharpening_stones2") end
+		if tool =="sharpening_stones2" then give("sharpening_stones3") end
+		if tool =="sharpening_stones3" then give("sharpening_stones4") end
+	end
+
+	local kogot_keep_tool, kogot_hurt_actor
+	if tool == "mutant_part_chimera_kogot" then
+		if target == "swiss" then
+			if test_on_probab(self.kogot_swiss_probab) then
+				kogot_keep_tool = true
+			end
+		elseif target == "cutlery" then
+			if test_on_probab(self.kogot_cutlery_probab) then
+				kogot_keep_tool = true
+			end
+		elseif target == "grooming" then
+			if test_on_probab(self.kogot_grooming_probab) then
+				kogot_keep_tool = true
+			end
+		elseif target == "shovel_mili" then
+			if test_on_probab(self.kogot_shovel_mili_probab) then
+				kogot_keep_tool = true
+			end
+		elseif target == "shovel_old" then
+			if test_on_probab(self.kogot_shovel_old_probab) then
+				kogot_keep_tool = true
+			end
+		elseif self.knives_list[target] then
+			local base = self.kogot_knife_probab
+			local lim = self.kogot_knife_probab_variation_limit
+			local kogot_knife_probab = 2 * lim * con + base - lim
+			if test_on_probab(kogot_knife_probab) then
+				kogot_keep_tool = true
+			end
+		elseif self.axes_list[target] then
+			local base = self.kogot_axe_probab
+			local lim = self.kogot_axe_probab_variation_limit
+			local kogot_axe_probab = 2 * lim * con + base - lim
+			if test_on_probab(kogot_axe_probab) then
+				kogot_keep_tool = true
+			end
+		end
+		if not kogot_keep_tool then
+			kogot_hurt_actor = true
+		end
+	end
+	if kogot_keep_tool then give(tool) end
+
+	if not kogot_hurt_actor then
+		if self.noncon_targets[target] then
+			give(target.."_sharp")
+			local getrid = (getLocalActor():object(target))
+			mc_cooking.itemop_release(getrid:id())
+		else
+	-- end Plaargath
+			con = con + self.add_condition + bonus
+			con = con <= 1 and con or 1
+			obj:set_condition(con)
+	-- Plaargath
+		end
+	else
+		if not self.noncon_targets[target] then
+			con = con + self.kogot_break_consolation_gain
+			con = con <= 1 and con or 1
+			obj:set_condition(con)
+		end
+	end
+
+	self.feedback_no_target = nil
+	self.trgt_is_axe = nil
+	self.mixtool_is_stones = nil
+	self.mixtool_is_beak = nil
+	self.mixtool_is_missing = nil
+
+	if self:IsShown() then self:HideDialog() end
+	-- end Plaargath
+
+	if (self.use_actor_effects and actor_effects) then
+		-- Plaargath
+		if kogot_hurt_actor then
+			actor_effects.use_item(self.section.."_dummy_with_hurt")
+		else
+		-- end Plaargath
+			actor_effects.use_item(self.section.."_dummy")
+		-- Plaargath
+		end
+		if (string.find(self.section,"toolkit") and not string.find(self.section,"toolkit_u"))
+		or string.find(self.section,"sewing_kit")
+		or string.find(self.section,"helmet_repair_kit")
+		or string.find(self.section,"armor_repair_pro") then
+			level_weathers.get_weather_manager():forced_weather_change()
+		end
+		-- end Plaargath
+	end
+
+	-- Plaargath - DebugInfo for chimera kogot
+	if alun_utils.read_from_ini(ini_file("debug\\xrs_debug_tools.ltx"),"plugin","enable","bool",true,"xrs_debug_tools") then
+		if tool == "mutant_part_chimera_kogot" then
+
+			local function cast(info,uiic)
+				local header
+				if kogot_hurt_actor then
+					header = "[KOGOT SHARPENING DEBUG]".." ".." ".." ".." ".." ".."tool FAIL"
+				else
+					header = "[KOGOT SHARPENING DEBUG]".." ".." ".." ".." ".." ".."tool SUCC"
+				end
+				news_manager.send_tip(getLocalActor(),info,nil,nil,10000,nil,header,uiic)
+			end
+
+			local uiic, succ_probab, base_probab, lim, info
+
+			if target == "swiss" then
+				succ_probab = self.kogot_swiss_probab
+				uiic = kogot_hurt_actor and "dh_tool_swiss" or "dh_tool_swiss_sharp"
+			elseif target == "cutlery" then
+				succ_probab = self.kogot_cutlery_probab
+				uiic = kogot_hurt_actor and "dh_tool_cutlery" or "dh_tool_cutlery_sharp"
+			elseif target == "grooming" then
+				succ_probab = self.kogot_grooming_probab
+				uiic = kogot_hurt_actor and "dh_tool_grooming" or "dh_tool_grooming_sharp"
+			elseif target == "shovel_mili" then
+				succ_probab = self.kogot_shovel_mili_probab
+				uiic = kogot_hurt_actor and "dh_tool_shovel_mili" or "dh_tool_shovel_mili_sharp"
+			elseif target == "shovel_old" then
+				succ_probab = self.kogot_shovel_old_probab
+				uiic = kogot_hurt_actor and "dh_tool_shovel_old" or "dh_tool_shovel_old_sharp"
+			end
+
+			if self.knives_list[target] then
+				base_probab = self.kogot_knife_probab
+				lim = self.kogot_knife_probab_variation_limit
+				succ_probab = 2 * lim * initial_con + base_probab - lim
+				if     target == "wpn_knife_inv"   then uiic = "dh_auxtool_wpn_knife_inv"
+				elseif target == "wpn_knife_inv_2" then uiic = "dh_auxtool_wpn_knife_inv_2"
+				elseif target == "wpn_knife_inv_3" then uiic = "dh_auxtool_wpn_knife_inv_3"
+				elseif target == "wpn_knife_inv_4" then uiic = "dh_auxtool_wpn_knife_inv_4"
+				elseif target == "wpn_knife_inv_5" then uiic = "dh_auxtool_wpn_knife_inv_5"
+				elseif target == "wpn_knife_m"     then uiic = "dh_auxtool_wpn_knife_m" end
+			elseif self.axes_list[target] then
+				base_probab = self.kogot_axe_probab
+				lim = self.kogot_axe_probab_variation_limit
+				succ_probab = 2 * lim * initial_con + base_probab - lim
+				uiic = "dh_auxtool_wpn_axe"
+			end
+
+			if kogot_hurt_actor then
+				if self.noncon_targets[target] then
+					info = "1) hurting actor 2) destroying kogot".." ".." ".." ".." ".." ".." ".." ".." ".." ".."succ probab == "..succ_probab
+				else
+					info = "1) hurting actor 2) destroying kogot 3) consolation gain on target = "..math.floor(self.kogot_break_consolation_gain*100).." %".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".."base succ probab = "..base_probab.." ".." ".." ".." ".."var limit = "..lim.." ".. " ".." ".."initial condition = "..print_initial_con.." % ".." ".." ".." ".." ".."final succ probab = "..math.floor(succ_probab).." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".."probab diff = "..math.floor(succ_probab-base_probab)
+				end
+			else
+				if self.noncon_targets[target] then
+					info = "succ probab == "..succ_probab
+				else
+					local gained = math.floor(100*con - 100*initial_con)
+					info = "base succ probab = "..base_probab.." ".." ".." ".." ".."var limit = "..lim.." ".. " ".." ".."initial condition = "..print_initial_con.." % ".." ".." ".." ".." ".."final succ probab = "..math.floor(succ_probab).." ".." ".." ".." ".." ".." ".." ".." ".." ".." ".."gained con = "..gained.." %".." ".." ".." ".."probab diff = "..math.floor(succ_probab-base_probab)
+				end
+			end
+
+			cast(info,uiic)
+		end
+	end
+	--end Plaargath
+end
+
+function repair_ui:AddItemToList(item,listbox,condition,list_id)
+	local _itm = load_item(self.file_item_main_sz.y)
+	local sec = item and item:section()
+	local inv_name = item and game.translate_string(alun_utils.read_from_ini(nil,sec,"inv_name","string","error")) or "none"
+
+	_itm:SetWndSize(self.file_item_main_sz)
+	_itm.fn:SetWndPos(vector2():set(0,0))
+	_itm.fn:SetWndSize(self.file_item_fn_sz)
+	_itm.fn:SetText(inv_name)
+
+	if condition then condition = math.ceil(condition*100) end -- Plaargath
+
+	if (item) then
+		-- Items refunct mod & legibility tweak, Plaargath
+		if condition then
+			if list_id == "list_parts" then
+				_itm.fage = _itm:AddTextField("+"..condition.."%", self.file_item_fd_sz.x)
+			elseif list_id == "list_trgts" then
+				_itm.fage = _itm:AddTextField(condition.."%", self.file_item_fd_sz.x)
+			end
+			_itm.fage:SetFont(GetFontLetterica16Russian())
+			_itm.fage:SetWndPos(vector2():set(self.file_item_fn_sz.x+4, 0))
+			_itm.fage:SetWndSize(self.file_item_fd_sz)
+		end
+		-- end Plaargath
+
+		_itm.item_id = item:id()
+
+		local inv_grid_width = alun_utils.read_from_ini(ini,sec,"inv_grid_width","float",0)
+		local inv_grid_height = alun_utils.read_from_ini(ini,sec,"inv_grid_height","float",0)
+		local inv_grid_x = alun_utils.read_from_ini(ini,sec,"inv_grid_x","float",0)
+		local inv_grid_y = alun_utils.read_from_ini(ini,sec,"inv_grid_y","float",0)
+		_itm.x1 = inv_grid_x*50
+		_itm.y1 = inv_grid_y*50
+		_itm.width = inv_grid_width*50
+		_itm.height = inv_grid_height*50
+		_itm.x2 = _itm.x1 + _itm.width
+		_itm.y2 = _itm.y1 + _itm.height
+	end
+
+	listbox:AddExistingItem(_itm)
+end
+
+-- Items refunct mod, Plaargath
+function test_on_probab(treshold)
+	return treshold >= math.random(0,100)
+end
+
+function give(section,amount)
+	if not getLocalActor() then return end
+	if not alife() then if mc_cooking then mc_cooking.itemop_give(section, amount or 1) end return end
+	if not amount then amount = 1 end
+	for i = 1, amount do
+		alife():create(section,getLocalActor():position(),getLocalActor():level_vertex_id(),getLocalActor():game_vertex_id(),getLocalActor():id())
+	end
+end
+-- end Plaargath

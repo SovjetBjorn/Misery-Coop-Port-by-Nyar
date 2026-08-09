@@ -1,0 +1,690 @@
+-- PORT_NOTES (Misery_Coop_Port, tools/build_cooking.py) -- coop-adapted
+-- Misery item-use DISPATCHER, coop. on_game_start (called by axr_main:104)
+-- registers the actor callbacks; actor_on_item_use fans out to the per-item
+-- branches -- the COOKING branch opens ui_itm_cooking. db.actor->getLocalActor
+-- (client). The per-frame actor_on_update is entry-guarded for a nil local
+-- actor (check_actor_backpack runs every frame). Enabled feature mods (keep_enabled):
+-- cooking_mod, mutant_loot_mod, repair_mod, backpack_stash -- their handlers are
+-- coop-routed (cooking UI, harvest RPC, repair UI, and the backpack world-spawn
+-- RPC). The backpack branch's inv_backpack world-spawn -> mc_cooking.request_deploy
+-- (server alife:create, no parent); the in-base give-back -> itemop_give. Remaining
+-- feature mods stay config-DISABLED EXCEPT flashlight_mod (now ENABLED to drive the
+-- headlamp beam from device_flashlight -- its alife():create sites are patched out
+-- since the vanilla device_torch already exists; only enable_torch(true/false) remains).
+-- sleep is handled by mc_sleep; sleepbag/tent stay disabled (no alife:create).
+
+---------------------------------------
+--	itms_manager
+--
+-- by Alundaio
+---------------------------------
+--[[
+Copyright (C) 2012 Alundaio
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License-]]
+--]]
+local ini = ini_file("plugins\\itms_manager.ltx")
+	--Backpack stash mod
+	local BackPackStashEnable = alun_utils.read_from_ini(ini,"backpack_stash","enable","bool",true)
+	local BackPackStashAllowInBase = BackPackStashEnable and alun_utils.read_from_ini(ini,"backpack_stash","allow_in_base","bool",false)
+	local BackPackStashSpot = BackPackStashEnable and alun_utils.read_from_ini(ini,"backpack_stash","map_spot","string","treasure_backpakstash")
+	local BackPackStashEnableTip = BackPackStashEnable and alun_utils.read_from_ini(ini,"backpack_stash","enable_news_tip","bool",true)
+	local BackPackStashEnableUi = BackPackStashEnable and alun_utils.read_from_ini(ini,"backpack_stash","enable_ui","bool",true)
+
+	-- Sleep bag mod
+	local SleepBagEnable = alun_utils.read_from_ini(ini,"sleeping_bag","enable","bool",true)
+	local SleepBagEnableDangerous = SleepBagEnable and alun_utils.read_from_ini(ini,"sleeping_bag","dangerous_sleep","bool",true)
+	local SleepBagRadius = SleepBagEnable and alun_utils.read_from_ini(ini,"sleeping_bag","unsafe_radius","float",5000)
+	local SleepBagPlaceable = SleepBagEnable and alun_utils.read_from_ini(ini,"sleeping_bag","use_placeable","bool",true)
+	local SleepBagGameStart = SleepBagEnable and alun_utils.read_from_ini(ini,"sleeping_bag","have_at_start","bool",true)
+	local SleepBagSections = SleepBagEnable and alun_utils.collect_section(ini,"sleeping_bag_sections",true)
+	local SleepBagPlaceableSections = SleepBagEnable and alun_utils.collect_section(ini,"sleeping_bag_ph_sections",true)
+	local NRCSections = SleepBagEnable and alun_utils.collect_section(ini,"nrc_section",true)
+	local NRCPlaceableSections = SleepBagEnable and alun_utils.collect_section(ini,"nrc_ph_sections",true)
+
+	-- Actor backpack mod
+	local ActorBackPackEnable = alun_utils.read_from_ini(ini,"actor_backpack","enable","bool",true)
+	local ActorBackPackSpot = ActorBackPackEnable and alun_utils.read_from_ini(ini,"actor_backpack","map_spot","string","treasure_actorbackpack")
+	local ActorBackPackSlot = ActorBackPackEnable and alun_utils.read_from_ini(ini,"actor_backpack","quick_slot","string","slot_3")
+	local ActorBackPackKeep = ActorBackPackEnable and alun_utils.collect_section(ini,"actor_backpack_keep_items",true)
+	local ActorBackPackForced = ActorBackPackEnable and alun_utils.read_from_ini(ini,"actor_backpack","actor_backpack_always_have","bool",true)
+
+	-- Repair mod
+	local RepairModEnable = alun_utils.read_from_ini(ini,"repair_mod","enable","bool",true)
+	local RepairTools = RepairModEnable and alun_utils.collect_section(ini,"repair_mod_tools",true)
+
+	-- Cooking mod
+	local CookingModEnable = alun_utils.read_from_ini(ini,"cooking_mod","enable","bool",true)
+	local CookingTools = CookingModEnable and alun_utils.collect_section(ini,"cooking_mod_tools",true)
+
+	-- Condition checker mod
+	local ConditionCheckerModEnable = alun_utils.read_from_ini(ini_file("plugins\\con_checker.ltx"),"con_checker_mod","enable","bool",true)
+	local ConditionCheckerTools = ConditionCheckerModEnable and alun_utils.collect_section(ini_file("plugins\\con_checker.ltx"),"con_checker_mod_tools",true)
+
+	-- Loot Mutant mod
+	local MutantLootEnable = alun_utils.read_from_ini(ini,"mutant_loot_mod","enable","bool",true)
+	local MutantLootEnableUI = alun_utils.read_from_ini(ini,"mutant_loot_mod","enable_ui","bool",true)
+	local MutantLootDecayTime = alun_utils.read_from_ini(ini,"mutant_loot_mod","decay_time","float",7200)
+
+	-- Flashlight mod
+	local FlashlightModEnable = alun_utils.read_from_ini(ini,"flashlight_mod","enable","bool",true)
+	local FlashlightSections = FlashlightModEnable and alun_utils.collect_section(ini,"flashlight_sections",true)
+
+	-- Items refunct mods, Plaargath
+	-- Tools sharpening
+	local SharpenToolsEnable = alun_utils.read_from_ini(ini,"items_refunct_mod","sharpen_tools_enable","bool",true)
+	local QuickSharpenItems = SharpenToolsEnable and alun_utils.collect_section(ini,"quick_sharpen_items_list",true)
+
+	-- Mutant Loot With Tools Only
+	local MutantLootWithToolsOnlyEnable = alun_utils.read_from_ini(ini,"mutant_loot_mod","tools_only","bool",true)
+
+	-- Canned Food mod
+	local CannedFoodEnable = alun_utils.read_from_ini(ini,"items_refunct_mod","canned_food_enable","bool",true)
+	local CanFoodItems = CannedFoodEnable and alun_utils.collect_section(ini,"food_in_cans_list",true)
+
+	-- Lighter mod
+	local LighterModEnable = alun_utils.read_from_ini(ini,"items_refunct_mod","lighter_enable","bool",true)
+	local SmokingRefillers = LighterModEnable and alun_utils.collect_section(ini,"lighter_refillers_list",true)
+	local SmokingItems = LighterModEnable and alun_utils.collect_section(ini,"smoking_items_list",true)
+
+	-- Tent mod
+	local TentModEnable = alun_utils.read_from_ini(ini,"items_refunct_mod","tent_enable","bool",true)
+	local TentItems = TentModEnable and alun_utils.collect_section(ini,"tent_items",true)
+	local TentPhSections = TentModEnable and alun_utils.collect_section(ini,"tent_ph_sections",true)
+
+	-- Dismantle mod
+	local DismantleModEnable = alun_utils.read_from_ini(ini,"items_refunct_mod","dismantle_enable","bool",true)
+	local DismantlingTools = DismantleModEnable and alun_utils.collect_section(ini,"dismantle_tools",true)
+	-- end Plaargath
+
+-- Static Message
+ShowMessage = nil
+ShowMessageInit = nil
+ShowMessageTime = nil
+
+
+function on_game_start()
+	callback_register("on_game_load",on_game_load)
+	callback_register("actor_on_update",actor_on_update)
+	callback_register("actor_on_item_drop",actor_on_item_drop)
+	callback_register("monster_on_actor_use_callback",monster_on_actor_use_callback)
+	callback_register("actor_on_item_use",actor_on_item_use)
+	callback_register("actor_on_item_take_from_box",actor_on_item_take_from_box)
+	callback_register("physic_object_on_use_callback",physic_object_on_use_callback)
+	callback_register("squad_assign_new_target",squad_assign_new_target)
+	--callback_register("npc_on_item_take_from_box",npc_on_item_take_from_box)
+end
+
+function on_game_load()
+
+	if (ActorBackPackEnable and ActorBackPackForced) then
+		local actor_itm_backpack_id= xr_logic.pstor_retrieve(getLocalActor(),"actor_itm_backpack_id",nil)
+		local actor_inv_backpack_id = xr_logic.pstor_retrieve(getLocalActor(),"actor_inv_backpack_id",nil)
+		if (not actor_itm_backpack_id and not actor_inv_backpack_id) then
+			get_console():execute(ActorBackPackSlot.." itm_actor_backpack")
+			local se_obj = alife():create("itm_actor_backpack",getLocalActor():position(),getLocalActor():level_vertex_id(),getLocalActor():game_vertex_id(),0)
+			xr_logic.pstor_store(getLocalActor(),"actor_itm_backpack_id",se_obj.id)
+		end
+	end
+
+	if (SleepBagEnable and SleepBagGameStart) then
+		local sleepbag_id = xr_logic.pstor_retrieve(getLocalActor(),"itm_sleepbag_id",nil)
+		if (not sleepbag_id) then
+			local se_obj = alife():create("itm_sleepbag",getLocalActor():position(),getLocalActor():level_vertex_id(),getLocalActor():game_vertex_id(),0)
+			xr_logic.pstor_store(getLocalActor(),"itm_sleepbag_id",se_obj.id)
+		end
+	end
+end
+
+local torch_delay
+-- bind_stalker update
+local actor_fill_backpack
+function actor_on_update()
+	if (getLocalActor() == nil) then return end -- coop: no local actor yet / dedicated server
+	check_actor_backpack()
+
+	if (ShowMessage and ShowMessageInit) then
+		local hud = get_hud()
+		local custom_static = hud:GetCustomStatic("can_use_weapon_now")
+		if custom_static ~= nil and game.get_game_time():diffSec(ShowMessageInit) > ShowMessageTime then
+			hud:RemoveCustomStatic("can_use_weapon_now")
+			ShowMessage = nil
+			ShowMessageTime = nil
+			ShowMessageInit = nil
+		end
+	end
+
+	if (FlashlightModEnable) then
+		local obj = getLocalActor():active_detector()
+		local torch = (getLocalActor():object("mp_device_torch") or getLocalActor():object("device_torch"))
+		if (obj and FlashlightSections[obj:section()]) then
+			if not _fl_scan then _fl_scan = true
+				local s = ""
+				for i = 1, 16 do local it = getLocalActor():item_in_slot(i) if it then s = s .. i .. "=" .. it:section() .. " " end end
+				if mc_core then mc_core.mc_log("[fl] SCAN torch_obj=%s slots=[%s]", tostring(torch ~= nil), s) end
+			end
+			if (has_alife_info("enable_device_torch")) then
+				getLocalActor():disable_info_portion("enable_device_torch")
+				-- coop: skip dummy create (device_torch exists)
+				show_message(game.translate_string("st_itms_manager_headlamp_out"),25)
+			end
+
+			-- coop: vanilla device_torch already exists (L-key); skip server-only create
+
+			if (torch and not torch:torch_enabled()) then
+				if not (torch_delay) then
+					torch_delay = time_global() + 1000
+				end
+
+				if (time_global() > torch_delay) then if mc_core then mc_core.mc_log("[fl] enable_torch(true) called") end torch:enable_torch(true) end
+			end
+		else
+			if (torch and not has_alife_info("enable_device_torch")) then
+				if (torch:torch_enabled()) then
+					torch:enable_torch(false)
+					torch_delay = nil
+				end
+			end
+		end
+	end
+
+end
+
+-- bind_stalker on_trade
+function actor_on_trade(obj,sell_bye,money)
+end
+
+-- bind_stalker on_item_take
+function actor_item_take(obj)
+end
+
+-- bind_stalker on_item_drop
+function actor_on_item_drop(obj)
+	if not (obj) then
+		return
+	end
+
+	if (ActorBackPackEnable and ActorBackPackForced and obj:section() == "itm_actor_backpack") then
+		local se_itm = alife():create("itm_actor_backpack",getLocalActor():position(),getLocalActor():level_vertex_id(),getLocalActor():game_vertex_id(),getLocalActor():id())
+
+		if not (se_itm) then
+			return
+		end
+
+		xr_logic.pstor_store(getLocalActor(),"actor_itm_backpack_id",se_itm.id)
+		alife():release( alife():object(obj:id()) )
+	end
+
+end
+
+function monster_on_actor_use_callback(obj,who)
+	if not (MutantLootEnable) then return end
+	-- coop: harvest owned by nz_loot (MSO skinning, server-side via bind_monster). No client gate/drop.
+
+	local looted = xr_logic.pstor_retrieve(obj,"looted",nil)
+	if (looted) then
+		return
+	end
+
+	xr_logic.pstor_store(obj,"looted",true)
+	xr_corpse_detection.set_valuable_loot(obj:id(),false)
+
+	local st = db.storage[obj:id()]
+	if (st and st.death_time and game.get_game_time():diffSec(st.death_time) > MutantLootDecayTime) then
+		show_message(game.translate_string("st_itms_manager_mutant_bad"),25)
+	else
+		-- coop: harvest owned by nz_loot (MSO skinning). Neutered here to avoid double-loot.
+	end
+end
+
+-- bind_stalker on_item_use
+function actor_on_item_use(obj)
+	if mc_core then mc_core.mc_log("[itms] use sec=%s cook_en=%s tool=%s uimod=%s", tostring(obj and obj:section()), tostring(CookingModEnable), tostring(CookingTools and obj and CookingTools[obj:section()]), tostring(ui_itm_cooking~=nil)) end
+
+	-- Backpack
+	if (BackPackStashEnable and obj:section() == "itm_backpack") then
+		local in_base
+		local zone
+		local t = {"zat_a2_sr_no_assault","jup_a6_sr_no_assault","jup_b41_sr_no_assault"}
+		for i=1,#t do
+			zone = db.zone_by_name[t[i]]
+			if (zone and zone:inside(getLocalActor():position())) then
+				in_base = true
+				break
+			end
+		end
+
+		if (BackPackStashAllowInBase ~= true and in_base) then
+			show_message(game.translate_string("st_itms_manager_backpack_no"),25)
+			mc_cooking.itemop_give("itm_backpack", 1)
+			return
+		else
+			mc_cooking.request_deploy("inv_backpack") -- coop: world-spawn the stash box server-side (no UI/map-spot)
+
+			-- onscreen message is moved to ui_itm_backpack for appropiate timing, Plaargath
+		end
+		return
+ 	end
+
+	-- Sleeping bag
+	if (SleepBagEnable and SleepBagSections[obj:section()]) then
+		local sec = obj:section()
+		if (SleepBagPlaceable) then
+			local ph_sec = alun_utils.read_from_ini(nil,sec,"placeable_section","string",nil)
+			local se_obj = alife():create(ph_sec or "ph_sleepbag",getLocalActor():position(),getLocalActor():level_vertex_id(),getLocalActor():game_vertex_id())
+			se_obj.sleepbag_section = sec
+		else
+			local se_obj = alife():create(sec,getLocalActor():position(),0,0,0)
+			local hud = get_hud()
+			hud:HideActorMenu()
+			local ui = ui_sleep_dialog.sleep_bag(se_obj,sec)
+		end
+		return
+	end
+	-- NRC, Items Refunct mod, Plaargath
+	if (SleepBagEnable and NRCSections[obj:section()]) then
+		local sec = obj:section()
+		if (SleepBagPlaceable) then
+			local ph_sec = alun_utils.read_from_ini(nil,sec,"placeable_section","string",nil)
+			local se_obj = alife():create(ph_sec or "ph_nrc_foil",getLocalActor():position(),getLocalActor():level_vertex_id(),getLocalActor():game_vertex_id())
+			se_obj.nrc_section = sec
+		else
+			local se_obj = alife():create(sec,getLocalActor():position(),0,0,0)
+			local hud = get_hud()
+			hud:HideActorMenu()
+			local ui = ui_sleep_dialog.sleep_in_nrc(se_obj,sec)
+		end
+		return
+	end
+	-- end Plaargath
+
+	-- Actor backpack
+	if (ActorBackPackEnable and obj:section() == "itm_actor_backpack") then
+		local id = xr_logic.pstor_retrieve(getLocalActor(),"actor_inv_backpack_id",nil)
+		if (id) then
+			show_message(game.translate_string("st_itms_manager_qrs_already"),30)
+			alife():create("itm_actor_backpack",getLocalActor():position(),0,0,0)
+			return
+		end
+
+		local se_obj = alife():create("inv_actor_backpack",getLocalActor():position(),getLocalActor():level_vertex_id(),getLocalActor():game_vertex_id())
+
+		level.map_add_object_spot_ser(se_obj.id, ActorBackPackSpot, getLocalActor():character_name()..game.translate_string("st_itms_manager_backpack_mapspot"))
+
+		xr_logic.pstor_store(getLocalActor(),"actor_inv_backpack_id",se_obj.id)
+	end
+
+	-- Repair mod
+	if (RepairModEnable and RepairTools[obj:section()]) then
+		local hud = get_hud()
+		hud:HideActorMenu() -- coop: give the repair dialog input focus
+		local ui = ui_itm_repair and ui_itm_repair.repair_ui(hud,obj:section())
+		if (ui) then
+			ui:ShowDialog(true)
+			ui:FillList()
+		end
+	end
+
+	-- Cooking mod    --    Lighter mod included in ui_itm_cooking, Plaargath
+	if (CookingModEnable and CookingTools[obj:section()]) then
+		local hud = get_hud()
+			hud:HideActorMenu() -- coop: give the cook dialog input focus
+			local ui = ui_itm_cooking and ui_itm_cooking.cooking_ui(hud,obj:section())
+		if (ui) then
+			ui:ShowDialog(true)
+			ui:FillList()
+		end
+	end
+
+	-- Condition Checker mod
+	if (ConditionCheckerModEnable and ConditionCheckerTools[obj:section()]) then
+		local hud = get_hud()
+		--hud:HideActorMenu()
+		local ui = ui_con_checker and ui_con_checker.con_checker_ui(hud,obj:section())
+		if (ui) then
+			ui:ShowDialog(true)
+			ui:FillList()
+		end
+	end
+
+	-- Dummy Torch for Flashlight
+	if (FlashlightModEnable and obj:section() == "device_torch_dummy") then
+		local torch = (getLocalActor():object("mp_device_torch") or getLocalActor():object("device_torch"))
+		if not (has_alife_info("enable_device_torch")) then
+			give_info("enable_device_torch")
+			-- coop: vanilla device_torch already exists (L-key); skip server-only create
+			-- Plaargath
+			getLocalActor():hide_weapon()
+			xr_effects.disable_ui_inventory(getLocalActor(), nil)
+			getLocalActor():restore_weapon()
+			-- end Plaargath
+			show_message(game.translate_string("st_itms_manager_headlamp_on"),25)
+		end
+	end
+
+	-- Items refunct mods, Plaargath
+	-- Canned Food mod
+	if (CannedFoodEnable and CanFoodItems[obj:section()]) then
+		itms_refunct.open_and_eat(obj)
+	end
+
+	-- Lighter mod
+	if (LighterModEnable and SmokingRefillers[obj:section()]) then
+		itms_refunct.refuel_target(obj)
+	end
+	if (LighterModEnable and SmokingItems[obj:section()]) then
+		itms_refunct.light_up_and_eat(obj)
+	end
+
+	-- Sharpening Tools mod
+	if (SharpenToolsEnable and QuickSharpenItems[obj:section()]) then
+		itms_refunct.sharpen_tools(obj)
+	elseif not SharpenToolsEnable then
+		local sec = obj:section()
+		alife():create(sec,getLocalActor():position(),0,0,0)
+		show_message("sharpening mod disabled",10)
+	end
+
+	-- Tent mod, Plaargath
+	if (TentModEnable and TentItems[obj:section()]) then
+		local hud = get_hud()
+		local ui = ui_tent and ui_tent.irm_tent_ui(hud,obj:section())
+		if (ui) then
+			ui:ShowDialog(true)
+			ui:FillToolsList()
+		end
+	elseif not TentModEnable then
+		alife():create(obj:section(),getLocalActor():position(),0,0,0)
+		show_message("tent mod disabled",10)
+	end
+
+	-- Dismantle mod
+	if (DismantleModEnable and DismantlingTools[obj:section()]) then
+		local hud = get_hud()
+		local ui = itms_dismantle and itms_dismantle.irm_dismantle(hud,obj:section())
+		if (ui) then
+			ui:ShowDialog(true)
+			ui:FillTargetsList()
+		end
+	elseif not DismantleModEnable then
+		show_message("dismantle mod disabled",10)
+	end
+
+	-- end Plaargath
+end
+
+function check_actor_backpack()
+	if (getLocalActor():has_info("actor_filled_backpack"))then
+		return
+	end
+
+	local id = xr_logic.pstor_retrieve(getLocalActor(),"actor_inv_backpack_id",nil)
+
+	if not (id) then
+		return
+	end
+
+	local se_obj = alife():object(id)
+	local obj = db.storage[se_obj.id] and db.storage[se_obj.id].object or level.object_by_id(id)
+
+	if not (obj) then
+		return
+	end
+
+	local function itr_inv(temp,item)
+		local id = item and item:section() ~= "itm_actor_backpack" and ActorBackPackKeep[item:section()] == nil and item:id()
+		if (id and not is_ammo_for_wpn(item:section())) then
+			local itm_slot
+			local equipped
+			for i=1,12 do
+				if (i ~= 4) then
+					itm_slot = getLocalActor():item_in_slot(i)
+					if (itm_slot and itm_slot:id() == id) then
+						equipped = true
+						break
+					end
+				end
+			end
+
+			if (not equipped) then
+				getLocalActor():transfer_item(item,obj)
+			end
+			equipped = nil
+		end
+	end
+
+	getLocalActor():iterate_inventory(itr_inv)
+
+	getLocalActor():give_info_portion("actor_filled_backpack")
+end
+
+-- bind_stalker take_item_from_iventory_box
+function actor_on_item_take_from_box(box,obj)
+	if not (box) then return end
+	if not (obj) then return end
+
+	-- alun_utils.printf("Taking something from box") -- KCS - additional info on picking up backpack
+	-- new functionality to check special stashes and remove object from game, to free some memory
+	if (box:section() == "inv_rucksack")
+	or (box:section() == "inv_sumka1")
+	or (box:section() == "inv_sumka2")
+	or (box:section() == "inv_sumka3")
+	or (box:section() == "inv_sumka4")
+	or (box:section() == "inv_sumka5")
+	or (box:section() == "inv_sumka7") then
+		--if axr_dynamic_spawn and axr_dynamic_spawn.interpret_special_spawn then axr_dynamic_spawn.interpret_special_spawn(box) end -- coop guard (module not shipped) -- new function to check and give actor proper "on_info" value
+		if (box:is_inv_box_empty()) then
+			-- interpret spawn function moved to this check, to ensure that new spawn can be only once when stash is empty
+			-- otherwise it will make new spawns on each open of stash
+			if axr_dynamic_spawn and axr_dynamic_spawn.interpret_special_spawn then axr_dynamic_spawn.interpret_special_spawn(box) end -- coop guard (module not shipped) -- new function to check and give actor proper "on_info" value
+			local hud = get_hud()
+			hud:HideActorMenu()
+			mc_cooking.itemop_release(box:id())
+		end
+	end
+
+	-- KCS - additional code to close UI if box is empty - hard cases that remains in game
+	if (box:section() == "inv_case")
+	or (box:section() == "inv_blue_box")
+	or (box:section() == "inv_dev_merger")
+	or (box:section() == "inv_box_metall_01")
+	or (box:section() == "inv_expl_dinamit")
+	or (box:section() == "inv_green_box")
+	or (box:section() == "inv_micro")
+	or (box:section() == "dropoff_assaulter")
+	or (box:section() == "dropoff_recon")
+	or (box:section() == "dropoff_sniper")
+	or (box:section() == "delivery_noah")
+	or (box:section() == "delivery_nimble")
+	or (box:section() == "delivery_bunker")
+	or (box:section() == "delivery_freedom")
+	or (box:section() == "delivery_duty")
+	or (box:section() == "delivery_bonesetter")
+	or (box:section() == "vertel_boar")	
+	or (box:section() == "inventory_box")
+	or (box:section() == "transiver_01") then
+		if (box:is_inv_box_empty()) then
+			local hud = get_hud()
+			hud:HideActorMenu()
+		end
+	end
+	-- ------
+	
+	-- Backpack section
+	if (BackPackStashEnable and box:section() == "inv_backpack") then
+		if (box:is_inv_box_empty()) then
+			local hud = get_hud()
+			hud:HideActorMenu()
+			-- KCS - check additional info on picking up backpack
+			-- this can be abused if player drop down his own backpack on the same spot -- those functions are moved in condition check above
+			-- alun_utils.printf("Itms_manager: backpack taken to inventory") 
+			-- if axr_dynamic_spawn and axr_dynamic_spawn.interpret_special_spawn then axr_dynamic_spawn.interpret_special_spawn(box) end -- coop guard (module not shipped) -- new function to check and give actor proper "on_info" value
+			level.map_remove_object_spot(box:id(), BackPackStashSpot)
+			mc_cooking.itemop_give("itm_backpack", 1)
+			mc_cooking.itemop_release(box:id())
+		end
+	end
+
+	-- Actor backpack section
+	if (ActorBackPackEnable and box:section() == "inv_actor_backpack") then
+		if (box:is_inv_box_empty()) then
+			local hud = get_hud()
+			hud:HideActorMenu()
+			level.map_remove_object_spot(box:id(), BackPackActorSpot)
+			mc_cooking.itemop_release(box:id())
+			alife():create("itm_actor_backpack",getLocalActor():position(),getLocalActor():level_vertex_id(),getLocalActor():game_vertex_id(),getLocalActor():id())
+			xr_logic.pstor_store(getLocalActor(),"actor_inv_backpack_id",nil)
+			getLocalActor():disable_info_portion("actor_filled_backpack")
+			-- alun_utils.printf("Actor QRS backpack taken to inventory") -- KCS - additional info on picking up backpack
+			-- getLocalActor():has_info("actor_filled_backpack") -- KCS that condition could be used to increase or decrease Actor's max weight
+		end
+	end
+end
+
+function npc_on_item_take_from_box(npc,box,item)
+
+end
+
+-- bind_physic_object use_callback
+function physic_object_on_use_callback(obj,who)
+	if (SleepBagEnable and SleepBagPlaceableSections[obj:section()]) then
+		local hud = get_hud()
+		hud:HideActorMenu()
+		local se_obj = alife():object(obj:id())
+		local ui = ui_sleep_dialog.sleep_bag(obj:id(),se_obj.sleepbag_section)
+	end
+	-- Items refunct mod, Plaargath
+	-- NRC Foil
+	if (SleepBagEnable and NRCPlaceableSections[obj:section()]) then
+		local hud = get_hud()
+		hud:HideActorMenu()
+		local se_obj = alife():object(obj:id())
+		local ui = ui_sleep_dialog.sleep_in_nrc(obj:id(),se_obj.nrc_section)
+	end
+	-- Tent
+	if (TentModEnable and obj:section() == "ph_tent") then
+		local hud = get_hud()
+		hud:HideActorMenu()
+		local se_obj = alife():object(obj:id())
+		local ui = ui_sleep_dialog.sleep_in_tent(obj:id())
+	end
+	-- end Plaargath
+end
+
+sleep_actor_safe = nil
+function squad_assign_new_target(squad)
+	if not (SleepBagEnableDangerous) then
+		return
+	end
+
+	if not (sleep_actor_safe) then
+		return
+	end
+
+	if not (has_alife_info("actor_is_sleeping")) then
+		return
+	end
+
+	if not (game_relations.get_squad_goodwill_to_actor_by_id(squad.id) == "enemy") then
+		return
+	end
+
+	local dist = getLocalActor():position():distance_to_sqr(squad.position)
+	if (dist < SleepBagRadius) then
+		--alun_utils.printf("actor is target")
+		return 0
+	end
+end
+
+function is_ammo_for_wpn(sec) --Adjusted to allow 3 types of ammo for weapon to stay in inventory...Yasti
+	local ammos, wpn, data
+	local sim = alife()
+	for i=2,3 do
+		wpn = getLocalActor():item_in_slot(i)
+		if (wpn) then
+
+			ammos = alun_utils.parse_list(system_ini(),wpn:section(),"ammo_class")
+
+			se_wpn = sim:object(wpn:id())
+			data = stpk_utils.get_weapon_data(se_wpn)
+
+			if (sec == ammos[data.ammo_type+1]) then
+				return true
+			end
+			--Adjusted Yasti
+			if (sec == ammos[data.ammo_type+2]) then
+				return true
+			end
+			if (sec == ammos[data.ammo_type+3]) then
+				return true
+			end
+			--End Yasti
+		end
+	end
+	return false
+end
+
+clsid_to_section = {  -- coop: module-global so the earlier use-corpse callback can read it
+		[clsid.bloodsucker_s] 	= "bloodsucker",
+		[clsid.boar_s] 			= "boar",
+		[clsid.burer_s] 		= "burer",
+		[clsid.chimera_s]		= "chimera",
+		[clsid.controller_s]	= "controller",
+		[clsid.dog_s]			= "dog",
+		[clsid.flesh_s]			= "flesh",
+		[clsid.gigant_s]		= "gigant",
+		[clsid.poltergeist_s]	= "poltergeist",
+		[clsid.psy_dog_s]		= "psy_dog",
+		[clsid.pseudodog_s]		= "pseudodog",
+		[clsid.snork_s]			= "snork",
+		[clsid.tushkano_s]		= "tushkano",
+		[clsid.cat_s]			= "cat",
+		[clsid.fracture_s]		= "fracture",
+		[clsid.zombie_s]		= "zombie",
+		[clsid.crow]			= "crow"
+}
+
+function loot_mutant(obj,clsid,t,npc)
+	local clsid = clsid or obj and obj:clsid()
+	if not (clsid) then
+		return
+	end
+
+	--alun_utils.printf("loot_mutant: collecting section=%s",clsid_to_section[clsid])
+	local loot_table = alun_utils.collect_section(ini,clsid_to_section[clsid])
+
+	local loot,sec
+	for i=1,#loot_table do
+		loot = alun_utils.str_explode(loot_table[i],",")
+		if (loot and loot[1] and loot[2]) then
+			if not (loot[3]) then
+				loot[3] = 1
+			end
+
+			loot[2] = tonumber(loot[2])
+			for i=1,loot[2] do
+				if (math.random() <= tonumber(loot[3])) then
+					--alun_utils.printf("loot_mutant: section=%s",loot[1])
+					local se_obj = alife():create(loot[1],npc and npc:position() or getLocalActor():position(),0,0,npc and npc:id() or 0)
+					if (t) then
+						local item_section = loot[1]
+						if not (t[item_section]) then
+							t[item_section] = {}
+						end
+						t[item_section].count = t[item_section].count and t[item_section].count + 1 or 1
+						t[item_section][t[item_section].count] = se_obj.id
+						--alun_utils.printf("loot_mutant")
+					end
+				end
+			end
+		end
+	end
+end
+
+function show_message(msg,time)
+	local hud = get_hud()
+	hud:AddCustomStatic("can_use_weapon_now", true)
+	hud:GetCustomStatic("can_use_weapon_now"):wnd():TextControl():SetTextST(msg)
+	ShowMessage = true
+	ShowMessageInit = game.get_game_time()
+	ShowMessageTime = time
+end

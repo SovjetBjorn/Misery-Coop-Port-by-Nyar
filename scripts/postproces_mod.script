@@ -1,0 +1,167 @@
+-- PORT_NOTES (Misery_Coop_Port, tools/build_port_systems.py) -- coop-adapted
+-- Misery survival-state SCREEN post-process (drowsiness/fatigue/wounded
+-- effects + item-use pp). Pure client-side: 0 alife, 0 packet ops, 0 pause.
+-- db.actor->getLocalActor(). No self-registration -- driven by direct calls:
+-- sleep_update() per-frame from mc_player_loop.update; use_obj(obj) from the
+-- bind_stalker use_inventory_item wiring. sleep_update entry-guarded for a nil
+-- local actor.
+
+---------------------------------------------------
+--------------------------------------------------------------------------
+--[[------ идея такая - при недосыпе в 12 часов начинаеться двоиться в глазах, при 18 - заблуривание, при 24 отруб с анимацией. Правда я не доконца разобрался с таблицами времени, ну ты уж сам напишешь как правильно. кстати, нужно бы расписать по часам ведь Пысовский сон ранжируется по часам а не по 3 этапам. нужно еще правда сделать подъем с анимацие так используй эту анимацию sleep.anm, а лучше такую surge_02.anm или surge_01, не помню точно. нужно будет потом еще звук зевка прописать на проигрывание, но пока нужного не нашел. сгенерирую из архивов игры потом, как экзамены сдам --]]
+
+local upd_time
+local max_wake_time = axr_misery.ActorClass == "assaulter" and 54 or axr_misery.ActorClass == "recon" and 66 or axr_misery.ActorClass == "sniper" and 76
+max_wake_time = max_wake_time*60*60 -- сколько может продержаться без сна. часы*минуты*секунды
+local drst = game.get_game_time()
+local sleep_ppe1,sleep_ppe2
+local sleepd = nil
+local zevoksnd,sleepsnd = sound_object("actor\\zevok"),sound_object("actor\\sleep")
+function sleep_update()
+	if (getLocalActor() == nil) then return end
+	if time_global() < (upd_time or 1500) then -- апдейтер не трогаем!!!
+		return
+	end
+	upd_time = time_global()+6100
+	local time = game.get_game_time()
+	if sleepd ~= nil then
+		if sleepd == false then
+			sleepd = nil
+			drst = time
+		end
+		return
+	end
+	local val = xr_logic.pstor_retrieve(getLocalActor(),"drowse",0)
+	local add = time:diffSec(drst)/max_wake_time
+	drst = time
+	val = val+add
+--	rx_ai.printf("drowse:add %s, val = %s",add,val)
+	xr_logic.pstor_store(getLocalActor(),"drowse",val)
+    if val > 1 and (not surge_manager.is_started() or surge_manager.actor_in_cover()) then -- отруб
+		sleepsnd:play(getLocalActor(),0,sound_object.s2d)
+		if val > 1.1 then                      --- если вы поставили на предметах (водка , в основном) большое значение сонливости, то можно увеличить предел на значение дельты изменения
+			ui_sleep_dialog.sleep_forced(4*val)  --- нажрались водяры? Спим дольше
+		else
+    ui_sleep_dialog.sleep_forced()
+		end
+    sleepd = true
+    elseif val > 0.75 then -- блюр
+		if not sleep_ppe1 then
+			sleep_ppe1 = true
+			sleep_ppe2 = nil
+			level.add_pp_effector("blur.ppe",2017,true)
+		end
+		if math.random(100) > 91 then -- зевок
+			zevoksnd:play(getLocalActor(),0,sound_object.s2d)
+			level.add_cam_effector("camera_effects\\surge_01.anm",1002,false)
+		end
+	elseif val > 0.5 then -- двоение
+		if not sleep_ppe2 then
+			sleep_ppe2 = true
+			sleep_ppe1 = nil
+			level.add_pp_effector("sleep.ppe",2017,true)
+		end
+		if math.random(100) > 99 then -- зевок
+			zevoksnd:play(getLocalActor(),0,sound_object.s2d)
+		end
+	else
+		level.remove_pp_effector(2017)
+	end
+end
+
+local wakeupsnd = sound_object("actor\\wakeup")
+function sleep_callback(hours,mins)
+	sleepd = false
+	wakeupsnd:play(getLocalActor(),2,sound_object.s2d)
+	local val = xr_logic.pstor_retrieve(getLocalActor(),"drowse",0)
+	val = val-hours/10-mins/600
+	if val < 0 then
+		val  = 0
+	end
+	xr_logic.pstor_store(getLocalActor(),"drowse",val)
+	val = xr_logic.pstor_retrieve(getLocalActor(),"drowse_cut",0)
+	val = val-hours/16-mins/960
+	if val < 0 then
+		val  = 0
+	end
+	xr_logic.pstor_store(getLocalActor(),"drowse_cut",val)
+end
+
+--[[------ Сдесь определяется сонливость в зависимоти от принятых на грудь литров водки или энергетиков. В принципе можете добавлять любой предмет который можно "съесть". я добавил некоторые медикаменты --]] ------
+local obj_table = {}
+function use_obj(obj)
+	local s = obj:section()
+	if not obj_table[s] then
+		obj_table[s] = alun_utils.read_from_ini(nil,s,"eat_sleepiness","float",0)
+	end
+	if obj_table[s] ~= 0 then
+--		rx_ai.printf("sleep:use %s = %s",s,obj_table[s])
+		local val = xr_logic.pstor_retrieve(getLocalActor(),"drowse_cut",0)
+		if val >= 1 and obj_table[s] < 0 then
+			return -- если лимит использования энeргеников исчерпан
+		end
+		if obj_table[s] < 0 then
+			xr_logic.pstor_store(getLocalActor(),"drowse_cut",val-obj_table[s])
+		end
+		val = xr_logic.pstor_retrieve(getLocalActor(),"drowse",0)+obj_table[s]
+		if val < 0 then
+			val = 0
+		end
+		xr_logic.pstor_store(getLocalActor(),"drowse",val)
+	end
+end
+
+-- KCS - new postprocess function that use spawn section name instead of oject directly. Must be for new created offline object
+-- it is used in bind_stalker.script if player attempt to use "medkit_script" object that is not intended to use but can be bought from stalkers or looted in strange situations
+function use_obj_section(s_obj)
+	local s = s_obj
+	if not obj_table[s] then
+		obj_table[s] = alun_utils.read_from_ini(nil,s,"eat_sleepiness","float",0)
+	end
+	if obj_table[s] ~= 0 then
+--		rx_ai.printf("sleep:use %s = %s",s,obj_table[s])
+		local val = xr_logic.pstor_retrieve(getLocalActor(),"drowse_cut",0)
+		if val >= 1 and obj_table[s] < 0 then
+			return -- если лимит использования энeргеников исчерпан
+		end
+		if obj_table[s] < 0 then
+			xr_logic.pstor_store(getLocalActor(),"drowse_cut",val-obj_table[s])
+		end
+		val = xr_logic.pstor_retrieve(getLocalActor(),"drowse",0)+obj_table[s]
+		if val < 0 then
+			val = 0
+		end
+		xr_logic.pstor_store(getLocalActor(),"drowse",val)
+	end
+end
+-- KCS end of new function
+
+lite_treshold = 0.05 -- насколько должно уменьшиться здоровье с предыдущего обновления чтоб экран окрасился в красный
+crit_treshold = 0.30 -- насколько должно уменьшиться здоровье с предыдущего обновления чтоб ГГ начало шатать
+drop_item_on_crit_prob = 0.20 -- вероятность того что ГГ выронит оружие
+effector_power_coeff = 0.7
+prev_health = -1
+chk_h_t = 0
+
+local painsnd = sound_object("actor\\pain_3")
+function wounded_pp_update()
+  if (chk_h_t or 0) < time_global() then
+    chk_h_t = time_global()+100
+    if prev_health > (getLocalActor().health + lite_treshold) then
+      level.add_pp_effector("fire_hit.ppe", 2011, false)
+      local effector_power = (prev_health - getLocalActor().health)*100*effector_power_coeff
+      level.set_pp_effector_factor(2011, effector_power)
+      if prev_health > getLocalActor().health + crit_treshold then
+	    painsnd:play(getLocalActor(),0,sound_object.s2d)
+        level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
+        if math.random() < drop_item_on_crit_prob then
+          local active_item = getLocalActor():active_item()
+          if active_item and active_item:section() ~= "bolt" and not string.find(active_item:section(),"knife") then
+            getLocalActor():drop_item(active_item)
+          end
+        end
+      end
+    end
+    prev_health = getLocalActor().health
+  end
+end

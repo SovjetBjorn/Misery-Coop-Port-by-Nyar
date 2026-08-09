@@ -1,0 +1,488 @@
+
+;сюжетные задания
+
+[jup_a9_way_to_pripyat_power_info]
+icon = ui_inGame2_Put_v_pripyat
+prior = 112
+storyline = true
+title = zat_a9_way_gates_check_transport_workshop_name
+descr = zat_a9_way_gates_check_transport_workshop_text
+target = jup_a9_power_info
+on_init = %+JUP_A9_WAY_TO_PRIPYAT_POWER_INFO_STARTED%
+condlist_0 = {+JUP_A9_POWER_INFO} complete
+
+[jup_a9_way_to_pripyat_search]
+icon = ui_inGame2_Put_v_pripyat
+prior = 109
+storyline = true
+title = {+JUP_A9_DELIVERY_INFO_TAKED} zat_a9_way_to_pripyat_check_archives_name, {+JUP_A9_LOSSES_INFO_TAKED} zat_a9_way_to_pripyat_check_repair_workshop_name, {+JUP_A9_MEETING_INFO_TAKED} zat_a9_way_to_pripyat_check_delivery_department_name, {+JUP_A9_EVACUATION_INFO_TAKED} zat_a9_way_gates_check_electrical_workshop_name, {+ZAT_B215_GUIDE_TO_PRIPYAT_NO_WAY_TOLD} zat_a9_way_gates_check_corps_name, zat_a9_way_to_pripyat_tell_stalker_guide_name
+descr = {+JUP_A9_DELIVERY_INFO_TAKED} zat_a9_way_to_pripyat_check_archives_text, {+JUP_A9_LOSSES_INFO_TAKED} zat_a9_way_to_pripyat_check_repair_workshop_text, {+JUP_A9_MEETING_INFO_TAKED} zat_a9_way_to_pripyat_check_delivery_department_text, {+JUP_A9_EVACUATION_INFO_TAKED} zat_a9_way_gates_check_electrical_workshop_text, {+ZAT_B215_GUIDE_TO_PRIPYAT_NO_WAY_TOLD} zat_a9_way_gates_check_corps_text, zat_a9_way_to_pripyat_tell_stalker_guide_text
+target = {+JUP_A9_DELIVERY_INFO_TAKED} jup_a9_way_info, {+JUP_A9_LOSSES_INFO_TAKED} jup_a9_delivery_info, {+JUP_A9_MEETING_INFO_TAKED} jup_a9_losses_info, {+JUP_A9_EVACUATION_INFO_TAKED} jup_a9_meeting_info, {+ZAT_B215_GUIDE_TO_PRIPYAT_NO_WAY_TOLD} jup_a9_evacuation_info, {=actor_on_level(jupiter)} zat_b215_stalker_guide_jupiter, {=actor_on_level(zaton)} zat_b215_stalker_guide_zaton;, zat_b215_stalker_guide
+on_init = %+JUP_A9_WAY_TO_PRIPYAT_SEARCH_STARTED%
+condlist_0 = {+JUP_A9_WAY_INFO} complete
+condlist_1 = {+JUP_A9_WAY_TO_PRIPYAT_WAY_INFO_STARTED} reversed
+
+[jup_a9_way_to_pripyat_gas_info]
+icon = ui_inGame2_Put_v_pripyat
+prior = 111
+storyline = true
+title = zat_a9_way_gases_check_chemistry_workshop_name
+descr = zat_a9_way_gases_check_chemistry_workshop_text
+target = jup_a9_conservation_info
+on_init = %+JUP_A9_WAY_TO_PRIPYAT_GAS_INFO_STARTED%
+condlist_0 = {+JUP_A9_CONSERVATION_INFO} complete
+
+[jup_a9_way_to_pripyat_way_info]
+icon = ui_inGame2_Put_v_pripyat
+prior = 110
+storyline = true
+title = zat_a9_way_to_pripyat_check_archives_name
+descr = zat_a9_way_to_pripyat_check_archives_text
+target = jup_a9_way_info
+on_init = %+JUP_A9_WAY_TO_PRIPYAT_WAY_INFO_STARTED%
+condlist_0 = {+JUP_A9_WAY_INFO} complete
+
+[jup_a9_way_to_pripyat_tech]
+icon = ui_inGame2_Put_v_pripyat
+prior = 113
+storyline = true
+title = jup_a9_way_to_pripyat_tech_name
+descr = jup_a9_way_to_pripyat_tech_text
+target = jup_b217_stalker_tech
+on_init = %+JUP_A9_WAY_TO_PRIPYAT_TECH_STARTED%
+condlist_0 = {+JUP_A9_TECH_WAY_INFO} complete
+
+[jup_b8_heli_4_crash]
+icon = ui_inGame2_Skat_4
+prior = 102
+storyline = true
+title = {+ZAT_B101_ONE_HELI_INFO -ZAT_B101_HELI_5_SEARCHING} jup_b8_heli_4_crash_name_2, jup_b8_heli_4_crash_name
+descr = {+ZAT_B101_ONE_HELI_INFO -ZAT_B101_HELI_5_SEARCHING} jup_b8_heli_4_crash_text_2, jup_b8_heli_4_crash_text
+target = {+JUP_B8_HELI_4_SEARCHED} nil, jup_b8_heli_4
+condlist_0 = {+JUP_B8_HELI_4_SEARCHED +ZAT_B101_BOTH_HELI_INFO} complete
+condlist_1 = {+PRI_B305_ACTOR_WONDERED_DONE} complete
+
+[jup_b9_heli_1_crash]
+icon = ui_inGame2_Skat_1
+prior = 105
+storyline = true
+title = {+JUP_B9_BLACKBOX_DECRYPTED_TIME}jup_b9_go_for_blackbox_descryption_name,{+JUP_B9_BLACKBOX_DECRYPTING}jup_b9_blackbox_descrypted_after_3_name,{+JUP_B9_HELI_1_SEARCHED}jup_b9_blackbox_decrypting_name,jup_b9_heli_1_crash_name
+descr = {+JUP_B9_BLACKBOX_DECRYPTED_TIME}jup_b9_go_for_blackbox_descryption_text,{+JUP_B9_BLACKBOX_DECRYPTING}jup_b9_blackbox_descrypted_after_3_text,{+JUP_B9_HELI_1_SEARCHED}jup_b9_blackbox_decrypting_text,jup_b9_heli_1_crash_text
+;target = {+JUP_B9_HELI_1_SEARCHED}jup_b217_stalker_tech_ZATICHKA, jup_b9_heli_1
+target = {+JUP_B9_HELI_1_SEARCHED}jup_b217_stalker_tech, jup_b9_heli_1
+condlist_0 = {+JUP_B9_BLACKBOX_DECRYPTED} complete
+
+[jup_b218_pripyat_group]
+icon = ui_inGame2_Pripyat_1
+prior = 114
+storyline = true
+title  = {+JUP_B218_PRIPYAT_GROUP_GATHERING} jup_b218_pripyat_group_gathering_name, jup_b218_pripyat_group_zulus_talk_name
+descr  = {+JUP_B218_PRIPYAT_GROUP_GATHERING} jup_b218_pripyat_group_gathering_text, jup_b218_pripyat_group_zulus_talk_text
+target = {+JUP_B218_PRIPYAT_GROUP_GATHERING} nil, jup_b15_zulus
+condlist_0 = {+JUP_B218_GATHER_SQUAD_COMPLETE} complete
+
+[jup_b218_stalker]
+icon = ui_inGame2_Pripyat_1
+prior = 116
+storyline = true
+title  = {+JUP_A10_STALKER_VANO_OUTFIT_MONEY_YES_TOLD} jup_b218_stalker_guide_to_zulus_name, {+JUP_A10_STALKER_VANO_NEED_OUTFIT_TOLD} jup_b218_stalker_bring_money_name, jup_b218_stalker_name
+descr  = {+JUP_A10_STALKER_VANO_OUTFIT_MONEY_YES_TOLD} jup_b218_stalker_guide_to_zulus_text, {+JUP_A10_STALKER_VANO_NEED_OUTFIT_TOLD} jup_b218_stalker_bring_money_text, jup_b218_stalker_text
+target = {+JUP_A10_STALKER_VANO_OUTFIT_MONEY_YES_TOLD} nil, {+JUP_A10_STALKER_VANO_NEED_OUTFIT_TOLD} nil, jup_a10_stalker_vano
+condlist_0 = {+JUP_B218_GATHER_SQUAD_COMPLETE} reversed
+condlist_1 = {+JUP_A10_VANO_AGREE_GO_UND_DONE} complete
+
+[jup_b218_soldier]
+icon = ui_inGame2_Pripyat_1
+prior = 115
+storyline = true
+title  = {+PRI_A15_SOKOLOV_ARRANGED_OUTFIT_TOLD} jup_b218_soldier_guide_to_zulus_name, {+JUP_B206_ANOMALOUS_GROVE_DONE} jup_b218_soldier_tell_outfit_name, {+JUP_B206_ANOMALOUS_GROVE_STARTED} jup_b218_soldier_do_scientist_quest_name, {+JUP_B218_SOLDIER_NEED_OUTFIT} jup_b218_soldier_talk_to_scientist_name, jup_b218_soldier_name
+descr  = {+PRI_A15_SOKOLOV_ARRANGED_OUTFIT_TOLD} jup_b218_soldier_guide_to_zulus_text, {+JUP_B206_ANOMALOUS_GROVE_DONE} jup_b218_soldier_tell_outfit_text, {+JUP_B206_ANOMALOUS_GROVE_STARTED} jup_b218_soldier_do_scientist_quest_text, {+JUP_B218_SOLDIER_NEED_OUTFIT} jup_b218_soldier_talk_to_scientist_text, jup_b218_soldier_text
+target = {+JUP_B206_ANOMALOUS_GROVE_DONE} pri_a15_sokolov, {+JUP_B218_SOLDIER_NEED_OUTFIT} jup_b6_scientist_biochemist, pri_a15_sokolov
+condlist_0 = {+JUP_B218_GATHER_SQUAD_COMPLETE} reversed
+condlist_1 = {+JUP_B15_ZULUS_GROUP_SOLDIER_START_TOLD} complete
+
+[jup_b218_monolith]
+icon = ui_inGame2_Pripyat_1
+prior = 117
+storyline = true
+title  = {+JUP_B4_MONOLITH_SQUAD_LEADER_NEED_OUTFIT_TOLD} jup_b218_monolith_guide_to_zulus_name, jup_b218_monolith_name
+descr  = {+JUP_B4_MONOLITH_SQUAD_LEADER_NEED_OUTFIT_TOLD} jup_b218_monolith_guide_to_zulus_text, jup_b218_monolith_text
+target = {+JUP_B4_MONOLITH_SQUAD_LEADER_NEED_OUTFIT_TOLD} jup_b15_logic, {+JUP_B4_MONOLITH_SQUAD_IN_FREEDOM} jup_b4_monolith_squad_leader_freedom_skin, {+JUP_B4_MONOLITH_SQUAD_IN_DUTY} jup_b4_monolith_squad_leader_duty_skin
+condlist_0 = {+JUP_B218_GATHER_SQUAD_COMPLETE} reversed
+condlist_1 = {+JUP_B15_ZULUS_GROUP_MONOLITH_START_TOLD} complete
+
+[jup_b218_actor_outfit]
+icon = ui_inGame2_Pripyat_1
+prior = 118
+storyline = true
+title  = jup_b218_actor_outfit_name
+descr  = jup_b218_actor_outfit_text
+condlist_0 = {=actor_has_item(scientific_outfit)} complete
+on_complete = %-JUP_B218_ACTOR_OUTFIT_TASK +JUP_B218_ACTOR_CAN_GO_PASS%
+
+[pas_b400_pripyat]
+icon = ui_inGame2_Pripyat_1
+prior = 119
+storyline = true
+title  = pas_b400_pripyat_name
+descr  = {+PAS_B400_WAY_BUTTON_PRESSED} pas_b400_pripyat_text, {-PAS_B400_WAY_BUTTON_PRESSED +PAS_B400_SR_WAY_2} pas_b400_pripyat_door_text, {+PAS_B400_HALL_DOOR_OPENED} pas_b400_pripyat_text, {-PAS_B400_HALL_DOOR_OPENED !squad_exist(pas_b400_stalkers_squad) +PAS_B400_SR_HALL_12_IN_2} pas_b400_pripyat_control_text, {-PAS_B400_HALL_DOOR_OPENED +PAS_B400_ABOUT_CONTROL_GATES +PAS_B400_SR_HALL_12_IN_2} pas_b400_pripyat_control_text, {+PAS_B400_CONTROL_DOWN_DOOR_OPENED} pas_b400_pripyat_text, {-PAS_B400_CONTROL_DOWN_DOOR_OPENED !squad_exist(pas_b400_stalkers_squad) +PAS_B400_SR_HALL_12_IN} pas_b400_pripyat_hall_door_text, {-PAS_B400_CONTROL_DOWN_DOOR_OPENED +PAS_B400_ABOUT_RAILWAY +PAS_B400_SR_HALL_12_IN} pas_b400_pripyat_hall_door_text,  {+PAS_B400_TUNNEL_BUTTON_PRESSED} pas_b400_pripyat_text, {-PAS_B400_TUNNEL_BUTTON_PRESSED +PAS_B400_SR_TUNNEL_5_IN +PAS_B400_ZULUS_ABOUT_TRAIN_GATES_1} pas_b400_pripyat_gate_text, {-PAS_B400_TUNNEL_BUTTON_PRESSED +PAS_B400_SR_TUNNEL_5_IN !is_alive(pas_b400_zulus)} pas_b400_pripyat_gate_text, {+PAS_B400_DOWNSTAIRS_BUTTON_PRESSED} pas_b400_pripyat_text, {-PAS_B400_DOWNSTAIRS_BUTTON_PRESSED +PAS_B400_SR_DOWNSTAIRS_2} pas_b400_pripyat_door_text, {+PAS_B400_TRACK_BUTTON_PRESSED} pas_b400_pripyat_text, {-PAS_B400_TRACK_BUTTON_PRESSED +PAS_B400_SR_TRACK_4 !is_alive(pas_b400_zulus)} pas_b400_pripyat_door_text, {-PAS_B400_TRACK_BUTTON_PRESSED +PAS_B400_SR_TRACK_4 =is_alive(pas_b400_zulus) +PAS_B400_ZULUS_ABOUT_OBSTACLE_2} pas_b400_pripyat_door_text, {+PAS_B400_ELEVATOR_BUTTON_PRESSED} pas_b400_pripyat_text, {-PAS_B400_ELEVATOR_BUTTON_PRESSED +PAS_B400_SR_ELEVATOR_5} pas_b400_pripyat_gate_text, pas_b400_pripyat_text
+target = {+PAS_B400_WAY_BUTTON_PRESSED} pas_b400_fwd, {-PAS_B400_WAY_BUTTON_PRESSED +PAS_B400_SR_WAY_2} pas_b400_ph_button_way, {+PAS_B400_HALL_DONE} pas_b400_door_way, {+PAS_B400_HALL_DOOR_OPENED} pas_b400_door_hall, {-PAS_B400_HALL_DOOR_OPENED !squad_exist(pas_b400_stalkers_squad) +PAS_B400_SR_HALL_12_IN_2} pas_b400_ph_button_hall, {-PAS_B400_HALL_DOOR_OPENED +PAS_B400_ABOUT_CONTROL_GATES +PAS_B400_SR_HALL_12_IN_2} pas_b400_ph_button_hall, {+PAS_B400_CONTROL_DOWN_DOOR_OPENED} pas_b400_door_hall, {-PAS_B400_CONTROL_DOWN_DOOR_OPENED !squad_exist(pas_b400_stalkers_squad) +PAS_B400_SR_HALL_11_IN} pas_b400_ph_button_control_down, {-PAS_B400_CONTROL_DOWN_DOOR_OPENED +PAS_B400_ABOUT_TRANSFORMER +PAS_B400_SR_HALL_11_IN} pas_b400_ph_button_control_down, {-PAS_B400_CONTROL_DOWN_DOOR_OPENED !squad_exist(pas_b400_stalkers_squad) +PAS_B400_SR_HALL_12_IN} nil, {-PAS_B400_CONTROL_DOWN_DOOR_OPENED +PAS_B400_ABOUT_RAILWAY +PAS_B400_SR_HALL_12_IN} nil, {+PAS_B400_TUNNEL_BUTTON_PRESSED} pas_b400_door_hall, {-PAS_B400_TUNNEL_BUTTON_PRESSED +PAS_B400_SR_TUNNEL_5_IN +PAS_B400_ZULUS_ABOUT_TRAIN_GATES_1} pas_b400_ph_button_tunnel, {-PAS_B400_TUNNEL_BUTTON_PRESSED +PAS_B400_SR_TUNNEL_5_IN !is_alive(pas_b400_zulus)} pas_b400_ph_button_tunnel, {+PAS_B400_DOWNSTAIRS_BUTTON_PRESSED} pas_b400_door_tunnel, {-PAS_B400_DOWNSTAIRS_BUTTON_PRESSED +PAS_B400_SR_DOWNSTAIRS_2} pas_b400_ph_button_downstairs, {+PAS_B400_TRACK_BUTTON_PRESSED} pas_b400_door_downstairs, {-PAS_B400_TRACK_BUTTON_PRESSED +PAS_B400_SR_TRACK_4 !is_alive(pas_b400_zulus)} pas_b400_ph_button_track, {-PAS_B400_TRACK_BUTTON_PRESSED +PAS_B400_SR_TRACK_4 =is_alive(pas_b400_zulus) +PAS_B400_ZULUS_ABOUT_OBSTACLE_2} pas_b400_ph_button_track, {+PAS_B400_ELEVATOR_BUTTON_PRESSED} pas_b400_door_track, {-PAS_B400_ELEVATOR_BUTTON_PRESSED +PAS_B400_SR_ELEVATOR_5} pas_b400_ph_button_elevator, pas_b400_door_elevator
+condlist_0 = {=actor_on_level(pripyat)} complete
+
+;второстепенные задания
+
+[jup_b208_burers_hunt]
+icon = ui_inGame2_Ohota_na_Burerov
+prior = 1
+storyline = false
+title = {+JUP_B208_BURERS_DEAD} jup_b208_burers_hunt_take_reward_name, jup_b208_burers_hunt_kill_burers_name
+descr = {+JUP_B208_BURERS_DEAD} jup_b208_burers_hunt_take_reward_text, jup_b208_burers_hunt_kill_burers_text
+target = {+JUP_B208_BURERS_DEAD} jup_b220_trapper, jup_b208_burers_lair
+condlist_0 = {+JUP_B208_BURERS_HUNT_DONE} complete
+on_complete = {=local_actor_story_id(actor_degtyarev)} %=jup_trapper_second_hunt_reward%
+
+[jup_b206_anomalous_grove]
+icon = ui_inGame2_Anomalnoe_rastenie
+prior = 1
+storyline = false
+title = {+JUP_B206_ANOMALOUS_GROVE_HAS_PLANT} jup_b206_anomalous_grove_have_plant_name, jup_b206_anomalous_grove_get_plant_name
+descr = {+JUP_B206_ANOMALOUS_GROVE_HAS_PLANT} jup_b206_anomalous_grove_have_plant_text, jup_b206_anomalous_grove_get_plant_text
+target = {+JUP_B206_ANOMALOUS_GROVE_HAS_PLANT} jup_b6_scientist_biochemist, jup_b206_plant
+condlist_0 = {+JUP_B206_ANOMALOUS_GROVE_DONE} complete
+on_complete = {=local_actor_story_id(actor_degtyarev)} %+JUP_B206_TASK_DONE =jup_sci_task_counter%
+
+[jup_b212_jupiter_chimera_hunt]
+icon = ui_inGame2_Nochnaya_ohota
+prior = 1
+storyline = false
+title = {+JUP_B212_JUPITER_CHIMERA_DEAD} jup_b212_jupiter_tell_animalboy_about_chimera_name, jup_b212_jupiter_kill_chimera_name
+descr = {+JUP_B212_JUPITER_CHIMERA_DEAD} jup_b212_jupiter_tell_animalboy_about_chimera_text, jup_b212_jupiter_kill_chimera_text
+target = {+JUP_B212_JUPITER_CHIMERA_DEAD} jup_b220_trapper, jup_b212_id
+condlist_0 = {+JUP_B212_JUPITER_CHIMERA_HUNT_DONE} complete
+on_complete = {=local_actor_story_id(actor_degtyarev)} %=jup_trapper_second_hunt_reward%
+reward_money = 15000
+
+[jup_a10_actor_agree_back_vano_duties]
+icon = ui_inGame2_Dolgi
+prior = 1
+storyline = false
+title = {+JUP_A10_BACK_VANO} jup_a10_actor_back_vano_duties_name, {+JUP_A10_KILL_ALL_BANDIT} jup_a10_kill_all_bandit_name, jup_a10_actor_agree_back_vano_duties_name 
+descr = {+JUP_A10_BACK_VANO} jup_a10_actor_back_vano_duties_text, {+JUP_A10_KILL_ALL_BANDIT} jup_a10_kill_all_bandit_text, jup_a10_actor_agree_back_vano_duties_text
+target = {+JUP_A10_BACK_VANO} jup_a10_stalker_vano, {+JUP_A10_DEATH_0 =squad_exist(jup_a10_bandit_squad_3)} jup_a10_bandit_squad_3, {+JUP_A10_KILL_ALL_BANDIT =squad_exist(jup_a10_bandit_squad_3)} jup_a10_bandit_leader, {=squad_exist(jup_a10_bandit_squad_3)} jup_a10_bandit_leader
+;target = {+JUP_A10_BACK_VANO} jup_a10_stalker_vano, {+JUP_A10_KILL_ALL_BANDIT}jup_a10_bandit_leader
+condlist_0 = {+JUP_A10_VANO_GIVE_TASK_END} complete
+;condlist_1 = {+JUP_A10_FALS} fail
+
+[jup_b16_oasis]
+icon = ui_inGame2_Oazis
+prior = 1
+storyline = false
+title = {+JUP_B16_OASIS_ART +ACTOR_HAS_AF_OASIS_HEART} jup_b16_oasis_artifact_back_name, {+JUP_B16_OASIS_ART} jup_b16_oasis_art_name, jup_b16_oasis_name 
+descr = {+JUP_B16_OASIS_ART +ACTOR_HAS_AF_OASIS_HEART} jup_b16_oasis_artifact_back_text, {+JUP_B16_OASIS_ART} jup_b16_oasis_art_text, jup_b16_oasis_text
+target = {+JUP_B16_OASIS_ART +ACTOR_HAS_AF_OASIS_HEART} jup_b6_scientist_biochemist, {+JUP_B16_OASIS_ART}jup_b16_oasis_artifact
+condlist_0 = {+JUP_B16_OASIS_ARTEFACT_TO_SCIENTIST} complete 
+on_complete = {=local_actor_story_id(actor_degtyarev)} %+JUP_B16_TASK_DONE =jup_sci_task_counter%
+
+[jup_b200_tech_materials]
+icon = ui_inGame2_Radiotechnika
+prior = 1
+storyline = false
+title = jup_b200_tech_materials_name
+descr = {+JUP_B200_COUNTER_FOUND_ALL}jup_b200_tech_materials_brought_all_text,{+JUP_B200_COUNTER_FOUND_SOME}jup_b200_tech_materials_brought_some_text,{+JUP_B200_ACTOR_BEGIN_SEARCH_MATIRIAL} jup_b200_tech_materials_inside_text ,{-JUP_B200_ACTOR_BEGIN_SEARCH_MATIRIAL} jup_b200_tech_materials_text
+target = {+JUP_B200_COUNTER_FOUND_ALL} jup_b217_stalker_tech, {-JUP_B200_COUNTER_FOUND_ALL +JUP_B200_COUNTER_FOUND_SOME} jup_b217_stalker_tech, {-JUP_B200_ACTOR_BEGIN_SEARCH_MATIRIAL -JUP_B200_COUNTER_FOUND_SOME} jup_b200_cement_mill
+condlist_0 = {+JUP_B200_TECH_MATERIALS_BROUGHT_ALL} complete, {+JUP_B200_TECH_MATERIALS_BROUGHT_SOME} complete
+
+
+[jup_b10_ufo]
+icon = ui_inGame2_Bespilotniy_razvedchik
+prior = 1
+storyline = false
+title = jup_b10_ufo_memory_name
+descr = {-JUP_B10_UFO_MEMORY_REPAIRING +JUP_B10_UFO_MEMORY_AT_NITROS} jup_b10_ufo_memory_repaired_by_nitro_text, {-JUP_B10_UFO_MEMORY_REPAIRING +JUP_B10_UFO_MEMORY_AT_NOVIKOVS} jup_b10_ufo_memory_repaired_by_novikov_text, {+JUP_B10_UFO_MEMORY_REPAIRING} jup_b10_ufo_memory_at_text, jup_b10_ufo_memory_started_text
+target = {-JUP_B10_UFO_MEMORY_REPAIRING +JUP_B10_UFO_MEMORY_AT_NITROS} jup_b217_stalker_tech, {-JUP_B10_UFO_MEMORY_REPAIRING +JUP_B10_UFO_MEMORY_AT_NOVIKOVS} jup_b6_scientist_tech, nil
+condlist_0 = {+JUP_B10_UFO_MEMORY_REPAIRED} complete
+
+[jup_b4_monolith_squad_help]
+icon = ui_inGame2_Vizhivshiy_monolit
+prior = 2
+storyline = false
+title = {+JUP_B4_DUTY_REDY_GO_TO_MONOLIT_SQUAD} jup_b4_stalkers_come_name, {+JUP_B4_FREEDOM_REDY_GO_TO_MONOLIT_SQUAD} jup_b4_stalkers_come_name, jup_b4_monolith_squad_help_name
+descr = {+JUP_B4_DUTY_REDY_GO_TO_MONOLIT_SQUAD} jup_b4_stalkers_come_duty_text, {+JUP_B4_FREEDOM_REDY_GO_TO_MONOLIT_SQUAD} jup_b4_stalkers_come_freedom_text, jup_b4_monolith_squad_help_text
+target = {+JUP_B4_DUTY_REDY_GO_TO_MONOLIT_SQUAD} jup_a6_duty_leader, {+JUP_B4_FREEDOM_REDY_GO_TO_MONOLIT_SQUAD} jup_a6_freedom_leader, jup_a6_smart_id
+condlist_0 = {+JUP_B4_MONOLITH_SQUAD_IN_DUTY} complete %+JUP_B4_MONOLITH_SQUAD_REDY_GO_YANOV%
+condlist_1 = {+JUP_B4_MONOLITH_SQUAD_IN_FREEDOM} complete %+JUP_B4_MONOLITH_SQUAD_REDY_GO_YANOV%
+condlist_2 = {+JUP_B4_MONOLITH_SQUAD_OUT} fail %+JUP_B4_TASK_END%
+on_complete = %+JUP_B4_TASK_END%
+
+[jup_b209_hypotheses]
+icon = ui_inGame2_Gipoteza
+prior = 2
+storyline = false
+title = {+JUP_B209_SCANNER_REMOVE} jup_b209_hypotheses_4_name,{+JUP_B209_SCANNER_PLACED +JUP_B209_SCANNER_TIME_TO_REMOVE}jup_b209_hypotheses_3_name,{+JUP_B209_SCANNER_PLACED -JUP_B209_SCANNER_TIME_TO_REMOVE} jup_b209_hypotheses_2_name,jup_b209_hypotheses_1_name
+descr = {+JUP_B209_SCANNER_REMOVE} jup_b209_hypotheses_4_text,{+JUP_B209_SCANNER_PLACED +JUP_B209_SCANNER_TIME_TO_REMOVE}jup_b209_hypotheses_3_text,{+JUP_B209_SCANNER_PLACED -JUP_B209_SCANNER_TIME_TO_REMOVE} jup_b209_hypotheses_2_text,jup_b209_hypotheses_1_text
+target = {+JUP_B209_SCANNER_REMOVE} jup_b6_scientist_biochemist, jup_b209_hypotheses
+condlist_0 = {+JUP_B209_HYPOTHESES_END} complete
+reward_money = 11600
+on_complete = {=local_actor_story_id(actor_degtyarev)} %+JUP_B209_TASK_DONE =jup_sci_task_counter%
+
+[jup_b1_task]
+icon = ui_inGame2_Peremennoe_psi_izluchenie
+prior = 2
+storyline = false
+title = {+JUP_B1_ACTOR_HAS_HALF_ARTIFACT} jup_b1_bring_art_back_name, {+JUP_B1_START} jup_b1_get_art_name, {+JUP_B1_ACTOR_ATK_SQUAD} jup_b1_get_art_name, {+JUP_B1_GO_ON_TASK} jup_b1_join_squad_name, jup_b1_meet_squad_name
+descr = {+JUP_B1_ACTOR_HAS_HALF_ARTIFACT} jup_b1_bring_art_back_text, {+JUP_B1_START} jup_b1_get_art_text, {+JUP_B1_ACTOR_ATK_SQUAD} jup_b1_get_art_text, {+JUP_B1_GO_ON_TASK} jup_b1_join_squad_text, jup_b1_meet_squad_text
+target = {+JUP_B1_ACTOR_HAS_HALF_ARTIFACT} jup_b6_scientist_nuclear_physicist, {+JUP_B1_START} jup_b1_half_artifact, {+JUP_B1_ACTOR_ATK_SQUAD} jup_b1_half_artifact, {+JUP_B1_GO_ON_TASK} jup_b1_task_beacon, jup_b1_stalker_1
+condlist_0 = {+JUP_B1_COMPLETE_END} complete
+condlist_1 = {-JUP_B1_GIVE_TASK} reversed
+on_complete = {=local_actor_story_id(actor_degtyarev)} %+JUP_B1_TASK_DONE =jup_sci_task_counter%
+
+[jup_b6_task]
+icon = ui_inGame2_Issledovanie_anomaliy
+prior = 2
+storyline = false
+title = {-JUP_B6_TWO_ANOMALY_LEARNED +JUP_B6_TRAVEL} jup_b6_travel_name, {+JUP_B6_TWO_ANOMALY_LEARNED +JUP_B6_ST_MISSION} jup_b6_travel_home_name, {+JUP_B6_TWO_ANOMALY_LEARNED} jup_b6_get_reward_name, {+JUP_B6_ANOM_1_GUARD} jup_b6_anom_1_guard_name, {+JUP_B6_ANOM_2_GUARD} jup_b6_anom_2_guard_name, {+JUP_B6_ST_MISSION} jup_b6_watch_topol_squad_six_name, jup_b6_get_to_anomal_place_name
+descr = {-JUP_B6_TWO_ANOMALY_LEARNED +JUP_B6_TRAVEL} jup_b6_travel_text, {+JUP_B6_TWO_ANOMALY_LEARNED +JUP_B6_ST_MISSION} jup_b6_travel_home_text, {+JUP_B6_TWO_ANOMALY_LEARNED} jup_b6_get_reward_text, {+JUP_B6_ANOM_1_GUARD} jup_b6_anom_1_guard_text, {+JUP_B6_ANOM_2_GUARD} jup_b6_anom_2_guard_text, {+JUP_B6_ST_MISSION} jup_b6_watch_topol_squad_six_text, jup_b6_get_to_anomal_place_text
+target = {+JUP_B6_TWO_ANOMALY_LEARNED +JUP_B6_ST_MISSION =squad_exist(jup_b6_stalker_freedom_squad) +JUP_B6_GIVE_TASK +JUP_B6_FREEDOM_EMPLOYED} jup_b6_stalker_freedom_squad, {+JUP_B6_TWO_ANOMALY_LEARNED +JUP_B6_ST_MISSION =squad_exist(jup_b6_stalker_duty_squad) +JUP_B6_GIVE_TASK +JUP_B6_DUTY_EMPLOYED} jup_b6_stalker_duty_squad, {+JUP_B6_TWO_ANOMALY_LEARNED +JUP_B6_ST_MISSION =squad_exist(jup_b6_stalker_gonta_squad) +JUP_B6_GIVE_TASK +JUP_B6_GONTA_EMPLOYED} jup_b6_stalker_gonta_squad, {+JUP_B6_TWO_ANOMALY_LEARNED +JUP_B6_ST_MISSION =squad_exist(jup_b6_stalker_exprisoner_squad) +JUP_B6_GIVE_TASK +JUP_B6_EXPRISONER_WORK_ON_SCI}  jup_b6_stalker_exprisoner_squad, {+JUP_B6_TWO_ANOMALY_LEARNED +JUP_B6_ST_MISSION =squad_exist(jup_b1_stalker_squad) +JUP_B6_GIVE_TASK -JUP_B6_FREEDOM_EMPLOYED -JUP_B6_DUTY_EMPLOYED -JUP_B6_GONTA_EMPLOYED -JUP_B6_EXPRISONER_WORK_ON_SCI -JUP_B1_SQUAD_IS_DEAD} jup_b1_stalker_squad, {+JUP_B6_TWO_ANOMALY_LEARNED} jup_b6_scientist_nuclear_physicist, {=squad_exist(jup_b6_stalker_freedom_squad) +JUP_B6_GIVE_TASK +JUP_B6_FREEDOM_EMPLOYED} jup_b6_stalker_freedom_squad, {=squad_exist(jup_b6_stalker_duty_squad) +JUP_B6_GIVE_TASK +JUP_B6_DUTY_EMPLOYED} jup_b6_stalker_duty_squad, {=squad_exist(jup_b6_stalker_gonta_squad) +JUP_B6_GIVE_TASK +JUP_B6_GONTA_EMPLOYED} jup_b6_stalker_gonta_squad, {=squad_exist(jup_b6_stalker_exprisoner_squad) +JUP_B6_GIVE_TASK +JUP_B6_EXPRISONER_WORK_ON_SCI}  jup_b6_stalker_exprisoner_squad, {=squad_exist(jup_b1_stalker_squad) +JUP_B6_GIVE_TASK -JUP_B6_FREEDOM_EMPLOYED -JUP_B6_DUTY_EMPLOYED -JUP_B6_GONTA_EMPLOYED -JUP_B6_EXPRISONER_WORK_ON_SCI -JUP_B1_SQUAD_IS_DEAD} jup_b1_stalker_squad
+condlist_0 = {+JUP_B6_COMPLETE_END} complete
+condlist_1 = {!squad_exist(jup_b1_stalker_squad) +JUP_B6_GIVE_TASK -JUP_B6_FREEDOM_EMPLOYED -JUP_B6_DUTY_EMPLOYED -JUP_B6_GONTA_EMPLOYED -JUP_B6_EXPRISONER_WORK_ON_SCI +JUP_B1_SQUAD_IS_DEAD} fail %+JUP_B6_TASK_FAIL%, {!squad_exist(jup_b6_stalker_freedom_squad) +JUP_B6_GIVE_TASK +JUP_B6_FREEDOM_EMPLOYED} fail %+JUP_B6_TASK_FAIL%, {!squad_exist(jup_b6_stalker_duty_squad) +JUP_B6_GIVE_TASK +JUP_B6_DUTY_EMPLOYED} fail %+JUP_B6_TASK_FAIL%, {!squad_exist(jup_b6_stalker_gonta_squad) +JUP_B6_GIVE_TASK +JUP_B6_GONTA_EMPLOYED} fail %+JUP_B6_TASK_FAIL%, {!squad_exist(jup_b6_stalker_exprisoner_squad) +JUP_B6_GIVE_TASK +JUP_B6_EXPRISONER_WORK_ON_SCI} fail %+JUP_B6_TASK_FAIL% 
+condlist_2 = {=is_squad_enemy_to_actor(jup_b1_stalker_squad) +JUP_B6_GIVE_TASK -JUP_B6_FREEDOM_EMPLOYED -JUP_B6_DUTY_EMPLOYED -JUP_B6_GONTA_EMPLOYED -JUP_B6_EXPRISONER_WORK_ON_SCI -JUP_B1_SQUAD_IS_DEAD} fail %+JUP_B6_TASK_FAIL%, {=is_squad_enemy_to_actor(jup_b6_stalker_freedom_squad) +JUP_B6_GIVE_TASK +JUP_B6_FREEDOM_EMPLOYED} fail %+JUP_B6_TASK_FAIL%, {=is_squad_enemy_to_actor(jup_b6_stalker_duty_squad) +JUP_B6_GIVE_TASK +JUP_B6_DUTY_EMPLOYED} fail %+JUP_B6_TASK_FAIL%, {=is_squad_enemy_to_actor(jup_b6_stalker_gonta_squad) +JUP_B6_GIVE_TASK +JUP_B6_GONTA_EMPLOYED} fail %+JUP_B6_TASK_FAIL%, {=is_squad_enemy_to_actor(jup_b6_stalker_exprisoner_squad) +JUP_B6_GIVE_TASK +JUP_B6_EXPRISONER_WORK_ON_SCI} fail %+JUP_B6_TASK_FAIL%  
+condlist_3 = {+JUP_B6_TASK_FAIL} fail
+on_complete = {=local_actor_story_id(actor_degtyarev)} %+JUP_B6_TASK_DONE =jup_sci_task_counter%
+
+[jup_b6_employ_stalkers]
+icon = ui_inGame2_Issledovatelskaya_gruppa
+prior = 2	
+storyline = false
+title  = {+JUP_B6_EMPLOYED_STALKER} jup_b6_employ_stalkers_reward_name, jup_b6_employ_stalkers_name
+descr  = {+JUP_B6_EMPLOYED_STALKER} jup_b6_employ_stalkers_reward_text, jup_b6_employ_stalkers_text
+target = {+JUP_B6_EMPLOYED_STALKER} jup_b6_scientist_nuclear_physicist, nil
+condlist_0 = {+JUP_B6_EMPLOYED_STALKER_REWARD_TAKEN} complete
+condlist_1 =  {=is_squad_enemy_to_actor(jup_b6_stalker_freedom_squad) +JUP_B6_FREEDOM_EMPLOYED} fail %+JUP_B6_TASK_FAIL%, {=is_squad_enemy_to_actor(jup_b6_stalker_duty_squad) +JUP_B6_DUTY_EMPLOYED} fail %+JUP_B6_TASK_FAIL%, {=is_squad_enemy_to_actor(jup_b6_stalker_gonta_squad) +JUP_B6_GONTA_EMPLOYED} fail %+JUP_B6_TASK_FAIL%, {=is_squad_enemy_to_actor(jup_b6_stalker_exprisoner_squad) +JUP_B6_EXPRISONER_WORK_ON_SCI} fail %+JUP_B6_TASK_FAIL% 
+reward_money = 13200
+
+[jup_b25_revenge_senya] 
+icon = ui_inGame2_Vozmezdie
+prior = 1
+storyline = false
+title = jup_b25_revenge_senya_name
+descr = {-JUP_B25_STORY_ARTEFACT_PLAYED -JUP_B25_STORY_ZATON_PLAYED}jup_b25_revenge_senya_text, {+JUP_B25_STORY_ARTEFACT_PLAYED -JUP_B25_STORY_ZATON_PLAYED}jup_b25_flint_and_senya_text, {+JUP_B25_STORY_ARTEFACT_PLAYED +JUP_B25_STORY_ZATON_PLAYED}jup_b25_senya_accuse_flint_text
+target = {+JUP_B25_STORY_ARTEFACT_PLAYED -JUP_B25_STORY_ZATON_PLAYED}jup_b25_freedom_flint
+condlist_0 = {+JUP_B25_FLINT_BLAME_DONE_TO_FREEDOM} complete, {+JUP_B25_FLINT_BLAME_DONE_TO_DUTY} complete, {+ZAT_B106_FOUND_SOROKA_DONE} complete
+
+[jup_b25_accuse_flint]
+icon = ui_inGame2_Chuzhie_zaslugi
+prior = 1
+storyline = false
+title = jup_b25_accuse_flint_name
+descr = {+JUP_B25_BLAME_STORY_END +JUP_B25_STORY_ZATON_PLAYED} jup_b25_accuse_flint_end_text, {+JUP_B25_STORY_ARTEFACT_PLAYED +JUP_B25_STORY_ZATON_PLAYED} jup_b25_accuse_flint_end_text, {+JUP_B25_THIRD_STORY} jup_b25_accuse_flint_third_text, {+JUP_B25_SECOND_STORY} jup_b25_accuse_flint_second_text, jup_b25_accuse_flint_first_text
+target = {+JUP_B25_SECOND_STORY -JUP_B25_SECOND_BLAME -JUP_B25_STORY_ARTEFACT_PLAYED -JUP_B25_STORY_ZATON_PLAYED} jup_b25_freedom_flint, {+JUP_B25_THIRD_STORY -JUP_B25_THIRD_BLAME -JUP_B25_STORY_ARTEFACT_PLAYED -JUP_B25_STORY_ZATON_PLAYED} jup_b25_freedom_flint;{-JUP_B25_STORY_ARTEFACT_PLAYED -JUP_B25_STORY_ZATON_PLAYED} jup_b25_freedom_flint
+condlist_0 = {+JUP_B25_FLINT_BLAME_DONE_TO_FREEDOM} complete, {+JUP_B25_FLINT_BLAME_DONE_TO_DUTY} complete, {+ZAT_B106_FOUND_SOROKA_DONE} complete
+
+[jup_a12_free_prisoner]
+icon = ui_inGame2_Zalozhnik
+prior = 1	
+storyline = false
+title = {+PRI_A12_STALKER_PRISONER_FREE +JUP_A12_STALKER_PRISONER_FREE_DIALOG_DONE} jup_a12_free_prisoner_get_reward_name, {+PRI_A12_STALKER_PRISONER_FREE +JUP_A12_STALKER_PRISONER_OUT_OF_CONTAINERS} jup_a12_talk_with_prisoner_name, {+PRI_A12_STALKER_PRISONER_FREE} jup_a12_guide_prisoner_name, {+JUP_A12_ACTOR_SWITCHED_FROM_RANSOM_TO_POWER} jup_a12_free_prisoner_power_name, {+JUP_A12_ACTOR_CHOOSE_POWER +JUP_A12_ACTOR_IS_READY +JUP_A12_MERCS_GO_TO_POSITIONS} jup_a12_free_prisoner_power_name, {+JUP_A12_ACTOR_CHOOSE_POWER +JUP_A12_ACTOR_IS_READY} jup_a12_free_prisoner_power_wait_name, {+JUP_A12_ACTOR_CHOOSE_RANSOM +JUP_A12_ACTOR_IS_READY} jup_a12_free_prisoner_ransom_name, {+JUP_A12_ACTOR_CHOOSE_RANSOM -JUP_A12_ACTOR_IS_READY} jup_a12_free_prisoner_not_ready_name, {+JUP_A12_ACTOR_CHOOSE_POWER -JUP_A12_ACTOR_IS_READY} jup_a12_free_prisoner_not_ready_name, {+JUP_A12_ACTOR_CHOOSE_SELF} jup_a12_free_prisoner_name
+descr = {+PRI_A12_STALKER_PRISONER_FREE +JUP_A12_STALKER_PRISONER_FREE_DIALOG_DONE} jup_a12_free_prisoner_get_reward_text, {+PRI_A12_STALKER_PRISONER_FREE +JUP_A12_STALKER_PRISONER_OUT_OF_CONTAINERS} jup_a12_talk_with_prisoner_text, {+PRI_A12_STALKER_PRISONER_FREE} jup_a12_guide_prisoner_text, {+JUP_A12_ACTOR_SWITCHED_FROM_RANSOM_TO_POWER} jup_a12_free_prisoner_power_text, {+JUP_A12_ACTOR_CHOOSE_POWER +JUP_A12_ACTOR_IS_READY +JUP_A12_MERCS_GO_TO_POSITIONS} jup_a12_free_prisoner_power_text, {+JUP_A12_ACTOR_CHOOSE_POWER +JUP_A12_ACTOR_IS_READY} jup_a12_free_prisoner_power_wait_text, {+JUP_A12_ACTOR_CHOOSE_RANSOM +JUP_A12_ACTOR_IS_READY} jup_a12_free_prisoner_ransom_text, {+JUP_A12_ACTOR_CHOOSE_RANSOM -JUP_A12_ACTOR_IS_READY} jup_a12_free_prisoner_not_ready_text, {+JUP_A12_ACTOR_CHOOSE_POWER -JUP_A12_ACTOR_IS_READY} jup_a12_free_prisoner_not_ready_text, {+JUP_A12_ACTOR_CHOOSE_SELF} jup_a12_free_prisoner_text
+target = {+PRI_A12_STALKER_PRISONER_FREE +JUP_A12_STALKER_PRISONER_FREE_DIALOG_DONE} jup_a12_stalker_assaulter, {+PRI_A12_STALKER_PRISONER_FREE} jup_a12_stalker_prisoner, {+JUP_A12_ACTOR_SWITCHED_FROM_RANSOM_TO_POWER} jup_a12_stalker_prisoner, {+JUP_A12_MERCS_GO_TO_POSITIONS} jup_a12_stalker_prisoner, {+JUP_A12_ACTOR_CHOOSE_POWER +JUP_A12_ACTOR_IS_READY +JUP_A12_MERC_COVER_IN_MERC_CAMP} jup_a12_merc_cover, {+JUP_A12_ACTOR_CHOOSE_POWER +JUP_A12_ACTOR_IS_READY} jup_a12_sr_merc_kamp, {+JUP_A12_ACTOR_CHOOSE_RANSOM +JUP_A12_ACTOR_IS_READY} jup_a12_bandit_chief, {+JUP_A12_ACTOR_CHOOSE_RANSOM -JUP_A12_ACTOR_IS_READY} jup_a12_stalker_assaulter, {+JUP_A12_ACTOR_CHOOSE_POWER -JUP_A12_ACTOR_IS_READY} jup_a12_stalker_assaulter, {+JUP_A12_ACTOR_CHOOSE_SELF +JUP_A12_ACTOR_ENEMY_TO_BANDITS} jup_a12_bandit_chief, {+JUP_A12_ACTOR_CHOOSE_SELF -JUP_A12_ACTOR_ENEMY_TO_BANDITS} jup_a12_stalker_prisoner  
+condlist_0 = {+PRI_A12_STALKER_PRISONER_FREE +JUP_A12_STALKER_PRISONER_FRIENDS_TALKED +JUP_A12_STALKER_PRISONER_FREE_DIALOG_DONE} complete %=inc_faction_goodwill_to_actor(stalker:200) =set_squad_goodwill(jup_a12_stalker_squad:friend)%
+condlist_1 = {+JUP_A12_STALKER_PRISONER_DEAD} fail %+JUP_A12_TASK_DONE%, {=quest_npc_enemy_actor(jup_a12_stalker_prisoner)} fail %+JUP_A12_TASK_DONE%
+on_complete = {-JUP_A12_ACTOR_ENEMY_TO_BANDITS} %+JUP_A12_WO_SHOOTING +JUP_A12_TASK_DONE +JUP_A12_STALKER_PRISONER_HELPED%, %+JUP_A12_TASK_DONE +JUP_A12_STALKER_PRISONER_HELPED%
+
+[jup_b202_actor_items_stolen]
+icon = ui_inGame2_Krazha
+prior = 1	
+storyline = false
+title = {+JUP_B202_ACTOR_ITEMS_STOLEN -JUP_B202_POLUSTANOK -JUP_B202_TALKED_ABOUT_TREASURE} jup_b202_actor_items_stolen_01_name, {+JUP_B202_ACTOR_ITEMS_STOLEN +JUP_B202_POLUSTANOK -JUP_B202_TALKED_ABOUT_TREASURE} jup_b202_actor_items_stolen_02_name, {+JUP_B202_ACTOR_ITEMS_STOLEN +JUP_B202_TALKED_ABOUT_TREASURE} jup_b202_actor_items_stolen_03_name
+descr = {+JUP_B202_ACTOR_ITEMS_STOLEN -JUP_B202_POLUSTANOK -JUP_B202_TALKED_ABOUT_TREASURE} jup_b202_actor_items_stolen_01_text, {+JUP_B202_ACTOR_ITEMS_STOLEN +JUP_B202_POLUSTANOK -JUP_B202_TALKED_ABOUT_TREASURE} jup_b202_actor_items_stolen_02_text, {+JUP_B202_ACTOR_ITEMS_STOLEN +JUP_B202_TALKED_ABOUT_TREASURE} jup_b202_actor_items_stolen_03_text
+target = {+JUP_B202_ACTOR_ITEMS_STOLEN +JUP_B52_MEDIC_TESTIMONY -JUP_B202_TALKED_ABOUT_TREASURE -JUP_B202_POLUSTANOK} jup_b15_zulus, {+JUP_B202_ACTOR_ITEMS_STOLEN +JUP_B202_POLUSTANOK +JUP_B52_MEDIC_TESTIMONY -JUP_B202_TALKED_ABOUT_TREASURE} jup_b202_stalker_snag, {+JUP_B202_ACTOR_ITEMS_STOLEN +JUP_B202_TALKED_ABOUT_TREASURE} jup_b202_snag_treasure 
+condlist_0 = {+JUP_B202_ACTOR_ITEMS_STOLEN +JUP_B202_ACTOR_ITEMS_RETURNED} complete
+
+[jup_b19_airing_to_kopatci]
+icon = ui_inGame2_Kopachi
+prior = 1
+storyline = false
+title = {+JUP_B19_AGREED_TO_GO -JUP_B19_FOLLOWING_YAR -JUP_B19_FIGHT_BEGUN -JUP_B19_MERCS_DEAD} jup_b19_agreed_to_go_name, {+JUP_B19_FOLLOWING_YAR -JUP_B19_FIGHT_BEGUN -JUP_B19_MERCS_DEAD} jup_b19_following_yar_name, {+JUP_B19_FIGHT_BEGUN -JUP_B19_MERCS_DEAD} jup_b19_destroy_mercs_name, {+JUP_B19_MERCS_DEAD} jup_b19_talk_to_yar_name
+descr = {+JUP_B19_AGREED_TO_GO -JUP_B19_FOLLOWING_YAR -JUP_B19_FIGHT_BEGUN -JUP_B19_MERCS_DEAD} jup_b19_agreed_to_go_text, {+JUP_B19_FOLLOWING_YAR -JUP_B19_FIGHT_BEGUN -JUP_B19_MERCS_DEAD} jup_b19_following_yar_text, {+JUP_B19_FIGHT_BEGUN -JUP_B19_MERCS_DEAD} jup_b19_destroy_mercs_text, {+JUP_B19_MERCS_DEAD} jup_b19_talk_to_yar_text
+target = {+JUP_B19_AGREED_TO_GO -JUP_B19_FOLLOWING_YAR -JUP_B19_FIGHT_BEGUN -JUP_B19_MERCS_DEAD} jup_b19_freedom_yar, {+JUP_B19_FOLLOWING_YAR -JUP_B19_FIGHT_BEGUN -JUP_B19_MERCS_DEAD} jup_b19_freedom_yar, {+JUP_B19_FIGHT_BEGUN -JUP_B19_MERCS_DEAD} jup_b19_merc_squad, {+JUP_B19_MERCS_DEAD} jup_b19_freedom_yar
+reward_money = 12800
+condlist_0 = {+JUP_B19_COMPLETE} complete %=set_squad_goodwill(jup_b19_freedom_yar_squad:friend)%
+condlist_1 = {+JUP_B19_YAR_ENEMY_OR_DEAD} fail %+JUP_B19_FAIL%
+condlist_2 = {=is_squad_enemy_to_actor(jup_b19_freedom_yar_squad)}  fail %+JUP_B19_FAIL +JUP_B19_YAR_ENEMY_OR_DEAD%
+
+[jup_b43_stalker_assistant_contract]
+icon = ui_inGame2_Kontrakt_s_uchenimi
+prior = 1	
+storyline = false
+title = {+JUP_B43_CONTRACT_BROUGHT_SECOND_ARTEFACT -JUP_B43_CONTRACT_BROUGHT_FIRST_ARTEFACT} jup_b43_bring_mincer_meat_name, {+JUP_B43_CONTRACT_BROUGHT_FIRST_ARTEFACT -JUP_B43_CONTRACT_BROUGHT_SECOND_ARTEFACT} jup_b43_bring_fuzz_kolobok_name, {+JUP_B43_CONTRACT_BROUGHT_FIRST_ARTEFACT +JUP_B43_CONTRACT_BROUGHT_SECOND_ARTEFACT} jup_b43_thanks_for_2_artifacts_name, {-JUP_B43_CONTRACT_BROUGHT_FIRST_ARTEFACT -JUP_B43_CONTRACT_BROUGHT_SECOND_ARTEFACT} jup_b43_contract_started_name
+descr = {+JUP_B43_CONTRACT_BROUGHT_SECOND_ARTEFACT -JUP_B43_CONTRACT_BROUGHT_FIRST_ARTEFACT} jup_b43_bring_mincer_meat_text, {+JUP_B43_CONTRACT_BROUGHT_FIRST_ARTEFACT -JUP_B43_CONTRACT_BROUGHT_SECOND_ARTEFACT} jup_b43_bring_fuzz_kolobok_text, {+JUP_B43_CONTRACT_BROUGHT_FIRST_ARTEFACT +JUP_B43_CONTRACT_BROUGHT_SECOND_ARTEFACT} jup_b43_thanks_for_2_artifacts_text, {-JUP_B43_CONTRACT_BROUGHT_FIRST_ARTEFACT -JUP_B43_CONTRACT_BROUGHT_SECOND_ARTEFACT} jup_b43_contract_started_text
+target = jup_b43_stalker_assistant
+condlist_0 = {+JUP_B43_CONTRACT_BROUGHT_FIRST_ARTEFACT +JUP_B43_CONTRACT_BROUGHT_SECOND_ARTEFACT} complete
+condlist_1 = {+PRI_A16_STALKER_GUIDE_MET} reversed
+
+[jup_b46_spatial_bubble]
+icon = ui_inGame2_Anomalnaya_aktivnost
+prior = 1	
+storyline = false
+title = jup_b46_spatial_bubble_name
+descr = jup_b46_spatial_bubble_text
+target = jup_b46_spatial_bubble_zone
+condlist_0 = {+JUP_B46_SPATIAL_BUBBLE_RUPTURED} complete
+;condlist_1 = {+PRI_A16_STALKER_GUIDE_MET} reversed
+on_complete = %+JUP_B46_TASK_DONE%
+
+[jup_b32_get_scanners_task]
+icon = ui_inGame2_Gipoteza
+prior = 2	
+storyline = false
+title = jup_b32_get_scanners_task_name
+descr = jup_b32_get_scanners_task_text
+target = jup_b6_scientist_tech
+condlist_0 = {+JUP_B32_SCANNERS_TRANFERRED} complete
+condlist_1 = {=is_squad_enemy_to_actor(jup_b6_scientist_group)} fail
+
+[jup_b32_task_1]
+icon = ui_inGame2_Gipoteza
+prior = 2	
+storyline = false
+title = jup_b32_task_name
+descr = jup_b32_task_text
+target = jup_b32_scanner_place_1
+condlist_0 = {+JUP_B32_SCANNER_1_PLACED} complete
+condlist_1 = {=is_squad_enemy_to_actor(jup_b6_scientist_group)} fail
+on_complete = {-JUP_B32_SCANNER_2_PLACED} %=set_active_task(jup_b32_task_2)%, {-JUP_B32_SCANNER_3_PLACED} %=set_active_task(jup_b32_task_3)%
+
+[jup_b32_task_2]
+icon = ui_inGame2_Gipoteza
+prior = 2	
+storyline = false
+title = jup_b32_task_name
+descr = jup_b32_task_text
+target = jup_b32_scanner_place_2
+condlist_0 = {+JUP_B32_SCANNER_2_PLACED} complete
+condlist_1 = {=is_squad_enemy_to_actor(jup_b6_scientist_group)} fail
+on_complete = {-JUP_B32_SCANNER_1_PLACED} %=set_active_task(jup_b32_task_1)%, {-JUP_B32_SCANNER_3_PLACED} %=set_active_task(jup_b32_task_3)%
+
+[jup_b32_task_3]
+icon = ui_inGame2_Gipoteza
+prior = 2	
+storyline = false
+title = jup_b32_task_name
+descr = jup_b32_task_text
+target = jup_b32_scanner_place_3
+condlist_0 = {+JUP_B32_SCANNER_3_PLACED} complete
+condlist_1 = {=is_squad_enemy_to_actor(jup_b6_scientist_group)} fail
+on_complete = {-JUP_B32_SCANNER_1_PLACED} %=set_active_task(jup_b32_task_1)%, {-JUP_B32_SCANNER_2_PLACED} %=set_active_task(jup_b32_task_2)%
+
+[jup_b32_task_reward]
+icon = ui_inGame2_Gipoteza
+prior = 2	
+storyline = false
+title = jup_b32_task_reward_name
+descr = jup_b32_task_reward_text
+target = jup_b6_scientist_nuclear_physicist
+condlist_0 = {+JUP_B32_SCANNER_REWARD} complete
+condlist_1 = {=is_squad_enemy_to_actor(jup_b6_scientist_group)} fail
+on_complete = {=local_actor_story_id(actor_degtyarev)} %+JUP_B32_TASK_DONE =jup_sci_task_counter =jup_b32_pda_check%
+
+[jup_b32_get_scanners_addon_task]
+icon = ui_inGame2_Gipoteza
+prior = 2	
+storyline = false
+title = jup_b32_get_scanners_task_name
+descr = jup_b32_get_scanners_task_text
+target = jup_b6_scientist_tech
+condlist_0 = {+JUP_B32_SCANNERS_TRANFERRED} complete
+condlist_1 = {=is_squad_enemy_to_actor(jup_b6_scientist_group)} fail
+
+[jup_b32_addon_task_1]
+icon = ui_inGame2_Gipoteza
+prior = 2	
+storyline = false
+title = jup_b32_task_name
+descr = jup_b32_task_text
+target = jup_b32_scanner_place_4
+condlist_0 = {+JUP_B32_SCANNER_4_PLACED} complete
+condlist_1 = {=is_squad_enemy_to_actor(jup_b6_scientist_group)} fail
+on_complete = {-JUP_B32_SCANNER_5_PLACED} %=set_active_task(jup_b32_addon_task_2) =jup_b32_pda_check%, %=jup_b32_pda_check%
+
+[jup_b32_addon_task_2]
+icon = ui_inGame2_Gipoteza
+prior = 2	
+storyline = false
+title = jup_b32_task_name
+descr = jup_b32_task_text
+target = jup_b32_scanner_place_5
+condlist_0 = {+JUP_B32_SCANNER_5_PLACED} complete
+condlist_1 = {=is_squad_enemy_to_actor(jup_b6_scientist_group)} fail
+on_complete = {-JUP_B32_SCANNER_4_PLACED} %=set_active_task(jup_b32_addon_task_1) =jup_b32_pda_check%, %=jup_b32_pda_check%
+
+[zat_b207_morgan_depot_task]
+icon = ui_inGame2_Sklad_dolga
+prior = 1	
+storyline = false
+title = zat_b207_morgan_depot_task_name
+descr = zat_b207_morgan_depot_task_text
+target = jup_b207_sr_depot
+condlist_0 = {+JUP_B207_MORGAN_AMBUSH} reversed
+
+[zat_b207_depot_reward_task]
+icon = ui_inGame2_Sklad_dolga
+prior = 1
+storyline = false
+title = zat_b207_depot_reward_task_name
+descr = {+JUP_B207_DUTY_KNOWS_ABOUT_DEPOT} zat_b207_depot_reward_task_duty_text, {+JUP_B207_FREEDOM_KNOWS_ABOUT_DEPOT} zat_b207_depot_reward_task_freedom_text
+target = jup_b207_sr_depot
+condlist_0 = {=any_actor_in_zone(jup_surge_hide_b207)} complete
+condlist_1 = {+JUP_B207_DUTY_KNOWS_ABOUT_DEPOT =is_squad_enemy_to_actor(jup_b207_duty_base)} fail %+JUP_B207_TASK_END%, {+JUP_B207_FREEDOM_KNOWS_ABOUT_DEPOT =is_squad_enemy_to_actor(jup_b207_freedom_base)} fail %+JUP_B207_TASK_END%, {+JUP_B207_FREEDOM_KNOWS_ABOUT_DEPOT =is_squad_enemy_to_actor(jup_b207_freedom_depot)} fail %+JUP_B207_TASK_END%, {+JUP_B207_FREEDOM_KNOWS_ABOUT_DEPOT +JUP_B207_DUTY_WINS} reversed %+JUP_B207_TASK_END%
+on_complete = %+JUP_B207_TASK_END%
+
+[jup_b46_duty_founder_pda]
+icon = ui_inGame2_Istoriya_dolga
+prior = 1	
+storyline = false
+title = jup_b46_duty_founder_pda_name
+descr = jup_b46_duty_founder_pda_text
+target = nil
+condlist_0 = {+JUP_B46_DUTY_FOUNDER_PDA_COMPLETE} complete
+;reward_money = 10000
+;reward_item = {+JUP_B46_DUTY_FOUNDER_PDA_TO_FREEDOM} wpn_sig550:ammo_5.56x45_ss190:ammo_5.56x45_ss190:ammo_5.56x45_ss190:ammo_5.56x45_ss190, {+JUP_B46_DUTY_FOUNDER_PDA_TO_DUTY} exo_outfit:wpn_groza:ammo_9x39_pab9:ammo_9x39_pab9:ammo_9x39_pab9:ammo_9x39_pab9:ammo_vog-25:ammo_vog-25
+
+[jup_b217_tech_instruments]
+icon = ui_inGame2_Instrumenti
+prior = 1
+storyline = false
+title = {+JUP_B217_TECH_INSTRUMENT_1_BROUGHT +JUP_B217_TECH_INSTRUMENT_2_BROUGHT} jup_b217_get_tools_3_name, {+JUP_B217_TECH_INSTRUMENT_1_BROUGHT +JUP_B217_TECH_INSTRUMENT_3_BROUGHT} jup_b217_get_tools_2_name, {+JUP_B217_TECH_INSTRUMENT_2_BROUGHT +JUP_B217_TECH_INSTRUMENT_3_BROUGHT} jup_b217_get_tools_1_name, {+JUP_B217_TECH_INSTRUMENT_3_BROUGHT} jup_b217_get_tools_1_2_name, {+JUP_B217_TECH_INSTRUMENT_2_BROUGHT} jup_b217_get_tools_1_3_name, {+JUP_B217_TECH_INSTRUMENT_1_BROUGHT} jup_b217_get_tools_2_3_name, jup_b217_mechanic_toolkit_search_name
+descr = {+JUP_B217_TECH_INSTRUMENT_1_BROUGHT +JUP_B217_TECH_INSTRUMENT_2_BROUGHT} jup_b217_get_tools_3_text, {+JUP_B217_TECH_INSTRUMENT_1_BROUGHT +JUP_B217_TECH_INSTRUMENT_3_BROUGHT} jup_b217_get_tools_2_text, {+JUP_B217_TECH_INSTRUMENT_2_BROUGHT +JUP_B217_TECH_INSTRUMENT_3_BROUGHT} jup_b217_get_tools_1_text, {+JUP_B217_TECH_INSTRUMENT_3_BROUGHT} jup_b217_get_tools_1_2_text, {+JUP_B217_TECH_INSTRUMENT_2_BROUGHT} jup_b217_get_tools_1_3_text, {+JUP_B217_TECH_INSTRUMENT_1_BROUGHT} jup_b217_get_tools_2_3_text, jup_b217_mechanic_toolkit_search_text
+condlist_0 = {+JUP_B217_TECH_INSTRUMENT_1_BROUGHT +JUP_B217_TECH_INSTRUMENT_2_BROUGHT +JUP_B217_TECH_INSTRUMENT_3_BROUGHT} complete
+on_complete = %+JUP_B217_TASK_END%
+
+[jup_b47_jupiter_products];+jup_b47_jupiter_products_start
+icon = ui_inGame2_Poslednie_razrabotki
+prior = 1	
+storyline = false
+title  = {-JUP_B47_ACTOR_PICK_DOCS -JUP_B47_ACTOR_PICK_PDA} jup_b47_jupiter_products_01_name, {+JUP_B47_ACTOR_PICK_DOCS -JUP_B47_ACTOR_PICK_PDA} jup_b47_jupiter_products_02_name, {+JUP_B47_ACTOR_PICK_DOCS +JUP_B47_ACTOR_PICK_PDA} jup_b47_jupiter_products_03_name
+descr  = {-JUP_B47_ACTOR_PICK_DOCS -JUP_B47_ACTOR_PICK_PDA} jup_b47_jupiter_products_01_text, {+JUP_B47_ACTOR_PICK_DOCS -JUP_B47_ACTOR_PICK_PDA} jup_b47_jupiter_products_02_text, {+JUP_B47_ACTOR_PICK_DOCS +JUP_B47_ACTOR_PICK_PDA} jup_b47_jupiter_products_03_text
+target = {-JUP_B47_ACTOR_PICK_DOCS} jup_b47_jupiter_products_info, {+JUP_B47_ACTOR_PICK_DOCS} jup_b6_scientist_nuclear_physicist
+condlist_0 = {+JUP_B47_PRODUCTS_INFO_COMPLITE} complete
+on_complete = {=local_actor_story_id(actor_degtyarev)} %+JUP_B47_TASK_END =jup_sci_task_counter%
+
+[jup_b47_bunker_guards];+JUP_B47_BUNKER_GUARDS_STARTED
+icon = ui_inGame2_Ohrana_uchenih
+prior = 2	
+storyline = false
+title  = {-JUP_B47_BUNKER_GUARDS_DONE} jup_b47_bunker_guards_01_name, {+JUP_B47_BUNKER_GUARDS_DONE} jup_b47_bunker_guards_02_name
+descr  = {-JUP_B47_BUNKER_GUARDS_DONE} jup_b47_bunker_guards_01_text, {+JUP_B47_BUNKER_GUARDS_DONE} jup_b47_bunker_guards_02_text
+target = {+JUP_B47_BUNKER_GUARDS_DONE} jup_b6_scientist_nuclear_physicist
+condlist_0 = {+JUP_B47_BUNKER_GUARDS_COMPLITE} complete
+condlist_1 = {+JUP_B41_BUNKER_GUARDS_DEAD} fail
+
+[jup_b211_swamp_bloodsuckers_hunt]
+icon = ui_inGame2_Ohota_na_Krovososov
+prior = 1	
+storyline = false
+title  = {+JUP_B6_ALL_HUNTERS_ARE_DEAD} jup_b211_take_reward_name, {+JUP_B211_SWAMP_BLOODSUCKERS_HUNT_STARTED} jup_b211_kill_bloodsuckers_name
+descr  = {+JUP_B6_ALL_HUNTERS_ARE_DEAD} jup_b211_take_reward_text, {+JUP_B211_SWAMP_BLOODSUCKERS_HUNT_STARTED} jup_b211_kill_bloodsuckers_text
+target = {+JUP_B6_ALL_HUNTERS_ARE_DEAD} jup_b220_trapper, {+JUP_B211_SWAMP_BLOODSUCKERS_HUNT_STARTED} jup_b6_swamp_hunters 
+condlist_0 = {+JUP_B211_SCENE_DONE} complete
+on_complete = {=local_actor_story_id(actor_degtyarev)} %=jup_trapper_first_hunt_reward%

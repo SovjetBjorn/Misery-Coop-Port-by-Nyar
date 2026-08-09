@@ -1,0 +1,61 @@
+-- mc_npc_ammo.script
+-- NPC ammo-economy instrumentation (server-side debug). Answers the two questions needed to
+-- balance NPC ammo as a realistic loot source:
+--   1) does the engine actually DRAIN an NPC's inventory ammo as it fires (so a fought-out NPC
+--      drops less than a fresh one), or is NPC ammo effectively infinite?
+--   2) roughly how many rounds does an NPC fire before it dies?
+-- It records the rounds each NPC is handed at spawn (xrs_rnd_npc_loadout calls record_spawn) and,
+-- on death (death_manager calls on_npc_death), logs given-vs-remaining + a fired estimate to the
+-- SERVER log (_appdata_server\logs\xray_*.log), channel "[MC] [npc_ammo]".
+-- PASSIVE: registers no callbacks; the two hooks call in. Both run server-side (alife/AI context).
+-- Toggle: set ENABLED = false to silence.
+
+local ENABLED = true
+
+local SPAWN = {}  -- npc id -> rounds handed out at spawn (primary + secondary accumulated)
+
+local function L(fmt, ...)
+	if ENABLED and mc_core and mc_core.mc_log then mc_core.mc_log("[npc_ammo] " .. fmt, ...) end
+end
+
+-- best-effort "rounds the NPC still has for its guns" = loaded mag + matching inventory ammo,
+-- summed over the primary + secondary slots. get_ammo_total() is the standard CWeapon accessor
+-- (mag + carried rounds of the loaded type). Everything is pcall-guarded so a dying/odd NPC
+-- never throws here.
+local function remaining_rounds(npc)
+	local total, parts = 0, {}
+	for _, s in ipairs({1, 2}) do
+		local ok, it = pcall(function() return npc.item_in_slot and npc:item_in_slot(s) end)
+		if ok and it then
+			local ok2, n = pcall(function() return it.get_ammo_total and it:get_ammo_total() end)
+			if ok2 and type(n) == "number" then
+				total = total + n
+				parts[#parts + 1] = "slot" .. s .. "=" .. n
+			end
+		end
+	end
+	return total, (#parts > 0 and table.concat(parts, " ") or "no-weapon")
+end
+
+function record_spawn(npc_id, rounds)
+	if not (ENABLED and npc_id and rounds and rounds > 0) then return end
+	SPAWN[npc_id] = (SPAWN[npc_id] or 0) + rounds
+end
+
+function on_npc_death(npc)
+	if not (ENABLED and npc) then return end
+	local ok_id, id = pcall(function() return npc:id() end)
+	if not (ok_id and id) then return end
+	local nm = "?"
+	pcall(function() nm = npc:character_name() or npc:name() end)
+	local left, detail = remaining_rounds(npc)
+	local given = SPAWN[id]
+	if given then
+		L("%s (id %s): given~%d  left~%d  fired~%d  [%s]",
+			tostring(nm), tostring(id), given, left, math.max(0, given - left), detail)
+	else
+		L("%s (id %s): left~%d (no spawn record -- pre-existing NPC)  [%s]",
+			tostring(nm), tostring(id), left, detail)
+	end
+	SPAWN[id] = nil
+end

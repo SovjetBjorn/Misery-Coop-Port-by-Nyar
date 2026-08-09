@@ -1,0 +1,507 @@
+[up_sect_vector_mag_fixator]
+cost = 5100
+value = +10
+misfire_start_condition = -0.06
+misfire_start_prob = -0.0004
+misfire_end_prob = -0.007
+
+[up_vector_mag_fixator]
+scheme_index = 0, 0
+known = 1
+effects = vartree_vector_barrel
+section = up_sect_vector_mag_fixator
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_mag_fixator_name
+description = st_up_vector_mag_fixator_descr
+icon = ui_up_ump45_mag_fixator
+;------------------------------------------ump45_barrel_compensator------------------------------------------
+
+[up_sect_vector_barrel_compensator]
+cost = 5100
+value = -30
+PDM_disp_base = -0.1
+PDM_disp_crouch = -0.01
+PDM_disp_crouch_no_acc = -0.01
+
+cam_dispersion = -0.25
+zoom_cam_dispersion = -0.2
+cam_dispersion_inc = -0.04
+zoom_cam_dispersion_inc = -0.02
+
+[up_vector_barrel_compensator]
+scheme_index = 1, 0
+known = 1
+effects = vartree_vector_body
+section = up_sect_vector_barrel_compensator
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_barrel_compensator_name
+description = st_up_vector_barrel_compensator_descr
+icon = ui_up_ump45_barrel_compensator
+;------------------------------------------ump45_barrel_speed------------------------------------------
+
+[up_sect_vector_barrel_speed]
+cost = 11900
+value = +30
+bullet_speed = +130
+
+[up_vector_barrel_speed]
+scheme_index = 1, 1
+known = 1
+effects = vartree_vector_body
+section = up_sect_vector_barrel_speed
+property = prop_bullet_speed
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_barrel_speed_name
+description = st_up_vector_barrel_speed_descr
+icon = ui_up_ump45_barrel_speed
+;------------------------------------------ump45_body_weight------------------------------------------
+
+[up_sect_vector_body_weight]
+cost = 5100
+value = -0.8
+inv_weight = -0.8
+control_inertion_factor = -0.3
+
+PDM_disp_base = +0.1
+cam_dispersion = +0.04
+zoom_cam_dispersion = +0.03
+
+[up_vector_body_weight]
+scheme_index = 2, 0
+known = 1
+effects = 
+section = up_sect_vector_body_weight
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_body_weight_name
+description = st_up_vector_body_weight_descr
+icon = ui_up_ump45_body_weight
+;------------------------------------------ump45_body_coating------------------------------------------
+
+[up_sect_vector_body_coating]
+cost = 5100
+value = +40
+misfire_start_condition = -0.12
+misfire_end_condition = -0.001
+misfire_start_prob = -0.0006
+misfire_end_prob = -0.01
+condition_shot_dec = -0.0006
+condition_queue_shot_dec = -0.0006
+
+[up_vector_body_coating]
+scheme_index = 2, 1
+known = 1
+effects = 
+section = up_sect_vector_body_coating
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_body_coating_name
+description = st_up_vector_body_coating_descr
+icon = ui_up_ump45_body_coating
+;------------------------------------------ump45_zatvor_balancer------------------------------------------
+
+[up_sect_vector_zatvor_balancer]
+cost = 5100
+value = -15
+PDM_disp_base = -0.2
+
+cam_dispersion = -0.18
+zoom_cam_dispersion  = -0.12
+cam_dispersion_inc = -0.05
+zoom_cam_dispersion_inc  = -0.04
+
+[up_vector_zatvor_balancer]
+scheme_index = 0, 1
+known = 1
+effects = vartree_vector_extractor
+section = up_sect_vector_zatvor_balancer
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_zatvor_balancer_name
+description = st_up_vector_zatvor_balancer_descr
+icon = ui_up_ump45_zatvor_balancer
+;------------------------------------------ump45_extractor------------------------------------------
+
+[up_sect_vector_extractor]
+cost = 5100
+value = +20
+misfire_start_condition  = -0.03
+misfire_end_condition  = -0.002
+misfire_start_prob = -0.0002
+misfire_end_prob  = -0.004
+condition_shot_dec = -0.0003
+condition_queue_shot_dec= -0.0003
+
+[up_vector_extractor]
+scheme_index = 1, 2
+known = 1
+effects = vartree_vector_usm
+section = up_sect_vector_extractor
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_extractor_name
+description = st_up_vector_extractor_descr
+icon = ui_up_ump45_extractor
+;------------------------------------------ump45_usm_accuracy------------------------------------------
+
+[up_sect_vector_usm_accuracy]
+cost = 11900
+value = +30
+fire_dispersion_base = -0.05
+bullet_speed = +10
+
+PDM_disp_base = -0.25
+PDM_disp_vel_factor 		= -0.05
+PDM_disp_accel_factor 		= -0.05
+PDM_disp_crouch	 		= -0.05
+PDM_disp_crouch_no_acc 		= -0.05
+
+cam_dispersion = -0.06
+zoom_cam_dispersion = -0.03
+
+cam_dispersion_inc      = -0.05
+zoom_cam_dispersion_inc     = -0.05
+
+[up_vector_usm_accuracy]
+scheme_index = 2, 2
+known = 1
+effects = 
+section = up_sect_vector_usm_accuracy
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_usm_accuracy_name
+description = st_up_vector_usm_accuracy_descr
+icon = ui_up_ump45_usm_accuracy
+;------------------------------------------ump45_usm_rpm------------------------------------------
+
+[up_sect_vector_usm_rpm]
+cost = 5100
+value = +20
+rpm = +100
+condition_queue_shot_dec     = +0.0003
+misfire_start_prob	     	= +0.0005
+misfire_end_prob	     	= +0.005
+
+[up_vector_usm_rpm]
+scheme_index = 2, 3
+known = 1
+effects = 
+section = up_sect_vector_usm_rpm
+property = prop_rpm
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_usm_rpm_name
+description = st_up_vector_usm_rpm_descr
+icon = ui_up_ump45_usm_rpm
+;------------------------------------------ump45_rail------------------------------------------
+
+[up_sect_vector_rail]
+cost = 11900
+inv_weight = +0.2
+
+
+;COMPENSATION: accuracy bonus replaces removed attachment unlock
+fire_dispersion_base = -0.015
+cam_dispersion = -0.06
+zoom_cam_dispersion = -0.04
+
+[up_vector_rail]
+scheme_index = 0, 2
+known = 1
+effects = 
+section = up_sect_vector_rail
+property = prop_scope_attach
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_rail_name
+description = st_up_vector_rail_descr
+icon = ui_up_ump45_rail
+;------------------------------------------ump45_handle------------------------------------------
+
+[up_sect_vector_handle]
+cost = 5100
+inv_weight  = +0.15
+
+control_inertion_factor = -0.15
+crosshair_inertion = -3.0
+cam_relax_speed = +1
+cam_dispersion = -0.12 
+cam_dispersion_inc = -0.07
+cam_max_angle = -15.0      
+cam_max_angle_horz = -15
+
+zoom_cam_relax_speed = +1
+zoom_cam_dispersion = -0.08
+zoom_cam_dispersion_inc = -0.05
+zoom_cam_max_angle = -20
+zoom_cam_max_angle_horz = -20
+
+PDM_disp_base = -0.23
+PDM_disp_vel_factor = -0.3
+PDM_disp_accel_factor = -0.2
+
+PDM_disp_crouch = -0.2
+PDM_disp_crouch_no_acc = -0.4
+
+hud = wpn_vector_handler_hud
+
+[up_vector_handle]
+scheme_index = 1, 3
+known = 1
+effects =
+;effects = vartree_vector_laser, vartree_vector_flash
+section = up_sect_vector_handle
+property = prop_tacticalhandle
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_handle_name
+description = st_up_vector_handle_descr
+icon = ui_up_ump45_handle
+;------------------------------------------ump45_laser------------------------------------------
+
+[up_sect_vector_laser]
+cost = 5100
+crosshair_inertion = -0.3
+inv_weight = +0.3
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_vector_laser]
+scheme_index = 2, 4
+known = 1
+effects = 
+section = up_sect_vector_laser
+property = prop_laser
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_laser_name
+description = st_up_vector_laser_descr
+icon = ui_up_ump45_laser
+;------------------------------------------ump45_torch------------------------------------------
+
+[up_sect_vector_torch]
+cost = 5100
+inv_weight              = +0.3
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_vector_torch]
+scheme_index = 2, 5
+known = 1
+effects = 
+section = up_sect_vector_torch
+property = prop_torch
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_torch_name
+description = st_up_vector_torch_descr
+icon = ui_up_ump45_torch
+;------------------------------------------ump45_sights------------------------------------------
+
+[up_sect_vector_sights]
+cost = 5100
+crosshair_inertion = -1
+control_inertion_factor = -0.05
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_vector_sights]
+scheme_index = 0, 3
+known = 1
+effects = 
+section = up_sect_vector_sights
+property = prop_lightingsights
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_sights_name
+description = st_up_vector_sights_descr
+icon = ui_up_ump45_sights
+;------------------------------------------ump45_sil------------------------------------------
+
+[up_sect_vector_sil]
+cost = 11900
+
+silencer_smoke_particles = weapons\generic_shoot_00
+snd_silencer_shoot_start        = weapons\ump45\layers\ump45_silencer_a_1
+snd_silencer_shoot_start1        = weapons\ump45\layers\ump45_silencer_a_2
+snd_silencer_shoot_start2        = weapons\ump45\layers\ump45_silencer_a_3
+snd_silencer_shoot_loop        = weapons\ump45\layers\ump45_silencer_loop_a
+snd_silencer_shoot_loop_tail    = weapons\mp5sd\layers\mp5sd_tail_a_1
+snd_silencer_shoot_loop_tail1    = weapons\mp5sd\layers\mp5sd_tail_a_2
+snd_silencer_shoot_loop_tail2    = weapons\mp5sd\layers\mp5sd_tail_a_3
+
+;COMPENSATION: accuracy bonus replaces removed attachment unlock
+fire_dispersion_base = -0.015
+cam_dispersion = -0.06
+zoom_cam_dispersion = -0.04
+
+[up_vector_sil]
+scheme_index = 1, 4
+known = 1
+effects = 
+section = up_sect_vector_sil
+property = prop_silencer
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_sil_name
+description = st_up_vector_sil_descr
+icon = ui_up_ump45_sil
+;------------------------------------------ump45_stock------------------------------------------
+
+[up_sect_vector_stock]
+cost = 5100
+value = -10
+cam_dispersion = -0.012
+zoom_cam_dispersion = -0.01
+cam_dispersion_inc = -0.005
+zoom_cam_dispersion_inc = -0.003
+
+[up_vector_stock]
+scheme_index = 2, 4
+known = 1
+effects = 
+section = up_sect_vector_stock
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_vector_stock_name
+description = st_up_vector_stock_descr
+icon = ui_up_ump45_stock
+;------------------------------------------------------------------------------------
+
+[vartree_vector_mag_fix]
+elements = up_vector_mag_fixator
+
+[vartree_vector_barrel]
+elements = up_vector_barrel_compensator, up_vector_barrel_speed
+
+[vartree_vector_body]
+elements = up_vector_body_weight, up_vector_body_coating
+
+[vartree_vector_zatvor]
+elements = up_vector_zatvor_balancer
+
+[vartree_vector_extractor]
+elements = up_vector_extractor
+
+[vartree_vector_usm]
+elements = up_vector_usm_accuracy, up_vector_usm_rpm
+
+[vartree_vector_rail]
+elements = up_vector_rail
+
+[vartree_vector_handle]
+elements = up_vector_handle
+
+[vartree_vector_laser]
+elements = up_vector_laser
+
+[vartree_vector_flash]
+elements = up_vector_torch
+
+[vartree_vector_sights]
+elements = up_vector_sights
+
+[vartree_vector_sil]
+elements = up_vector_sil
+
+[vartree_vector_stock]
+elements = up_vector_stock

@@ -1,0 +1,424 @@
+[up_sect_aa12_mag_fix]
+cost = 10800
+value = +10
+misfire_start_condition = -0.05
+misfire_end_condition = -0.03
+misfire_start_prob = -0.0003
+misfire_end_prob = -0.01
+condition_shot_dec = -0.0003
+
+[up_aa12_mag_fix]
+scheme_index = 0, 0
+known = 1
+effects = vartree_aa12_barrel
+section = up_sect_aa12_mag_fix
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_mag_fix_name
+description = st_up_aa12_mag_fix_descr
+icon = ui_up_saiga12_mag_fix
+;------------------------------------------saiga12_barrel_narezka------------------------------------------
+
+[up_aa12_barrel_narezka]
+scheme_index = 1, 0
+known = 1
+effects = vartree_aa12_usm
+section = up_sect_aa12_barrel_narezka
+property = prop_dispersion, prop_destruction, prop_no_buck
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_barrel_narezka_name
+description = st_up_aa12_barrel_narezka_descr
+icon = ui_up_saiga12_barrel_narezka
+;------------------------------------------saiga12_barrel_dtk------------------------------------------
+
+[up_sect_aa12_barrel_dtk]
+cost = 10800
+value = -20
+cam_dispersion = -0.5
+cam_dispersion_inc = -0.2
+
+zoom_cam_dispersion = -0.2
+zoom_cam_dispersion_inc    = -0.45
+
+PDM_disp_base = -0.1
+
+[up_aa12_barrel_dtk]
+scheme_index = 1, 1
+known = 1
+effects = vartree_aa12_usm
+section = up_sect_aa12_barrel_dtk
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_barrel_dtk_name
+description = st_up_aa12_barrel_dtk_descr
+icon = ui_up_saiga12_barrel_dtk
+;------------------------------------------saiga12_patronnik------------------------------------------
+
+[up_sect_aa12_patronnik]
+cost = 25200
+value = +30
+PDM_disp_base = -0.8
+fire_dispersion_base = -0.04
+cam_dispersion = -0.3
+zoom_cam_dispersion = -0.3
+bullet_speed = +30
+
+[up_aa12_patronnik]
+scheme_index = 2, 0
+known = 1
+effects = 
+section = up_sect_aa12_patronnik
+property = prop_bullet_speed
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_patronnik_name
+description = st_up_aa12_patronnik_descr
+icon = ui_up_saiga12_patronnik
+;------------------------------------------saiga12_usm_rpm------------------------------------------
+
+[up_sect_aa12_usm_rpm]
+cost = 10800
+value = +30
+condition_shot_dec = +0.0003
+rpm = +50
+
+[up_aa12_usm_rpm]
+scheme_index = 2, 1
+known = 1
+effects = 
+section = up_sect_aa12_usm_rpm
+property = prop_rpm
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_usm_rpm_name
+description = st_up_aa12_usm_rpm_descr
+icon = ui_up_saiga12_usm_rpm
+;------------------------------------------saiga12_usm_recoil------------------------------------------
+
+[up_sect_aa12_usm_recoil]
+cost = 10800
+value = -30
+cam_dispersion = -0.8
+zoom_cam_dispersion = -0.8
+
+cam_dispersion_inc = -0.4
+zoom_cam_dispersion_inc = -0.4
+
+PDM_disp_base = 0.2
+
+[up_aa12_usm_recoil]
+scheme_index = 2, 2
+known = 1
+effects = 
+section = up_sect_aa12_usm_recoil
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_usm_recoil_name
+description = st_up_aa12_usm_recoil_descr
+icon = ui_up_saiga12_usm_recoil
+;------------------------------------------saiga12_light_foregrip------------------------------------------
+
+[up_sect_aa12_light_foregrip]
+cost = 16200
+value = -0.3
+inv_weight = -0.3
+
+[up_aa12_light_foregrip]
+scheme_index = 0, 1
+known = 1
+effects = vartree_aa12_stock
+section = up_sect_aa12_light_foregrip
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_light_foregrip_name
+description = st_up_aa12_light_foregrip_descr
+icon = ui_up_saiga12_light_foregrip
+;------------------------------------------saiga12_stock_nakladka------------------------------------------
+
+[up_sect_aa12_stock_nakladka]
+cost = 10800
+value = -20
+cam_dispersion          = -0.6
+cam_dispersion_inc      = -0.4
+inv_weight              = +0.1
+
+zoom_cam_dispersion = -0.5
+zoom_cam_dispersion_inc = -0.4
+
+[up_aa12_stock_nakladka]
+scheme_index = 1, 2
+known = 1
+effects = vartree_aa12_body
+section = up_sect_aa12_stock_nakladka
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_stock_nakladka_name
+description = st_up_aa12_stock_nakladka_descr
+icon = ui_up_saiga12_stock_nakladka
+;------------------------------------------saiga12_light_stock------------------------------------------
+
+[up_sect_aa12_light_stock]
+cost = 10800
+value = -0.5
+inv_weight = -0.5
+cam_dispersion = +0.2
+zoom_cam_dispersion = +0.2
+
+[up_aa12_light_stock]
+scheme_index = 1, 3
+known = 1
+effects = vartree_aa12_body
+section = up_sect_aa12_light_stock
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_light_stock_name
+description = st_up_aa12_light_stock_descr
+icon = ui_up_saiga12_light_stock
+;------------------------------------------saiga12_accurate_details------------------------------------------
+
+[up_sect_aa12_accurate_details]
+cost = 25200
+value = +25
+fire_dispersion_base = -0.06
+PDM_disp_base = -0.6
+cam_dispersion = -0.2
+zoom_cam_dispersion = -0.1
+
+[up_aa12_accurate_details]
+scheme_index = 2, 3
+known = 1
+effects = 
+section = up_sect_aa12_accurate_details
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_accurate_details_name
+description = st_up_aa12_accurate_details_descr
+icon = ui_up_saiga12_accurate_details
+;------------------------------------------saiga12_titan_details------------------------------------------
+
+[up_sect_aa12_titan_details]
+cost = 10800
+value = +25
+misfire_start_condition = -0.2
+misfire_start_prob = -0.001
+misfire_end_prob = -0.3
+condition_shot_dec = -0.0015
+
+[up_aa12_titan_details]
+scheme_index = 2, 4
+known = 1
+effects = 
+section = up_sect_aa12_titan_details
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_titan_details_name
+description = st_up_aa12_titan_details_descr
+icon = ui_up_saiga12_titan_details
+;------------------------------------------saiga12_lightdetails------------------------------------------
+
+[up_sect_aa12_lightdetails]
+cost = 10800
+value = -0.5
+inv_weight = -0.5
+condition_shot_dec = +0.0005
+
+[up_aa12_lightdetails]
+scheme_index = 2, 5
+known = 1
+effects = 
+section = up_sect_aa12_lightdetails
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_lightdetails_name
+description = st_up_aa12_lightdetails_descr
+icon = ui_up_saiga12_lightdetails
+;------------------------------------------saiga12_sights------------------------------------------
+
+[up_sect_aa12_sights]
+cost = 10800
+crosshair_inertion = -0.3
+control_inertion_factor = -0.1
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_aa12_sights]
+scheme_index = 0, 2
+known = 1
+effects = 
+section = up_sect_aa12_sights
+property = prop_lightingsights
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_sights_name
+description = st_up_aa12_sights_descr
+icon = ui_up_saiga12_sights
+;------------------------------------------saiga12_mag10------------------------------------------
+
+[up_sect_aa12_mag10]
+cost = 10800
+value = +5
+inv_weight = +0.1
+ammo_mag_size = +5
+
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_aa12_mag10]
+scheme_index = 1, 4
+known = 1
+effects = 
+section = up_sect_aa12_mag10
+property = prop_ammo_size
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_mag10_name
+description = st_up_aa12_mag10_descr
+icon = ui_up_saiga12_mag10
+;------------------------------------------saiga12_handle------------------------------------------
+
+[up_sect_aa12_handle]
+cost = 10800
+value = +10
+
+cam_dispersion = -0.3
+cam_dispersion_inc = -0.17
+
+zoom_cam_dispersion = -0.3
+zoom_cam_dispersion_inc = 0.15
+
+[up_aa12_handle]
+scheme_index = 2, 6
+known = 1
+effects = 
+section = up_sect_aa12_handle
+property = prop_inertion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_aa12_handle_name
+description = st_up_aa12_handle_descr
+icon = ui_up_saiga12_handle
+;------------------------------------------------------------------------------------
+
+[vartree_aa12_magfix]
+elements = up_aa12_mag_fix
+
+[vartree_aa12_barrel]
+elements = up_aa12_barrel_narezka, up_aa12_barrel_dtk
+
+[vartree_aa12_usm]
+elements = up_aa12_patronnik, up_aa12_usm_rpm, up_aa12_usm_recoil
+
+[vartree_aa12_foregrip]
+elements = up_aa12_light_foregrip
+
+[vartree_aa12_stock]
+elements = up_aa12_stock_nakladka, up_aa12_light_stock
+
+[vartree_aa12_body]
+elements = up_aa12_accurate_details, up_aa12_titan_details, up_aa12_lightdetails
+
+[vartree_aa12_sights]
+elements = up_aa12_sights
+
+[vartree_aa12_mag]
+elements = up_aa12_mag10
+
+[vartree_aa12_handle]
+elements = up_aa12_handle
+
+;; Misery_Coop_Port: define missing up_sect(s) (mirror saiga12; tools\build_upgrade_variants.py)
+[up_sect_aa12_barrel_narezka]
+cost = 25200
+value = +15
+bullet_speed = 50
+fire_dispersion_base = -0.03

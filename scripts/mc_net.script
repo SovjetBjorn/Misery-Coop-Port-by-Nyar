@@ -1,0 +1,69 @@
+-- mc_net.script
+-- Misery Coop Port: dispatcher and senders for GM_MC_* messages.
+-- PORT_NOTES: new file. Entered from the port-layer game_cl.script shadow:
+-- TranslateGameMessage routes any _type >= GM_SCRIPT_ADDON_EVENTS here.
+-- Guard discipline mirrors TranslateGameMessage: client->server handlers gated
+-- by OnServer(), server->client handlers by OnClient().
+
+function on_game_message(_type, packet)
+	if not mc_core.is_coop() then
+		return
+	end
+
+	if _type == mc_core.GM_MC_CLIENT_HELLO then
+		if OnServer() then
+			mc_player_state.sv_on_hello(packet)
+		end
+	elseif _type == mc_core.GM_MC_STATE_PUSH then
+		if OnServer() then
+			mc_player_state.sv_on_state_push(packet)
+		end
+	elseif _type == mc_core.GM_MC_STATE_RESTORE then
+		if OnClient() then
+			mc_player_state.cl_on_state_restore(packet)
+		end
+	elseif _type == mc_core.GM_MC_PLAYER_EVENT then
+		-- per-player item-op events (cooking, ...): mc_cooking dispatches by event code.
+		-- The handler self-guards OnServer/OnClient per event (cook is client->server).
+		if mc_cooking and mc_cooking.on_player_event then
+			mc_cooking.on_player_event(packet)
+		else
+			mc_core.mc_log("GM_MC_PLAYER_EVENT received but mc_cooking absent")
+		end
+	elseif _type == mc_core.GM_MC_SLEEP_EVENT then
+		-- coop consent-sleep: mc_sleep dispatches by sub-event (self-guards OnServer/OnClient).
+		if mc_sleep and mc_sleep.on_event then
+			mc_sleep.on_event(packet)
+		else
+			mc_core.mc_log("GM_MC_SLEEP_EVENT received but mc_sleep absent")
+		end
+	elseif _type == mc_core.GM_MC_NEWS_TIP then
+		-- server -> one client: show a harvest/loot feedback tip (news_manager is client-only;
+		-- the harvest runs server-side, so the server bounces the tip here to the looting actor).
+		if OnClient() then
+			local actor_id = packet:r_u16()
+			local news_id  = packet:r_stringZ()
+			local la = getLocalActor()
+			if la and la:id() == actor_id and news_manager and news_manager.send_tip then
+				news_manager.send_tip(la, news_id, nil, "mutant_hunter", 5000)
+			end
+		end
+	else
+		mc_core.mc_log("! unknown addon message type %s", tostring(_type))
+	end
+end
+
+-- client -> server (broadcast path; server handler picks it up, OnServer-guarded)
+function send_to_server(packet)
+	u_EventSendReliable(packet)
+end
+
+-- server -> one client; gameID is the target's session actor id
+-- (precedent: xr_statistic.write_data_for / game_sv.SendStoryFlags)
+function send_to_client(packet, actor_id)
+	u_EventSendToReliable(packet, actor_id)
+end
+
+function new_message(_type)
+	return game_cl.GenerateGameMessage(_type)
+end

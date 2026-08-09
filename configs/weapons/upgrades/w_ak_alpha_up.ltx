@@ -1,0 +1,551 @@
+[up_sect_ak_alpha_barrel]
+cost = 18900
+value = +20
+bullet_speed = +150
+fire_dispersion_base = -0.01
+
+PDM_disp_base 				= -0.05
+PDM_disp_vel_factor 		= -0.05
+
+[up_ak_alpha_barrel]
+scheme_index = 0, 0
+known = 1
+effects = vartree_ak_alpha_usm
+section = up_sect_ak_alpha_barrel
+property = prop_bullet_speed
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_barrel_name
+description = st_up_ak_alpha_barrel_descr
+icon = ui_up_ak74_barrel
+;------------------------------------------ak74_usm_rpm------------------------------------------
+
+[up_sect_ak_alpha_usm_rpm]
+cost = 8100
+value = +20
+rpm = +130
+condition_queue_shot_dec     = +0.0002
+misfire_start_prob	     	= +0.001
+misfire_end_prob	     	= +0.005
+
+[up_ak_alpha_usm_rpm]
+scheme_index = 1, 0
+known = 1
+effects = vartree_ak_alpha_body
+section = up_sect_ak_alpha_usm_rpm
+property = prop_rpm
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_usm_rpm_name
+description = st_up_ak_alpha_usm_rpm_descr
+icon = ui_up_ak74_usm_rpm
+;------------------------------------------ak74_usm_accuracy------------------------------------------
+
+[up_sect_ak_alpha_usm_accuracy]
+cost = 18900
+value = +20
+fire_dispersion_base = -0.05
+PDM_disp_base = -0.2
+PDM_disp_vel_factor 		= -0.1
+PDM_disp_accel_factor 		= -0.2
+PDM_disp_crouch	 			= -0.1
+PDM_disp_crouch_no_acc 		= -0.1
+
+bullet_speed = +10
+crosshair_inertion = -1
+cam_dispersion = -0.1
+zoom_cam_dispersion = -0.05
+cam_dispersion_inc      = -0.1
+zoom_cam_dispersion_inc     = -0.03
+
+[up_ak_alpha_usm_accuracy]
+scheme_index = 1, 1
+known = 1
+effects = vartree_ak_alpha_body
+section = up_sect_ak_alpha_usm_accuracy
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_usm_accuracy_name
+description = st_up_ak_alpha_usm_accuracy_descr
+icon = ui_up_ak74_usm_accuracy
+;------------------------------------------ak74_usm_rpm_down------------------------------------------
+
+[up_sect_ak_alpha_usm_rpm_down]
+cost = 8100
+value = -20
+rpm = -130
+condition_queue_shot_dec     = -0.0001
+misfire_start_prob	     	= -0.001
+misfire_end_prob	     	= -0.005
+cam_dispersion = -0.05
+zoom_cam_dispersion = -0.02
+PDM_disp_base = -0.05
+
+[up_ak_alpha_usm_rpm_down]
+scheme_index = 1, 2
+known = 1
+effects = vartree_ak_alpha_body
+section = up_sect_ak_alpha_usm_rpm_down
+property = prop_rpm
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_usm_rpm_down_name
+description = st_up_ak_alpha_usm_rpm_down_descr
+icon = ui_up_ak74_usm_rpm_down
+;------------------------------------------ak74_lightdetails------------------------------------------
+
+[up_sect_ak_alpha_lightdetails]
+cost = 12150
+value = -1
+inv_weight              = -1
+control_inertion_factor = -0.2
+
+[up_ak_alpha_lightdetails]
+scheme_index = 2, 0
+known = 1
+effects = 
+section = up_sect_ak_alpha_lightdetails
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_lightdetails_name
+description = st_up_ak_alpha_lightdetails_descr
+icon = ui_up_ak74_lightdetails
+;------------------------------------------ak74_reliability------------------------------------------
+
+[up_sect_ak_alpha_reliability]
+cost = 8100
+value = +50
+condition_queue_shot_dec     = -0.00025
+misfire_start_prob	     	= -0.001
+misfire_end_prob	     	= -0.005
+condition_shot_dec = -0.0001
+
+[up_ak_alpha_reliability]
+scheme_index = 2, 1
+known = 1
+effects = 
+section = up_sect_ak_alpha_reliability
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_reliability_name
+description = st_up_ak_alpha_reliability_descr
+icon = ui_up_ak74_reliability
+;------------------------------------------ak74_light_tsevie------------------------------------------
+
+[up_sect_ak_alpha_light_tsevie]
+cost = 8100
+value = +8
+control_inertion_factor = -0.1
+cam_dispersion          = -0.05
+cam_dispersion_inc         	= -0.02
+zoom_cam_dispersion          = =-0.02
+zoom_cam_dispersion_inc =   -0.05
+
+
+PDM_disp_base = -0.1
+PDM_disp_vel_factor = -0.1
+PDM_disp_crouch_no_acc = -0.1
+
+[up_ak_alpha_light_tsevie]
+scheme_index = 0, 1
+known = 1
+effects = vartree_ak_alpha_tsevie_up
+section = up_sect_ak_alpha_light_tsevie
+property = prop_inertion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_light_tsevie_name
+description = st_up_ak_alpha_light_tsevie_descr
+icon = ui_up_ak74_light_tsevie
+;------------------------------------------ak74_foregrip_rail------------------------------------------
+
+[up_sect_ak_alpha_foregrip_rail]
+cost = 18900
+inv_weight        = +0.05
+
+
+;COMPENSATION: accuracy bonus replaces removed attachment unlock
+fire_dispersion_base = -0.015
+cam_dispersion = -0.06
+zoom_cam_dispersion = -0.04
+
+[up_ak_alpha_foregrip_rail]
+scheme_index = 1, 3
+known = 1
+effects = 
+;effects = vartree_ak_alpha_laser, vartree_ak_alpha_torch
+section = up_sect_ak_alpha_foregrip_rail
+property = prop_scope_attach
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_foregrip_rail_name
+description = st_up_ak_alpha_foregrip_rail_descr
+icon = ui_up_ak74_foregrip_rail
+;------------------------------------------ak74_laser------------------------------------------
+
+[up_sect_ak_alpha_laser]
+cost = 8100
+inv_weight              = +0.2
+crosshair_inertion = -0.1
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_ak_alpha_laser]
+scheme_index = 2, 2
+known = 1
+effects = 
+section = up_sect_ak_alpha_laser
+property = prop_laser
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_laser_name
+description = st_up_ak_alpha_laser_descr
+icon = ui_up_ak74_laser
+;------------------------------------------ak74_torch------------------------------------------
+
+[up_sect_ak_alpha_torch]
+cost = 8100
+inv_weight              = +0.3
+
+
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_ak_alpha_torch]
+scheme_index = 0, 8
+known = 1
+effects = 
+section = up_sect_ak_alpha_torch
+property = prop_torch
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_torch_name
+description = st_up_ak_alpha_torch_descr
+icon = ui_up_ak74_torch
+;------------------------------------------ak74_mag45_black------------------------------------------
+
+[up_sect_ak_alpha_mag45_black]
+cost = 8100
+value = +15
+ammo_mag_size	= +15
+inv_weight              = +0.1
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_ak_alpha_mag45_black]
+scheme_index = 0, 2
+known = 1
+effects = vartree_ak_alpha_mag60
+section = up_sect_ak_alpha_mag45_black
+property = prop_ammo_size
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_mag45_black_name
+description = st_up_ak_alpha_mag45_black_descr
+icon = ui_up_ak74_mag45_black
+;------------------------------------------ak74_mag45_brown------------------------------------------
+
+[up_sect_ak_alpha_mag45_brown]
+cost = 8100
+value = +15
+ammo_mag_size	= +15
+inv_weight              = +0.1
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_ak_alpha_mag45_brown]
+scheme_index = 0, 3
+known = 1
+effects = vartree_ak_alpha_mag60
+section = up_sect_ak_alpha_mag45_brown
+property = prop_ammo_size
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_mag45_brown_name
+description = st_up_ak_alpha_mag45_brown_descr
+icon = ui_up_ak74_mag45_brown
+;------------------------------------------ak74_mag60------------------------------------------
+
+[up_sect_ak_alpha_mag60]
+cost = 8100
+value = +15
+ammo_mag_size	= +15
+inv_weight              = +0.1
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_ak_alpha_mag60]
+scheme_index = 1, 4
+known = 1
+effects = 
+section = up_sect_ak_alpha_mag60
+property = prop_ammo_size
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_mag60_name
+description = st_up_ak_alpha_mag60_descr
+icon = ui_up_ak74_mag60
+;------------------------------------------ak74_weight_priklad------------------------------------------
+
+[up_sect_ak_alpha_weight_priklad]
+cost = 12150
+value = -0.3
+inv_weight              = -0.3
+
+[up_ak_alpha_weight_priklad]
+scheme_index = 0, 4
+known = 1
+effects = vartree_ak_alpha_priklad_nakladka
+section = up_sect_ak_alpha_weight_priklad
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_weight_priklad_name
+description = st_up_ak_alpha_weight_priklad_descr
+icon = ui_up_ak74_weight_priklad
+;------------------------------------------ak74_nakladka_priklad------------------------------------------
+
+[up_sect_ak_alpha_nakladka_priklad]
+cost = 8100
+value = -25
+cam_dispersion          = -0.3
+cam_dispersion_inc      = -0.05
+inv_weight              = +0.1
+
+
+zoom_cam_dispersion = -0.1
+zoom_cam_dispersion_inc = -0.1
+
+[up_ak_alpha_nakladka_priklad]
+scheme_index = 1, 5
+known = 1
+effects = 
+section = up_sect_ak_alpha_nakladka_priklad
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_nakladka_priklad_name
+description = st_up_ak_alpha_nakladka_priklad_descr
+icon = ui_up_ak74_nakladka_priklad
+;------------------------------------------ak74_sights------------------------------------------
+
+[up_sect_ak_alpha_sights]
+cost = 8100
+crosshair_inertion = -1
+control_inertion_factor = -0.05
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_ak_alpha_sights]
+scheme_index = 0, 5
+known = 1
+effects = 
+section = up_sect_ak_alpha_sights
+property = prop_lightingsights
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_sights_name
+description = st_up_ak_alpha_sights_descr
+icon = ui_up_ak74_sights
+;------------------------------------------ak74_handle------------------------------------------
+
+[up_sect_ak_alpha_handle]
+cost = 8100
+value = +10
+control_inertion_factor = -0.1
+cam_dispersion = -0.1
+zoom_cam_dispersion_inc = -0.1
+zoom_cam_dispersion = -0.05
+inv_weight = -0.05
+PDM_disp_vel_factor = -0.15
+
+[up_ak_alpha_handle]
+scheme_index = 1, 6
+known = 1
+effects = 
+section = up_sect_ak_alpha_handle
+property = prop_inertion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_handle_name
+description = st_up_ak_alpha_handle_descr
+icon = ui_up_ak74_handle
+;------------------------------------------ak74_bayonet------------------------------------------
+
+[up_sect_ak_alpha_bayonet]
+cost = 8100
+
+
+inv_weight              = +0.2
+;silencer_status            = 0
+hud = wpn_ak_alpha_hud_bayonet
+
+
+;COMPENSATION: handling bonus replaces removed bone swap
+crosshair_inertion = -0.2
+PDM_disp_base = -0.05
+
+[up_ak_alpha_bayonet]
+scheme_index = 2, 4
+known = 1
+effects = 
+section = up_sect_ak_alpha_bayonet
+property = prop_bayonet
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_ak_alpha_bayonet_name
+description = st_up_ak_alpha_bayonet_descr
+icon = ui_up_ak74_bayonet
+;------------------------------------------------------------------------------------
+
+[vartree_ak_alpha_barrel]
+elements = up_ak_alpha_barrel
+
+[vartree_ak_alpha_usm]
+elements = up_ak_alpha_usm_accuracy, up_ak_alpha_usm_rpm, up_ak_alpha_usm_rpm_down
+
+[vartree_ak_alpha_body]
+elements = up_ak_alpha_lightdetails, up_ak_alpha_reliability
+
+[vartree_ak_alpha_tsevie_down]
+elements = up_ak_alpha_light_tsevie
+
+[vartree_ak_alpha_tsevie_up]
+elements = up_ak_alpha_foregrip_rail
+
+[vartree_ak_alpha_laser]
+elements = up_ak_alpha_laser
+
+[vartree_ak_alpha_torch]
+elements = up_ak_alpha_torch
+
+[vartree_ak_alpha_mag45]
+elements = up_ak_alpha_mag45_brown, up_ak_alpha_mag45_black
+
+[vartree_ak_alpha_mag60]
+elements = up_ak_alpha_mag60
+
+[vartree_ak_alpha_priklad]
+elements = up_ak_alpha_weight_priklad
+
+[vartree_ak_alpha_priklad_nakladka]
+elements = up_ak_alpha_nakladka_priklad
+
+[vartree_ak_alpha_sights]
+elements = up_ak_alpha_sights
+
+[vartree_ak_alpha_handle]
+elements = up_ak_alpha_handle
+
+[vartree_ak_alpha_bayonet]
+elements = up_ak_alpha_bayonet

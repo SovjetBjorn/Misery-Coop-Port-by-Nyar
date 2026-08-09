@@ -1,0 +1,573 @@
+;------------------------------------------l85_mag_fixator------------------------------------------
+[up_sect_l85_mag_fixator]
+cost = 4200
+value = +10
+misfire_start_condition = -0.1
+misfire_start_prob = -0.0004
+misfire_end_prob = -0.008
+
+[up_l85_mag_fixator]
+scheme_index = 0, 0
+known = 1
+effects = vartree_l85_usm
+section = up_sect_l85_mag_fixator
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_mag_fixator_name
+description = st_up_l85_mag_fixator_descr
+icon = ui_up_l85_mag_fixator
+;------------------------------------------l85_usm_accuracy------------------------------------------
+[up_sect_l85_usm_accuracy]
+cost = 9800
+value = +20
+fire_dispersion_base = -0.05
+bullet_speed = +10
+
+PDM_disp_base = -0.15
+PDM_disp_vel_factor 		= -0.05
+PDM_disp_accel_factor 		= -0.05
+PDM_disp_crouch	 		= -0.05
+PDM_disp_crouch_no_acc 		= -0.05
+
+cam_dispersion = -0.05
+zoom_cam_dispersion = -0.05
+
+cam_dispersion_inc      = -0.05
+zoom_cam_dispersion_inc     = -0.05
+
+[up_l85_usm_accuracy]
+scheme_index = 1, 0
+known = 1
+effects = vartree_l85_barrel
+section = up_sect_l85_usm_accuracy
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_usm_accuracy_name
+description = st_up_l85_usm_accuracy_descr
+icon = ui_up_l85_usm_accuracy
+;------------------------------------------l85_usm_rpm------------------------------------------
+[up_sect_l85_usm_rpm]
+cost = 4200
+value = +20
+rpm = +120
+condition_queue_shot_dec     = +0.0002
+misfire_start_prob	     	= +0.0005
+misfire_end_prob	     	= +0.005
+
+[up_l85_usm_rpm]
+scheme_index = 1, 1
+known = 1
+effects = vartree_l85_barrel
+section = up_sect_l85_usm_rpm
+property = prop_rpm
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_usm_rpm_name
+description = st_up_l85_usm_rpm_descr
+icon = ui_up_l85_usm_rpm
+;------------------------------------------l85_barrel_accuracy------------------------------------------
+[up_sect_l85_barrel_accuracy]
+cost = 9800
+value = +25
+fire_dispersion_base = -0.07
+PDM_disp_base = -0.2
+PDM_disp_vel_factor 		= -0.1
+PDM_disp_accel_factor 		= -0.2
+PDM_disp_crouch	 		= -0.1
+PDM_disp_crouch_no_acc 		= -0.1
+
+cam_dispersion = -0.05
+zoom_cam_dispersion = -0.02
+
+
+[up_l85_barrel_accuracy]
+scheme_index = 2, 0
+known = 1
+effects = 
+section = up_sect_l85_barrel_accuracy
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_barrel_accuracy_name
+description = st_up_l85_barrel_accuracy_descr
+icon = ui_up_l85_barrel_accuracy
+;------------------------------------------l85_barrel_kompensator------------------------------------------
+[up_sect_l85_barrel_kompensator]
+cost = 4200
+value = -30
+PDM_disp_base = -0.1
+
+cam_dispersion = -0.12
+cam_dispersion_inc = -0.07
+
+zoom_cam_dispersion = -0.08
+zoom_cam_dispersion_inc = -0.07
+
+[up_l85_barrel_kompensator]
+scheme_index = 2, 1
+known = 1
+effects = 
+section = up_sect_l85_barrel_kompensator
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_barrel_kompensator_name
+description = st_up_l85_barrel_kompensator_descr
+icon = ui_up_l85_barrel_kompensator
+;------------------------------------------l85_barrel_bullet_speed------------------------------------------
+[up_sect_l85_barrel_bullet_speed]
+cost = 9800
+value = +50
+bullet_speed = +250
+
+[up_l85_barrel_bullet_speed]
+scheme_index = 2, 2
+known = 1
+effects = 
+section = up_sect_l85_barrel_bullet_speed
+property = prop_bullet_speed
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_barrel_bullet_speed_name
+description = st_up_l85_barrel_bullet_speed_descr
+icon = ui_up_l85_barrel_bullet_speed
+;------------------------------------------l85_firemode------------------------------------------
+[up_sect_l85_firemode]
+cost = 4200
+value = +10
+misfire_start_condition = -0.1
+misfire_start_prob = -0.0004
+misfire_end_prob = -0.008
+
+condition_shot_dec = -0.00005
+condition_queue_shot_dec	= -0.00008
+
+[up_l85_firemode]
+scheme_index = 0, 1
+known = 1
+effects = vartree_l85_body
+section = up_sect_l85_firemode
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_firemode_name
+description = st_up_l85_firemode_descr
+icon = ui_up_l85_firemode
+;------------------------------------------l85_body_reliability------------------------------------------
+[up_sect_l85_body_reliability]
+cost = 4200
+value = +25
+misfire_start_condition = -0.05
+
+misfire_start_prob = -0.0008
+misfire_end_prob  = -0.016
+
+condition_shot_dec      	= -0.0002
+condition_queue_shot_dec	= -0.0003
+
+[up_l85_body_reliability]
+scheme_index = 1, 2
+known = 1
+effects = vartree_l85_zatvor
+section = up_sect_l85_body_reliability
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_body_reliability_name
+description = st_up_l85_body_reliability_descr
+icon = ui_up_l85_body_reliability
+;------------------------------------------l85_body_weight------------------------------------------
+[up_sect_l85_body_weight]
+cost = 4200
+value = -1
+inv_weight           	= -1
+control_inertion_factor = -0.2
+
+PDM_disp_base = +0.1
+cam_dispersion = +0.05
+zoom_cam_dispersion = +0.03
+
+[up_l85_body_weight]
+scheme_index = 1, 3
+known = 1
+effects = vartree_l85_zatvor
+section = up_sect_l85_body_weight
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_body_weight_name
+description = st_up_l85_body_weight_descr
+icon = ui_up_l85_body_weight
+;------------------------------------------l85_zatvor_balancer------------------------------------------
+[up_sect_l85_zatvor_balancer]
+cost = 4200
+value = -30
+zoom_cam_dispersion          = -0.1
+cam_dispersion          = -0.17
+
+misfire_start_prob	     	= -0.0002
+misfire_end_prob	     	= -0.005
+
+PDM_disp_base = -0.05
+
+[up_l85_zatvor_balancer]
+scheme_index = 2, 3
+known = 1
+effects = 
+section = up_sect_l85_zatvor_balancer
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_zatvor_balancer_name
+description = st_up_l85_zatvor_balancer_descr
+icon = ui_up_l85_zatvor_balancer
+;------------------------------------------l85_mag40------------------------------------------
+[up_sect_l85_mag40]
+cost = 4200
+value = +10
+overriding_show_bones = mag40
+overriding_hide_bones = mag30
+ammo_mag_size	= +10
+inv_weight              = +0.05
+
+cam_dispersion = +0.02
+zoom_cam_dispersion = +0.01
+
+hud = wpn_l85_long_mag_hud
+
+upgrade_addon_icon = upgrade_addon_icon_mag_556_40_1
+upgrade_addon_icons_hide = icon_element_l85_mag_default
+upgrade_addon_icon_offset_x = 50
+upgrade_addon_icon_offset_y = 0
+
+[up_l85_mag40]
+scheme_index = 0, 2
+known = 1
+effects = vartree_l85_mag60, vartree_l85_tac_handler
+section = up_sect_l85_mag40
+property = prop_ammo_size
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_mag40_name
+description = st_up_l85_mag40_descr
+icon = ui_up_l85_mag40
+;------------------------------------------l85_tac_handle------------------------------------------
+[up_sect_l85_tac_handle]
+cost = 4200
+control_inertion_factor = -0.3
+inv_weight              = +0.2
+
+crosshair_inertion		= -3.0
+cam_relax_speed         = +1
+
+cam_max_angle           = -20.0      
+cam_max_angle_horz      = -20.0
+
+cam_dispersion          = -0.15 
+cam_dispersion_inc      = -0.1
+
+zoom_cam_dispersion = -0.07
+zoom_cam_dispersion_inc = -0.05
+
+PDM_disp_base = -0.1
+
+overriding_show_bones = handguard_rail, tac_handler
+overriding_hide_bones = handguard
+
+hud = wpn_l85_handler_long_mag_hud
+
+upgrade_addon_icon = icon_element_l85_fore_tac
+upgrade_addon_icons_hide = icon_element_l85_fore_stock
+upgrade_addon_icon_offset_x = 118
+upgrade_addon_icon_offset_y = 0
+upgrade_addon_icon_banned_addons_mask = 2
+
+[up_l85_tac_handle]
+scheme_index = 1, 4
+known = 1
+effects =
+;effects = vartree_l85_laser
+section = up_sect_l85_tac_handle
+property = prop_tacticalhandle
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_tac_handle_name
+description = st_up_l85_tac_handle_descr
+icon = ui_up_l85_tac_handle
+;------------------------------------------l85_flashlaser------------------------------------------
+[up_sect_l85_flashlaser]
+cost = 6300
+crosshair_inertion = -0.3
+overriding_show_bones = flash, laser, rope
+inv_weight              = +0.3
+laserdot_world_attach_offset_x = -0.020
+laserdot_world_attach_offset_y = 0.228
+laserdot_world_attach_offset_z = 0.194
+
+torch_world_attach_offset_x = 0.020
+torch_world_attach_offset_y = 0.234
+torch_world_attach_offset_z = 0.194
+
+torch_omni_world_attach_offset_x = 0.020
+torch_omni_world_attach_offset_y = 0.234
+torch_omni_world_attach_offset_z = 0.194
+
+upgrade_addon_icon = upgrade_addon_icon_laser_anpeq_1
+upgrade_addon_icon_offset_x = 123
+upgrade_addon_icon_offset_y = 0
+
+[up_l85_flashlaser]
+scheme_index = 2, 4
+known = 1
+effects = 
+section = up_sect_l85_flashlaser
+property = prop_laser
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_flashlaser_name
+description = st_up_l85_flashlaser_descr
+icon = ui_up_l85_flashlaser
+;------------------------------------------l85_mag60------------------------------------------
+[up_sect_l85_mag60]
+cost = 4200
+value = +20
+overriding_show_bones = mag60
+overriding_hide_bones = mag40
+ammo_mag_size	= +20
+inv_weight              = +0.07
+
+cam_dispersion = +0.03
+zoom_cam_dispersion = +0.02
+
+upgrade_addon_icon = upgrade_addon_icon_mag_556_60_1
+upgrade_addon_icons_hide = upgrade_addon_icon_mag_556_40_1
+upgrade_addon_icon_offset_x = 50
+upgrade_addon_icon_offset_y = 0
+
+[up_l85_mag60]
+scheme_index = 1, 5
+known = 1
+effects = 
+section = up_sect_l85_mag60
+property = prop_ammo_size
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_mag60_name
+description = st_up_l85_mag60_descr
+icon = ui_up_l85_mag60
+;------------------------------------------l85_sights------------------------------------------
+[up_sect_l85_sights]
+cost = 6300
+crosshair_inertion = -1
+control_inertion_factor = -0.05
+overriding_show_bones = sight, sight_top
+
+[up_l85_sights]
+scheme_index = 0, 3
+known = 1
+effects = 
+section = up_sect_l85_sights
+property = prop_lightingsights
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_sights_name
+description = st_up_l85_sights_descr
+icon = ui_up_l85_sights
+;------------------------------------------l85_priklad------------------------------------------
+[up_sect_l85_priklad]
+cost = 4200
+value = -10
+cam_dispersion = -0.07
+zoom_cam_dispersion = -0.05
+cam_dispersion_inc = -0.01
+zoom_cam_dispersion_inc = -0.04
+
+[up_l85_priklad]
+scheme_index = 1, 6
+known = 1
+effects = 
+section = up_sect_l85_priklad
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_priklad_name
+description = st_up_l85_priklad_descr
+icon = ui_up_l85_priklad
+;------------------------------------------l85_grip------------------------------------------
+[up_sect_l85_grip]
+cost = 4200
+value = +10
+control_inertion_factor = -0.2
+PDM_disp_vel_factor = -0.2
+
+cam_dispersion = -0.01
+zoom_cam_dispersion = -0.01
+inv_weight = +0.05
+overriding_hide_bones = handler
+
+[up_l85_grip]
+scheme_index = 1, 7
+known = 1
+effects = 
+section = up_sect_l85_grip
+property = prop_inertion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_grip_name
+description = st_up_l85_grip_descr
+icon = ui_up_l85_grip
+;------------------------------------------l85_bayonet------------------------------------------
+[up_sect_l85_bayonet]
+cost = 6300
+overriding_show_bones = bayonet
+
+disable_kick_anim_when_sil_attached = true
+hide_bones_override_when_silencer_attached = bayonet
+
+disable_kick_anim_when_gl_attached = true
+hide_bones_override_when_gl_attached = bayonet
+
+disable_kick_anim_when_gl_enabled = true
+hide_bones_override_grenade = bayonet
+
+inv_weight              = +0.3
+
+upgrade_addon_icon = upgrade_addon_icon_knife_l3a1_1
+upgrade_addon_icon_offset_x = 200
+upgrade_addon_icon_offset_y = 0
+inv_grid_width = +1
+upgrade_addon_icon_banned_addons_mask = 6
+
+
+[up_l85_bayonet]
+scheme_index = 2, 5
+known = 1
+effects = 
+section = up_sect_l85_bayonet
+property = prop_bayonet
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_l85_bayonet_name
+description = st_up_l85_bayonet_descr
+icon = ui_up_l85_bayonet
+;------------------------------------------------------------------------------------
+[vartree_l85_podacha]
+elements = up_l85_mag_fixator
+[vartree_l85_usm]
+elements = up_l85_usm_accuracy, up_l85_usm_rpm
+[vartree_l85_barrel]
+elements = up_l85_barrel_accuracy, up_l85_barrel_kompensator, up_l85_barrel_bullet_speed
+[vartree_l85_perevodchik]
+elements = up_l85_firemode
+[vartree_l85_body]
+elements = up_l85_body_reliability, up_l85_body_weight
+[vartree_l85_zatvor]
+elements = up_l85_zatvor_balancer
+[vartree_l85_mag45]
+elements = up_l85_mag40
+[vartree_l85_tac_handler]
+elements = up_l85_tac_handle
+[vartree_l85_mag60]
+elements = up_l85_mag60
+[vartree_l85_laser]
+elements = up_l85_flashlaser
+[vartree_l85_sights]
+elements = up_l85_sights
+[vartree_l85_priklad]
+elements = up_l85_priklad
+[vartree_l85_grip]
+elements = up_l85_grip
+[vartree_l85_bayonet]
+elements = up_l85_bayonet

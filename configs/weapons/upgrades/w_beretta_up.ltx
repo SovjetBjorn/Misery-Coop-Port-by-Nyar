@@ -1,0 +1,403 @@
+;------------------------------------------beretta_pokritie------------------------------------------
+[up_sect_beretta_pokritie]
+cost = 1300
+value = +10
+condition_shot_dec      	= -0.0004
+misfire_end_prob	     	= -0.01
+misfire_start_condition		= -0.05
+
+[up_beretta_pokritie]
+scheme_index = 0, 0
+known = 1
+effects = vartree_beretta_patronnik
+section = up_sect_beretta_pokritie
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_pokritie_name
+description = st_up_beretta_pokritie_descr
+icon = ui_up_beretta_pokritie
+;------------------------------------------beretta_zapiratel------------------------------------------
+[up_sect_beretta_zapiratel]
+cost = 3100
+value = +20
+bullet_speed = +40
+
+[up_beretta_zapiratel]
+scheme_index = 1, 0
+known = 1
+effects = vartree_beretta_barrel
+section = up_sect_beretta_zapiratel
+property = prop_bullet_speed
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_zapiratel_name
+description = st_up_beretta_zapiratel_descr
+icon = ui_up_beretta_zapiratel
+;------------------------------------------beretta_shell_ejector------------------------------------------
+[up_sect_beretta_shell_ejector]
+cost = 1300
+value = +20
+misfire_start_prob	     	= -0.002
+misfire_end_prob	     	= -0.02
+
+[up_beretta_shell_ejector]
+scheme_index = 1, 1
+known = 1
+effects = vartree_beretta_barrel
+section = up_sect_beretta_shell_ejector
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_shell_ejector_name
+description = st_up_beretta_shell_ejector_descr
+icon = ui_up_beretta_shell_ejector
+;------------------------------------------beretta_barrel_accuracy------------------------------------------
+[up_sect_beretta_barrel_accuracy]
+cost = 3100
+value = +30
+PDM_disp_base = -0.25
+fire_dispersion_base = -0.05
+
+[up_beretta_barrel_accuracy]
+scheme_index = 2, 0
+known = 1
+effects = 
+section = up_sect_beretta_barrel_accuracy
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_barrel_accuracy_name
+description = st_up_beretta_barrel_accuracy_descr
+icon = ui_up_beretta_barrel_accuracy
+;------------------------------------------beretta_barrel_bullet_speed------------------------------------------
+[up_sect_beretta_barrel_bullet_speed]
+cost = 3100
+value = +30
+bullet_speed = +70
+
+[up_beretta_barrel_bullet_speed]
+scheme_index = 2, 1
+known = 1
+effects = 
+section = up_sect_beretta_barrel_bullet_speed
+property = prop_bullet_speed
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_barrel_bullet_speed_name
+description = st_up_beretta_barrel_bullet_speed_descr
+icon = ui_up_beretta_barrel_bullet_speed
+;------------------------------------------beretta_barrel_silencer------------------------------------------
+[up_sect_beretta_barrel_silencer]
+cost = 1100
+silencer_status         = 2
+silencer_name  	= wpn_addon_silencer_919
+silencer_x 					= 70						; offset in inventory icon
+silencer_y 					= -19
+silencer_smoke_particles 	= weapons\generic_shoot_00
+snd_silencer_shot				= weapons\fiveseven\layers\fiveseven_silencer_a_1
+snd_silencer_shot1				= weapons\fiveseven\layers\fiveseven_silencer_a_2
+snd_silencer_shot2				= weapons\fiveseven\layers\fiveseven_silencer_a_3
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.01
+silencer_light_time 		= 0.01
+
+overriding_hide_bones = barrel
+overriding_show_bones = barrel_silencer
+
+upgrade_addon_icon = upgrade_addon_icon_barrel_silencer_1
+upgrade_addon_icon_offset_x = 53
+upgrade_addon_icon_offset_y = 0
+
+[up_beretta_barrel_silencer]
+scheme_index = 2, 2
+known = 1
+effects = 
+section = up_sect_beretta_barrel_silencer
+property = prop_silencer
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_barrel_silencer_name
+description = st_up_beretta_barrel_silencer_descr
+icon = ui_up_beretta_barrel_silencer
+;------------------------------------------beretta_kompensator------------------------------------------
+[up_sect_beretta_kompensator]
+cost = 1300
+value = -5
+cam_dispersion          = -0.05
+zoom_cam_dispersion         = -0.015
+PDM_disp_base  = -0.05
+
+[up_beretta_kompensator]
+scheme_index = 0, 1
+known = 1
+effects = vartree_beretta_spusk
+section = up_sect_beretta_kompensator
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_kompensator_name
+description = st_up_beretta_kompensator_descr
+icon = ui_up_beretta_kompensator
+;------------------------------------------beretta_spusk_rpm------------------------------------------
+[up_sect_beretta_spusk_rpm]
+cost = 2000
+value = +10
+rpm = +20
+
+[up_beretta_spusk_rpm]
+scheme_index = 1, 2
+known = 1
+effects = vartree_beretta_details
+section = up_sect_beretta_spusk_rpm
+property = prop_rpm
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_spusk_rpm_name
+description = st_up_beretta_spusk_rpm_descr
+icon = ui_up_beretta_spusk_rpm
+;------------------------------------------beretta_spusk_recoil------------------------------------------
+[up_sect_beretta_spusk_recoil]
+cost = 1300
+value = -10
+PDM_disp_base = -0.05
+cam_dispersion          = -0.1
+zoom_cam_dispersion         = -0.03
+
+[up_beretta_spusk_recoil]
+scheme_index = 1, 3
+known = 1
+effects = vartree_beretta_details
+section = up_sect_beretta_spusk_recoil
+property = prop_recoil
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_spusk_recoil_name
+description = st_up_beretta_spusk_recoil_descr
+icon = ui_up_beretta_spusk_recoil
+;------------------------------------------beretta_forced_details------------------------------------------
+[up_sect_beretta_forced_details]
+cost = 1300
+value = +30
+rpm = +50
+condition_shot_dec      	= +0.001
+
+[up_beretta_forced_details]
+scheme_index = 2, 3
+known = 1
+effects = 
+section = up_sect_beretta_forced_details
+property = prop_rpm
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_forced_details_name
+description = st_up_beretta_forced_details_descr
+icon = ui_up_beretta_forced_details
+;------------------------------------------beretta_titan_details------------------------------------------
+[up_sect_beretta_titan_details]
+cost = 1300
+value = +30
+condition_shot_dec      	= -0.0015
+misfire_start_condition	= -0.05
+
+[up_beretta_titan_details]
+scheme_index = 2, 4
+known = 1
+effects = 
+section = up_sect_beretta_titan_details
+property = prop_reliability
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_titan_details_name
+description = st_up_beretta_titan_details_descr
+icon = ui_up_beretta_titan_details
+;------------------------------------------beretta_light_details------------------------------------------
+[up_sect_beretta_light_details]
+cost = 2000
+value = -0.25
+inv_weight = -0.25
+
+[up_beretta_light_details]
+scheme_index = 2, 5
+known = 1
+effects = 
+section = up_sect_beretta_light_details
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_light_details_name
+description = st_up_beretta_light_details_descr
+icon = ui_up_beretta_light_details
+;------------------------------------------beretta_calibration------------------------------------------
+[up_sect_beretta_calibration]
+cost = 3100
+value = +30
+PDM_disp_base = -0.2
+fire_dispersion_base = -0.06
+
+[up_beretta_calibration]
+scheme_index = 2, 6
+known = 1
+effects = 
+section = up_sect_beretta_calibration
+property = prop_dispersion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_calibration_name
+description = st_up_beretta_calibration_descr
+icon = ui_up_beretta_calibration
+;------------------------------------------beretta_sights------------------------------------------
+[up_sect_beretta_sights]
+cost = 2000
+crosshair_inertion = -1
+control_inertion_factor = -0.1
+overriding_show_bones = sight
+
+[up_beretta_sights]
+scheme_index = 0, 2
+known = 1
+effects = 
+section = up_sect_beretta_sights
+property = prop_lightingsights
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_sights_name
+description = st_up_beretta_sights_descr
+icon = ui_up_beretta_sights
+;------------------------------------------beretta_light_mag------------------------------------------
+[up_sect_beretta_light_mag]
+cost = 2000
+value = -0.1
+inv_weight = -0.1
+
+[up_beretta_light_mag]
+scheme_index = 1, 4
+known = 1
+effects = 
+section = up_sect_beretta_light_mag
+property = prop_weight
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_light_mag_name
+description = st_up_beretta_light_mag_descr
+icon = ui_up_beretta_light_mag
+;------------------------------------------beretta_anatomic_handle------------------------------------------
+[up_sect_beretta_anatomic_handle]
+cost = 1300
+value = +10
+control_inertion_factor = -0.2
+crosshair_inertion = -1
+PDM_disp_vel_factor = -0.1
+
+[up_beretta_anatomic_handle]
+scheme_index = 2, 7
+known = 1
+effects = 
+section = up_sect_beretta_anatomic_handle
+property = prop_inertion
+precondition_functor = inventory_upgrades.precondition_functor_a
+precondition_parameter = true
+effect_functor = inventory_upgrades.effect_functor_a
+effect_parameter  = something_here
+prereq_functor  = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params  = 
+name = st_up_beretta_anatomic_handle_name
+description = st_up_beretta_anatomic_handle_descr
+icon = ui_up_beretta_anatomic_handle
+;------------------------------------------------------------------------------------
+[vartree_beretta_body]
+elements = up_beretta_pokritie
+[vartree_beretta_patronnik]
+elements = up_beretta_zapiratel, up_beretta_shell_ejector
+[vartree_beretta_barrel]
+elements = up_beretta_barrel_accuracy, up_beretta_barrel_bullet_speed, up_beretta_barrel_silencer
+[vartree_beretta_kompensator]
+elements = up_beretta_kompensator
+[vartree_beretta_spusk]
+elements = up_beretta_spusk_rpm, up_beretta_spusk_recoil
+[vartree_beretta_details]
+elements = up_beretta_forced_details, up_beretta_titan_details, up_beretta_light_details, up_beretta_calibration
+[vartree_beretta_sights]
+elements = up_beretta_sights
+[vartree_beretta_mag]
+elements = up_beretta_light_mag
+[vartree_beretta_handle]
+elements = up_beretta_anatomic_handle
