@@ -7,6 +7,9 @@
 
 local SPAWN_EVERY   = 30      -- frames between item probes (avoid flooding one tick)
 local START_DELAY   = 300     -- frames to wait after spawn before probing begins
+-- Optional focused repro: launch with `mc_selftest=<section>` to exercise just
+-- that section through the same g_spawn_to_inventory path as the full matrix.
+local TARGET_SECTION = string.match(command_line() or "", "mc_selftest=([%w_]+)")
 
 -- baked manifest: { section, class, kind }  (kind: weapon|helmet|outfit|item)
 local MANIFEST = {
@@ -1132,7 +1135,8 @@ local function run(binder, delta)
 	local frame = device().frame
 	if started_frame == nil then
 		started_frame = frame
-		slog("ENABLED -- %s items queued; first probe in %s frames", tostring(#MANIFEST), tostring(START_DELAY))
+		slog("ENABLED -- %s items queued%s; first probe in %s frames", tostring(#MANIFEST),
+			TARGET_SECTION and ("; target=" .. TARGET_SECTION) or "", tostring(START_DELAY))
 		-- identity self-check: write + read back a per-player var (2-client run: each
 		-- client logs its OWN LocalActor; the buckets must not cross-contaminate)
 		mc_player_state.set("selftest_owner", LocalActor())
@@ -1145,12 +1149,15 @@ local function run(binder, delta)
 		return
 	end
 	next_frame = frame + SPAWN_EVERY
-	idx = idx + 1
-	if idx > #MANIFEST then
-		done = true
-		slog("COMPLETE -- pass=%s fail=%s of %s", tostring(pass_n), tostring(fail_n), tostring(#MANIFEST))
-		return
-	end
+	repeat
+		idx = idx + 1
+		if idx > #MANIFEST then
+			done = true
+			slog("COMPLETE -- pass=%s fail=%s of %s", tostring(pass_n), tostring(fail_n),
+				TARGET_SECTION and 1 or #MANIFEST)
+			return
+		end
+	until TARGET_SECTION == nil or MANIFEST[idx][1] == TARGET_SECTION
 	local entry = MANIFEST[idx]
 	local ok, reason = probe(entry)
 	if ok then

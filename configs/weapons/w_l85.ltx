@@ -13,9 +13,9 @@ default_to_ruck         = false
 sprint_allowed       	= true
 
 ;-------------------------------------------------------------------------------
-cost                    = 27000
+cost                    = 35000
 weapon_class            = assault_rifle        ; Type of the weapon
-inv_weight           	= 3.82
+inv_weight           	= 4.13
 
 upgrades = vartree_l85_podacha, vartree_l85_perevodchik, vartree_l85_mag45, vartree_l85_sights, vartree_l85_priklad, vartree_l85_grip;, vartree_l85_bayonet
 installed_upgrades = 
@@ -27,12 +27,12 @@ def_hide_bones = scope1, scope2, scope3, scope4, scope5, rail, handguard_rail, m
 def_hide_bones_override_when_gl_attached = handguard, handguard_rail, tac_handler
 
 ;--TTX--------------------------------------------------------------------------
-hit_power               = 0.9, 0.9, 0.9, 0.9
+hit_power               = 0.994
 hit_impulse             = 100
 hit_type				= fire_wound
-rpm                     = 680
+rpm                     = 700
 fire_distance           = 200
-bullet_speed            = 500        ;начальная скорость пули
+bullet_speed            = 923;начальная скорость пули
 rpm_empty_click         = 10
 
 use_aim_bullet          = false                ;Поддерживается ли первая суппер пуля
@@ -67,7 +67,7 @@ single_handed           = 0
 
 ;--дисперсия----------------------------------------------------------------------------
 ;базовая дисперсия
-fire_dispersion_base    = 0.21    ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base    = 0.21;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 control_inertion_factor = 1.4f
 crosshair_inertion		= 6.20
 
@@ -75,12 +75,12 @@ crosshair_inertion		= 6.20
 cam_return				= 0
 cam_relax_speed         = 5      ;скорость возврата в исходное положение
 cam_relax_speed_ai      = 360
-cam_dispersion          = 0.75      ;увеличения угла (в градусах) с первым выстрелом
-cam_dispersion_inc      = 0.4    ;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 0.54;увеличения угла (в градусах) с первым выстрелом
+cam_dispersion_inc      = 0.31;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac     = 1.0    ;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle           = 50.0         ;максимальный угол отдачи
 cam_max_angle_horz      = 50.0      ;(degree) maximum shot horizontal degree
-cam_step_angle_horz     = 2.0    ;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz     = 1.25;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_base 				= 1.2
 PDM_disp_vel_factor 		= 2.0
@@ -90,14 +90,14 @@ PDM_disp_crouch_no_acc 		= 1.0
 
 zoom_cam_relax_speed         = 5     ; scope & ironsight
 zoom_cam_relax_speed_ai      = 360
-zoom_cam_dispersion          = 0.4
-zoom_cam_dispersion_inc      = 0.3
+zoom_cam_dispersion          = 0.38
+zoom_cam_dispersion_inc      = 0.23
 zoom_cam_dispersion_frac     = 0.8
 zoom_cam_max_angle           = 50.0
 zoom_cam_max_angle_horz      = 50.0
-zoom_cam_step_angle_horz     = 1.8
+zoom_cam_step_angle_horz     = 0.94
 
-fire_dispersion_condition_factor = 11        ;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 11;увеличение дисперсии в процентах при максимальном износе
 
 ;---DOF-------------------------------------------------------------------------
 zoom_dof						= 0.5, 1.0, 180
@@ -203,7 +203,7 @@ grenade_launcher_y      = 11
 ;звуки
 snd_draw                = weapons\l85\mechanics\l85_draw
 snd_holster             = weapons\l85\mechanics\l85_hide
-snd_shoot					= weapons\silence
+snd_shoot = weapons\extra\l85\f0
 
 snd_empty               = weapons\l85\mechanics\l85_dry_1
 snd_empty1               = weapons\l85\mechanics\l85_dry_2
@@ -230,24 +230,24 @@ snd_jammed_click     = weapons\sig552\mechanics\sig552_check
 ;silencer_flame_particles  = weapons\generic_weapon01
 silencer_smoke_particles   = weapons\generic_shoot_00
 
-snd_silncer_shot        = weapons\silence
+snd_silncer_shot = weapons\extra\l85\s0
 
-snd_shoot_start                = weapons\l85\layers\l85_shoot_a_1
-snd_shoot_start1                = weapons\l85\layers\l85_shoot_a_2
-snd_shoot_start2                = weapons\l85\layers\l85_shoot_a_3
-snd_silencer_shoot_start        = weapons\l85\layers\l85_silencer_a_1
-snd_silencer_shoot_start1        = weapons\l85\layers\l85_silencer_a_2
-snd_silencer_shoot_start2        = weapons\l85\layers\l85_silencer_a_3
+;snd_shoot_start                = weapons\l85\layers\l85_shoot_a_1
+;snd_shoot_start1                = weapons\l85\layers\l85_shoot_a_2
+;snd_shoot_start2                = weapons\l85\layers\l85_shoot_a_3
+;snd_silencer_shoot_start        = weapons\l85\layers\l85_silencer_a_1
+;snd_silencer_shoot_start1        = weapons\l85\layers\l85_silencer_a_2
+;snd_silencer_shoot_start2        = weapons\l85\layers\l85_silencer_a_3
 
-snd_shoot_loop            = weapons\l85\layers\l85_loop_a
-snd_shoot_loop_tail        = weapons\l85\layers\l85_tail_a_1
-snd_shoot_loop_tail1        = weapons\l85\layers\l85_tail_a_2
-snd_shoot_loop_tail2        = weapons\l85\layers\l85_tail_a_3
+;snd_shoot_loop            = weapons\l85\layers\l85_loop_a
+;snd_shoot_loop_tail        = weapons\l85\layers\l85_tail_a_1
+;snd_shoot_loop_tail1        = weapons\l85\layers\l85_tail_a_2
+;snd_shoot_loop_tail2        = weapons\l85\layers\l85_tail_a_3
 
-snd_silencer_shoot_loop        = weapons\l85\layers\l85_silencer_loop_a
-snd_silencer_shoot_loop_tail        = weapons\val\layers\val_tail_a_1
-snd_silencer_shoot_loop_tail1        = weapons\val\layers\val_tail_a_2
-snd_silencer_shoot_loop_tail2        = weapons\val\layers\val_tail_a_3
+;snd_silencer_shoot_loop        = weapons\l85\layers\l85_silencer_loop_a
+;snd_silencer_shoot_loop_tail        = weapons\val\layers\val_tail_a_1
+;snd_silencer_shoot_loop_tail1        = weapons\val\layers\val_tail_a_2
+;snd_silencer_shoot_loop_tail2        = weapons\val\layers\val_tail_a_3
 
 silencer_light_color    = 0.6,0.5,0.3
 silencer_light_range    = 0.01

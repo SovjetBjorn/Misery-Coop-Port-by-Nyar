@@ -1,18 +1,25 @@
 [wpn_ump45]:wpn_mp5
+zoom_cam_step_angle_horz		= 1.5
+zoom_cam_dispersion_inc		= 0.3
+zoom_cam_dispersion		= 0.6
+cam_step_angle_horz		= 1.5
+cam_dispersion_inc		= 0.5
+cam_dispersion		= 0.95
+bullet_speed		= 274
 $spawn                  = "weapons\ump45"		; option for Level Editor
 inv_name		= st_wpn_ump45
 description		= st_wpn_ump45_descr
 
-cost                    = 20000
+cost                    = 32500
 
-hit_power		= 0.90, 0.90, 0.90, 0.90
+hit_power		= 1
 inv_weight        = 2.45
 fire_dispersion_base    = 0.26
-rpm                     = 660
+rpm                     = 600
 rpm_empty_click         = 10
 
 ammo_elapsed      = 25
-ammo_mag_size     = 25          
+ammo_mag_size     = 25
 
 ammo_class		= ammo_11.43x23_fmj, ammo_11.43x23_hydro
 fire_modes		= 1, -1
@@ -44,7 +51,7 @@ silencer_y              = 16
 
 ;звук
 
-snd_shoot		= weapons\silence
+snd_shoot = weapons\extra\ump45\f0
 snd_reload		= weapons\ump45\mechanics\ump45_reload
 snd_reload_empty        = weapons\ump45\mechanics\ump45_reload_empty
 snd_reload_jammed       = weapons\ump45\mechanics\ump45_revival
@@ -53,22 +60,22 @@ snd_switch_firemode     = weapons\mp5\mechanics\mp5_firemode_1
 snd_switch_firemode1     = weapons\mp5\mechanics\mp5_firemode_2
 snd_jammed_click     = weapons\ak74u\mechanics\ak74u_check
 
-snd_shoot_start                = weapons\ump45\layers\ump45_shoot_a_1
-snd_shoot_start1                = weapons\ump45\layers\ump45_shoot_a_2
-snd_shoot_start2                = weapons\ump45\layers\ump45_shoot_a_3
-snd_silencer_shoot_start        = weapons\ump45\layers\ump45_silencer_a_1
-snd_silencer_shoot_start1        = weapons\ump45\layers\ump45_silencer_a_2
-snd_silencer_shoot_start2        = weapons\ump45\layers\ump45_silencer_a_3
+;snd_shoot_start                = weapons\ump45\layers\ump45_shoot_a_1
+;snd_shoot_start1                = weapons\ump45\layers\ump45_shoot_a_2
+;snd_shoot_start2                = weapons\ump45\layers\ump45_shoot_a_3
+;snd_silencer_shoot_start        = weapons\ump45\layers\ump45_silencer_a_1
+;snd_silencer_shoot_start1        = weapons\ump45\layers\ump45_silencer_a_2
+;snd_silencer_shoot_start2        = weapons\ump45\layers\ump45_silencer_a_3
 
-snd_shoot_loop            = weapons\ump45\layers\ump45_loop_a
-snd_shoot_loop_tail        = weapons\mp5\layers\mp5_tail_a_1
-snd_shoot_loop_tail1        = weapons\mp5\layers\mp5_tail_a_2
-snd_shoot_loop_tail2        = weapons\mp5\layers\mp5_tail_a_3
+;snd_shoot_loop            = weapons\ump45\layers\ump45_loop_a
+;snd_shoot_loop_tail        = weapons\mp5\layers\mp5_tail_a_1
+;snd_shoot_loop_tail1        = weapons\mp5\layers\mp5_tail_a_2
+;snd_shoot_loop_tail2        = weapons\mp5\layers\mp5_tail_a_3
 
-snd_silencer_shoot_loop        = weapons\ump45\layers\ump45_silencer_loop_a
-snd_silencer_shoot_loop_tail    = weapons\mp5sd\layers\mp5sd_tail_a_1
-snd_silencer_shoot_loop_tail1    = weapons\mp5sd\layers\mp5sd_tail_a_2
-snd_silencer_shoot_loop_tail2    = weapons\mp5sd\layers\mp5sd_tail_a_3
+;snd_silencer_shoot_loop        = weapons\ump45\layers\ump45_silencer_loop_a
+;snd_silencer_shoot_loop_tail    = weapons\mp5sd\layers\mp5sd_tail_a_1
+;snd_silencer_shoot_loop_tail1    = weapons\mp5sd\layers\mp5sd_tail_a_2
+;snd_silencer_shoot_loop_tail2    = weapons\mp5sd\layers\mp5sd_tail_a_3
 
 hud                     = wpn_ump45_hud
 

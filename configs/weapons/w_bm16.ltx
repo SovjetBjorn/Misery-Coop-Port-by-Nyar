@@ -13,9 +13,9 @@ ef_main_weapon_type		= 1
 ef_weapon_type			= 9
 
 ;-----------------------------------------------------------------------------
-cost					= 12000
+cost					= 5000
 weapon_class			= shotgun
-inv_weight				= 2.7
+inv_weight				= 2.8
 
 upgrades = vartree_bm16_barrel, vartree_bm16_stock, vartree_bm16_kurki
 installed_upgrades      =
@@ -25,12 +25,12 @@ def_hide_bones = stock_short, barrel_short, sight
 def_show_bones = stock, barrel
 
 ;---TTX-------------------------------------------------------------------------
-hit_power       = 1.05, 1.05, 1.05, 1.05
+hit_power       = 1
 hit_impulse     = 120
 hit_type 		= fire_wound
 fire_distance       	= 100
-bullet_speed			= 270
-rpm                 	= 1000
+bullet_speed			= 481
+rpm                 	= 600
 rpm_empty_click         = 10							 
 
 hud                      		= wpn_bm16_hud
@@ -62,7 +62,7 @@ zoom_dof			    = 0.5, 1.0, 180
 ;reload_dof           = 0.0, 0.5, 5, 1.7
 ;----дисперсия--------------------------------------------------------------------------
 ;базовая дисперсия
-fire_dispersion_base		= 0.25  	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base		= 0.25;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 control_inertion_factor    	= 1.1f
 crosshair_inertion			= 7
 
@@ -70,12 +70,12 @@ crosshair_inertion			= 7
 cam_return				= 1
 cam_relax_speed         = 8.0		;скорость возврата в исходное положение
 cam_relax_speed_ai      = 360
-cam_dispersion          = 4 	;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc		= 3.0 	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 5.2;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 3.17;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac		= 0.4 	;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle			= 13 		;максимальный угол отдачи
 cam_max_angle_horz		= 13 		;(degree) maximum shot horizontal degree
-cam_step_angle_horz		= 1.0 	;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz		= 3.0;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_base 				= 2.3
 PDM_disp_vel_factor 		= 1.6
@@ -84,14 +84,14 @@ PDM_disp_crouch	 				= 1.0
 PDM_disp_crouch_no_acc 			= 0.8							 
 zoom_cam_relax_speed        = 4.0    ; scope & ironsight
 zoom_cam_relax_speed_ai     = 120.75
-zoom_cam_dispersion         = 2.5
-zoom_cam_dispersion_inc     = 2.2
+zoom_cam_dispersion         = 3.8
+zoom_cam_dispersion_inc     = 3.0
 zoom_cam_dispersion_frac    = 0.5
 zoom_cam_max_angle          = 5.0
 zoom_cam_max_angle_horz     = 5.0
-zoom_cam_step_angle_horz    = 0.5
+zoom_cam_step_angle_horz    = 3.0
 
-fire_dispersion_condition_factor = 6	;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 6;увеличение дисперсии в процентах при максимальном износе
 
 ;-------------------------------------------------------------------------------
 holder_range_modifier	= 1.0     ; во сколько раз увеличивается eye_range
@@ -174,9 +174,9 @@ scope_zoom_factor	    			= 85
 ;звуки
 snd_draw		    = weapons\winchester1300\mechanics\winchester1300_draw
 snd_holster		    = weapons\winchester1300\mechanics\winchester1300_hide
-snd_shoot			            = weapons\toz66\layers\toz66_shoot_a_1
-snd_shoot1			            = weapons\toz66\layers\toz66_shoot_a_2
-snd_shoot2			            = weapons\toz66\layers\toz66_shoot_a_3
+snd_shoot = weapons\extra\bm16\f0
+snd_shoot1 = weapons\extra\bm16\f0
+snd_shoot2 = weapons\extra\bm16\f0
 snd_empty					= weapons\toz34\mechanics\toz34_dry_1
 snd_empty1					= weapons\toz34\mechanics\toz34_dry_2
 snd_reload			        = weapons\toz66\mechanics\toz66_reload

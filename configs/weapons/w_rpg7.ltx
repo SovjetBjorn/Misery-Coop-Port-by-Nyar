@@ -22,7 +22,7 @@ def_hide_bones = scope1, mount_off
 def_show_bones = mount
 
 ;------------------------------------------------------------------------------
-cost					= 30000
+cost					= 175000
 weapon_class			= heavy_weapon
 inv_weight				= 6.3
 
@@ -32,7 +32,7 @@ hit_impulse				= 100
 hit_type 				= explosion
 fire_distance           = 400
 bullet_speed			= 100 ;300			;начальная скорость пули
-rpm                     = 200
+rpm                     = 4
 rpm_empty_click         = 10
 
 hud                     = wpn_rpg7_hud
@@ -42,13 +42,13 @@ misfire_start_condition		= 0.6
 ;изношеность при которой шанс осечки становится константным
 misfire_end_condition		= 0.1
 ;шанс осечки при изношености больше чем misfireStartCondition
-misfire_start_prob	     	= 0.0
+misfire_start_prob	     	= 0
 ;шанс осечки при изношености больше чем misfireEndCondition
-misfire_end_prob	     	= 0.0
+misfire_end_prob	     	= 0
 ;увеличение изношености при одиночном выстреле
-condition_shot_dec      	= 0.00001
+condition_shot_dec      	= 1e-05
 ;увеличение изношености при выстреле очередью
-condition_queue_shot_dec	= 0.00002
+condition_queue_shot_dec	= 2e-05
 
 ammo_limit		 		= 120
 ammo_current		 	= 96
@@ -62,7 +62,7 @@ single_handed			= 0
 
 ;---дисперсия-------------------------------------------------------------------------
 ;базовая дисперсия
-fire_dispersion_base			= 1.5   ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base			= 1.5;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 crosshair_inertion   	= 10
 
 PDM_disp_base           = 2.0
@@ -78,7 +78,7 @@ cam_dispersion          = 0.1	;увеличения угла (в градуса�
 cam_max_angle			= 15		;максимальный угол отдачи
 cam_max_angle_horz		= 15	;(degree) maximum shot horizontal degree
 cam_step_angle_horz		= 0.5	;(degree) size of step camera moved in horizontal position while shooting
-fire_dispersion_condition_factor 	= 5	;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor 	= 5;увеличение дисперсии в процентах при максимальном износе
 
 misfire_probability        = 0.005 ;вероятность осечки при максимальном износе  !!!old - now not working
 

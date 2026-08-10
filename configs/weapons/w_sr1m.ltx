@@ -18,7 +18,7 @@ control_inertion_factor = 1.0
 repair_group = sr1m
 
 ;-------------------------------------------------------------------------------
-cost					= 14000           ; the price of the item
+cost					= 25000; the price of the item
 inv_weight				= 0.9
 
 upgrades = vartree_sr1m_zatvor, vartree_sr1m_mag_reliability, vartree_sr1m_usm, vartree_sr1m_ramka, vartree_sr1m_rail, vartree_sr1m_sights, vartree_sr1m_mag
@@ -31,11 +31,11 @@ ammo_in_chamber = true
 def_hide_bones = sight, picatinia, laser, flash, barrel_silencer, barrel_compensator
 def_show_bones = barrel
 ;----TTX--------------------------------------------------------------------------
-hit_power           			= 1.0, 1.0, 1.0, 1.0
+hit_power           			= 0.732
 hit_impulse	 		 			= 75
 hit_type 						= fire_wound
 fire_distance           	= 200
-bullet_speed		 		= 225
+bullet_speed		 		= 410
 rpm                     	= 320
 rpm_empty_click 	 		= 10
 
@@ -75,10 +75,10 @@ light_misfire_start_probability = 0.8
 ;какая часть всех задержек будет осечками на нижнем пороге
 light_misfire_end_probability = 0.4
 
-fire_dispersion_condition_factor = 6        ;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 6;увеличение дисперсии в процентах при максимальном износе
 
 ammo_elapsed      = 18
-ammo_mag_size     = 18           ; clip (magazine) size
+ammo_mag_size     = 18; clip (magazine) size
 fire_modes		  = 1
 
 ammo_class		  = ammo_9x21_sp10
@@ -93,7 +93,7 @@ reload_dof           = 0.0, 0.5, 5, 1.7
 
 ;---дисперсия---------------------------------------------------------------------------
 ;базовая дисперсия
-fire_dispersion_base	= 0.18 ;0.15 			;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base	= 0.18;0.15 			;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 control_inertion_factor = 1.0
 crosshair_inertion   	= 2.40
 
@@ -101,12 +101,12 @@ crosshair_inertion   	= 2.40
 cam_return				= 0
 cam_relax_speed         = 7				;скорость возврата в исходное положение
 cam_relax_speed_ai      = 360
-cam_dispersion          = 1.2			;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc		= 0.8			;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 1.2;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 1.09;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac		= 0.95			;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle			= 25.0			;максимальный угол отдачи
 cam_max_angle_horz		= 1.0			;(degree) maximum shot horizontal degree
-cam_step_angle_horz		= 0.5			;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz		= 0.85;(degree) size of step camera moved in horizontal position while shooting
 detector_disp_factor            = 3                     ;во сколько раз увеличится дисперсия оружия при активном детекторе в другой руке.
 
 PDM_disp_base 				= 1.4
@@ -117,8 +117,8 @@ PDM_disp_crouch_no_acc 			= 0.9
 
 zoom_cam_relax_speed        = 10    ; scope & ironsight
 zoom_cam_relax_speed_ai     = 120.75
-zoom_cam_dispersion         = 0.35
-zoom_cam_dispersion_inc     = 0.75
+zoom_cam_dispersion         = 0.41
+zoom_cam_dispersion_inc     = 0.68
 zoom_cam_dispersion_frac    = 0.9
 zoom_cam_max_angle          = 15.0
 zoom_cam_max_angle_horz     = 10.0
@@ -225,7 +225,7 @@ grenade_launcher_y      = 24
 ;звуки
 snd_draw		= weapons\pm\mechanics\pm_draw
 snd_holster		= weapons\pm\mechanics\pm_hide
-snd_shoot		= weapons\sr1m\layers\sr1m_shoot_a_1
+snd_shoot = weapons\extra\sr1m\f0
 snd_empty		= weapons\sr1m\mechanics\sr1m_dry_1
 snd_reload		= weapons\sr1m\mechanics\sr1m_reload 
 snd_reload_empty        = weapons\sr1m\mechanics\sr1m_reload_empty
@@ -240,9 +240,9 @@ snd_jammed_click     = weapons\pm\mechanics\pm_check
 
 ;silencer_flame_particles  = weapons\generic_weapon01
 silencer_smoke_particles 	= weapons\generic_shoot_00
-snd_silncer_shot				= weapons\pm\layers\pm_silencer_a_1
-snd_silncer_shot1				= weapons\pm\layers\pm_silencer_a_2
-snd_silncer_shot2				= weapons\pm\layers\pm_silencer_a_3
+snd_silncer_shot = weapons\extra\sr1m\s0
+snd_silncer_shot1 = weapons\extra\sr1m\s0
+snd_silncer_shot2 = weapons\extra\sr1m\s0
 silencer_light_color			= 0.6,0.5,0.3
 silencer_light_range			= 0.01
 silencer_light_var_color	= 0.05

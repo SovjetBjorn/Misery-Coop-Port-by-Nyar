@@ -14,20 +14,21 @@ cost				= 3360
 
 inv_grid_width			= 1
 inv_grid_height			= 1
-inv_grid_x			= 1
-inv_grid_y			= 45
+inv_grid_x			= 28
+inv_grid_y			= 46
 
 boost_time				= 42.6
-boost_health_restore	= 0.0028
-boost_radiation_restore	= 0.0059
+boost_health_restore	= 0.028
+boost_radiation_restore	= 0.059
 
-eat_bleeding	= -0.88
+; eat_bleeding -0.88 -> wounds_heal_perc (xrMPE reads no eat_bleeding)
 
 eat_satiety 			= 0.346
 
 use_sound			= interface\inv_medkit
 
 repair_part_bonus	 	= 0.06
+wounds_heal_perc	= 0.88
 
 [stimpack]:booster	; will be stimpack
 $spawn 				= "food and drugs\medkit"
@@ -39,12 +40,12 @@ inv_weight			= 0.088
 
 inv_grid_width     = 1
 inv_grid_height    = 1
-inv_grid_x         = 0
+inv_grid_x         = 5
 inv_grid_y         = 46
 cost				= 1320 ; 850
 
 boost_time				= 12.75
-boost_health_restore	= 0.0034
+boost_health_restore	= 0.034
 boost_radiation_restore	= 0.0
 
 use_sound			= interface\inv_stim_4p3
@@ -68,7 +69,7 @@ inv_grid_y         = 46
 cost				= 2250 ; 1650
 
 boost_time				= 10.65
-boost_health_restore	= 0.0072
+boost_health_restore	= 0.072
 boost_radiation_restore	= 0.0
 
 use_sound			= interface\inv_stim_4p3
@@ -93,8 +94,8 @@ inv_grid_y         = 46
 cost				= 3450 ; 2260
 
 boost_time				= 9.3
-boost_health_restore	= 0.0110
-boost_radiation_restore	= 0.0012
+boost_health_restore	= 0.11
+boost_radiation_restore	= 0.012
 
 eat_alcohol				= 0.028
 eat_satiety 			= -0.098
@@ -112,16 +113,16 @@ inv_weight			= 0.076
 
 inv_grid_width			= 1
 inv_grid_height			= 1
-inv_grid_x			= 19
-inv_grid_y			= 4
+inv_grid_x			= 35
+inv_grid_y			= 45
 cost				= 6690
 
 ;eatable item
 ;eat_radiation 			= 0.9
 
 boost_time				= 8.5
-boost_health_restore	= 0.0188
-boost_radiation_restore	= 0.0122
+boost_health_restore	= 0.188
+boost_radiation_restore	= 0.122
 
 eat_alcohol				= 0.534
 eat_satiety 			= 0.462
@@ -147,7 +148,7 @@ cost			= 2550
 boost_time			= 286
 boost_max_weight	= 0.992
 
-boost_power_restore		= 0.0012
+boost_power_restore		= 0.012
 
 eat_alcohol 			= -0.203
 eat_satiety 			= 0.0088
@@ -174,7 +175,7 @@ cost			= 2040
 boost_time			= 286
 boost_max_weight	= 0.992
 
-boost_power_restore		= 0.0012
+boost_power_restore		= 0.012
 
 eat_alcohol 			= -0.203
 eat_satiety 			= 0.0088
@@ -201,7 +202,7 @@ cost			= 1530
 boost_time			= 286
 boost_max_weight	= 0.992
 
-boost_power_restore		= 0.0012
+boost_power_restore		= 0.012
 
 eat_alcohol 			= -0.203
 eat_satiety 			= 0.0088
@@ -228,7 +229,7 @@ cost			= 1020
 boost_time			= 286
 boost_max_weight	= 0.992
 
-boost_power_restore		= 0.0012
+boost_power_restore		= 0.012
 
 eat_alcohol 			= -0.203
 eat_satiety 			= 0.0088
@@ -248,14 +249,14 @@ description			= st_caffeine_descr
 inv_weight			= 0.003
 inv_grid_width		= 1
 inv_grid_height		= 1
-inv_grid_x		= 20
-inv_grid_y		= 21
+inv_grid_x		= 12
+inv_grid_y		= 41
 cost			= 510
 
 boost_time			= 286
 boost_max_weight	= 0.992
 
-boost_power_restore		= 0.0012
+boost_power_restore		= 0.012
 
 eat_alcohol 			= -0.203
 eat_satiety 			= 0.0088
@@ -280,8 +281,8 @@ inv_grid_y			= 48
 cost				= 1940
 
 boost_time				= 434
-boost_health_restore	= 0.000051
-boost_radiation_restore	= 0.000046
+boost_health_restore	= 0.00051
+boost_radiation_restore	= 0.00046
 ;boost_bleeding_restore	= 0.000094
 
 boost_chemburn_protection 	= 0.00042
@@ -324,8 +325,8 @@ inv_weight			= 0.0134
 
 inv_grid_width			= 1
 inv_grid_height			= 1
-inv_grid_x			= 40
-inv_grid_y			= 0
+inv_grid_x			= 0
+inv_grid_y			= 42
 cost				= 1440
 
 eat_satiety 			= 0.173
@@ -362,7 +363,7 @@ position_offset			 = 0.0,0.0,0.0
 angle_offset			 = 1.570790,1.570790,3.92699
 
 boost_time				= 1644
-boost_power_restore		= 0.00442
+boost_power_restore		= 0.0442
 boost_max_weight	= 6.329
 ;boost_bleeding_restore	= 0 ; 0.00026
 
@@ -406,7 +407,7 @@ position_offset			 = 0.0,0.0,0.0
 angle_offset			 = 1.570790,1.570790,3.92699
 
 boost_time				= 1644
-boost_power_restore		= 0.00442
+boost_power_restore		= 0.0442
 boost_max_weight	= 6.329
 ;boost_bleeding_restore	= 0 ; 0.00026
 
@@ -450,7 +451,7 @@ position_offset			 = 0.0,0.0,0.0
 angle_offset			 = 1.570790,1.570790,3.92699
 
 boost_time				= 1644
-boost_power_restore		= 0.00442
+boost_power_restore		= 0.0442
 boost_max_weight	= 6.329
 ;boost_bleeding_restore	= 0 ; 0.00026
 
@@ -496,7 +497,7 @@ angle_offset			 = 1.570790,1.570790,3.92699
 boost_time				= 1152
 ;boost_power_restore		= -0.0036 ;0.005
 ;boost_max_weight	= -6.88
-boost_bleeding_restore	= 0.00041
+boost_bleeding_restore	= 0.0041
 
 boost_wound_immunity		= 0.245
 boost_fire_wound_immunity	= 0.144
@@ -540,7 +541,7 @@ angle_offset			 = 1.570790,1.570790,3.92699
 boost_time				= 1518
 ;boost_power_restore		= -0.00272 ;0.005
 ;boost_max_weight	= -4.26
-boost_bleeding_restore	= 0.00073
+boost_bleeding_restore	= 0.0073
 
 boost_wound_immunity		= 0.374
 boost_fire_wound_immunity	= 0.188
@@ -575,7 +576,7 @@ attach_bone_name		= bip01_r_hand
 auto_attach				= false
 
 boost_time				= 2184
-boost_power_restore		= 0.00629
+boost_power_restore		= 0.0629
 boost_max_weight	= 11.147
 ;boost_bleeding_restore	= 0 ; 0.00047
 

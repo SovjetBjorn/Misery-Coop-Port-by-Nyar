@@ -27,9 +27,9 @@ no_scope_overriding_show_bones = launcher_scope
 banned_upgrades = up_val_
 
 ;-------------------------------------------------------------------------------
-cost                    = 32000
+cost                    = 72500
 weapon_class            = assault_rifle        ; Type of the weapon
-inv_weight              = 2.7
+inv_weight              = 2.74
 
 upgrades = vartree_groza_mag, vartree_groza_ejector, vartree_groza_stock, vartree_groza_rail, vartree_groza_handle, vartree_groza_sights;, vartree_groza_tac_handle
 installed_upgrades = 
@@ -37,12 +37,12 @@ upgrade_scheme = upgrade_scheme_groza
 
 
 ;--TTX----------------------------------------------------------------------------
-hit_power				= 0.95, 0.95, 0.95, 0.95
+hit_power				= 1
 hit_impulse				= 100
 hit_type				= fire_wound
 fire_distance           = 100
-bullet_speed            = 300
-rpm                     = 660
+bullet_speed            = 298
+rpm                     = 700
 rpm_empty_click         = 200
 
 use_aim_bullet          = false                ;Поддерживается ли первая суппер пуля
@@ -88,7 +88,7 @@ reload_dof				= 0.0, 0.5, 5, 2
 
 ;-дисперсия-----------------------------------------------------------------------------
 ;базовая дисперсия
-fire_dispersion_base    = 0.23        ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base    = 0.23;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 control_inertion_factor = 1.2f
 crosshair_inertion		= 6.80
 
@@ -96,12 +96,12 @@ crosshair_inertion		= 6.80
 cam_return              = 0
 cam_relax_speed         = 5        ;скорость возврата в исходное положение
 cam_relax_speed_ai      = 360     ;скорость возврата в исходное положение
-cam_dispersion          = 0.4        ;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc      = 0.2       ;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 1.12;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc      = 0.6;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac     = 0.7       ;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle           = 50.0        ;максимальный угол отдачи
 cam_max_angle_horz      = 50.0        ;(degree) maximum shot horizontal degree
-cam_step_angle_horz     = 1.35        ;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz     = 1.8;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_base 				= 1.2
 PDM_disp_vel_factor 		= 1.5
@@ -111,14 +111,14 @@ PDM_disp_crouch_no_acc 		= 1.0
 
 zoom_cam_relax_speed         = 5	    ; scope & ironsight
 zoom_cam_relax_speed_ai      = 360
-zoom_cam_dispersion          = 0.2
-zoom_cam_dispersion_inc      = 0.15
+zoom_cam_dispersion          = 0.6
+zoom_cam_dispersion_inc      = 0.45
 zoom_cam_dispersion_frac     = 1.0
 zoom_cam_max_angle           = 50.0
 zoom_cam_max_angle_horz      = 50.0
-zoom_cam_step_angle_horz     = 1.25
+zoom_cam_step_angle_horz     = 1.3
 
-fire_dispersion_condition_factor = 11        ;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 11;увеличение дисперсии в процентах при максимальном износе
 
 ;-------------------------------------------------------------------------------
 holder_range_modifier   = 1.0                       ; во сколько раз увеличивается eye_range
@@ -220,7 +220,7 @@ scopes_sect				= scope_po4x34_groza
 ;звуки
 snd_draw                = weapons\groza\mechanics\groza_draw
 snd_holster             = weapons\ak74u\mechanics\ak74u_hide
-snd_shoot               = weapons\silence
+snd_shoot = weapons\extra\groza\f0
 snd_empty               = weapons\ak74u\mechanics\ak74u_dry_1
 snd_empty1               = weapons\ak74u\mechanics\ak74u_dry_2
 snd_empty2               = weapons\ak74u\mechanics\ak74u_dry_3
@@ -247,22 +247,22 @@ silencer_smoke_particles   = weapons\generic_shoot_00
 
 snd_silncer_shot        = weapons\silence
 
-snd_shoot_start                = weapons\groza\layers\groza_shoot_a_1
-snd_shoot_start1                = weapons\groza\layers\groza_shoot_a_2
-snd_shoot_start2                = weapons\groza\layers\groza_shoot_a_3
-snd_silencer_shoot_start        = weapons\groza\layers\groza_silencer_a_1
-snd_silencer_shoot_start1        = weapons\groza\layers\groza_silencer_a_2
-snd_silencer_shoot_start2        = weapons\groza\layers\groza_silencer_a_3
+;snd_shoot_start                = weapons\groza\layers\groza_shoot_a_1
+;snd_shoot_start1                = weapons\groza\layers\groza_shoot_a_2
+;snd_shoot_start2                = weapons\groza\layers\groza_shoot_a_3
+;snd_silencer_shoot_start        = weapons\groza\layers\groza_silencer_a_1
+;snd_silencer_shoot_start1        = weapons\groza\layers\groza_silencer_a_2
+;snd_silencer_shoot_start2        = weapons\groza\layers\groza_silencer_a_3
 
-snd_shoot_loop            = weapons\groza\layers\groza_loop_a
-snd_shoot_loop_tail        = weapons\groza\layers\groza_tail_a_1
-snd_shoot_loop_tail1        = weapons\groza\layers\groza_tail_a_2
-snd_shoot_loop_tail2        = weapons\groza\layers\groza_tail_a_3
+;snd_shoot_loop            = weapons\groza\layers\groza_loop_a
+;snd_shoot_loop_tail        = weapons\groza\layers\groza_tail_a_1
+;snd_shoot_loop_tail1        = weapons\groza\layers\groza_tail_a_2
+;snd_shoot_loop_tail2        = weapons\groza\layers\groza_tail_a_3
 
-snd_silencer_shoot_loop        = weapons\groza\layers\groza_silencer_loop_a
-snd_silencer_shoot_loop_tail        = weapons\val\layers\val_tail_a_1
-snd_silencer_shoot_loop_tail1        = weapons\val\layers\val_tail_a_2
-snd_silencer_shoot_loop_tail2        = weapons\val\layers\val_tail_a_3
+;snd_silencer_shoot_loop        = weapons\groza\layers\groza_silencer_loop_a
+;snd_silencer_shoot_loop_tail        = weapons\val\layers\val_tail_a_1
+;snd_silencer_shoot_loop_tail1        = weapons\val\layers\val_tail_a_2
+;snd_silencer_shoot_loop_tail2        = weapons\val\layers\val_tail_a_3
 
 silencer_light_color    = 0.6,0.5,0.3
 silencer_light_range    = 0.01

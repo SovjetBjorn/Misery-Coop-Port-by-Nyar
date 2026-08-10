@@ -15,7 +15,7 @@ default_to_ruck         = false
 sprint_allowed       	= true
 
 ;-------------------------------------------------------------------------------
-cost					= 36000
+cost					= 75000
 weapon_class			= sniper_rifle
 inv_weight				= 4.9
 
@@ -26,11 +26,11 @@ upgrade_scheme          = upgrade_scheme_svd
 def_hide_bones = scope1, scope2, scope3, scope4, scope5, scope6, scope7, sight, sheka, knife
 
 ;------TTX------------------------------------------------------------------------
-hit_power           	= 1.0, 1.0, 1.0, 1.0
+hit_power           	= 0.899
 hit_impulse		 		= 125
 hit_type 				= fire_wound
 fire_distance           = 200
-bullet_speed		 	= 800 ;830	;начальная скорость пули
+bullet_speed		 	= 830;830	;начальная скорость пули
 rpm                     = 190
 rpm_empty_click         = 10
 
@@ -47,7 +47,7 @@ misfire_end_condition		= 0.25
 ;шанс осечки при изношености больше чем misfireStartCondition
 misfire_start_prob	     	= 0.0005
 ;шанс осечки при изношености больше чем misfireEndCondition
-misfire_end_prob	     	= 0.0750
+misfire_end_prob	     	= 0.075
 ;увеличение изношености при одиночном выстреле
 condition_shot_dec      	= 0.0085
 ;увеличение изношености при выстреле очередью
@@ -62,7 +62,7 @@ single_handed           = 0
 
 ;-------------------------------------------------------------------------------
 ;базовая дисперсия
-fire_dispersion_base	= 0.08	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base	= 0.08;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 control_inertion_factor    	= 1.5f
 crosshair_inertion      = 11
 
@@ -70,12 +70,12 @@ crosshair_inertion      = 11
 cam_return				= 1
 cam_relax_speed         = 12.0	;скорость возврата в исходное положение
 cam_relax_speed_ai      = 360	;скорость возврата в исходное положение
-cam_dispersion          = 3.0	;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc		= 2.5	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 2.76;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 1.79;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle			= 15.0	;максимальный угол отдачи
 cam_max_angle_horz		= 3.0	;(degree) maximum shot horizontal degree
-cam_step_angle_horz		= 0.25	;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz		= 0.49;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_base 			= 1.0
 PDM_disp_vel_factor 	= 6.0
@@ -85,14 +85,14 @@ PDM_disp_crouch_no_acc 	= 0.8
 
 zoom_cam_relax_speed        = 9.0    ; scope & ironsight
 zoom_cam_relax_speed_ai     = 120.75
-zoom_cam_dispersion         = 0.9
-zoom_cam_dispersion_inc     = 0.8
+zoom_cam_dispersion         = 0.89
+zoom_cam_dispersion_inc     = 0.81
 zoom_cam_dispersion_frac    = 1.0
 zoom_cam_max_angle          = 10.0
 zoom_cam_max_angle_horz     = 5.0
-zoom_cam_step_angle_horz    = 0.25
+zoom_cam_step_angle_horz    = 0.33
 
-fire_dispersion_condition_factor = 18	;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 18;увеличение дисперсии в процентах при максимальном износе
 
 ;---DOF-------------------------------------------------------------------------
 ;zoom_dof				= 0.5, 1.0, 350
@@ -201,9 +201,9 @@ silencer_light_time 			= 0.2
 ;звуки
 snd_draw						= weapons\svd\mechanics\svd_draw
 snd_holster					= weapons\svd\mechanics\svd_hide
-snd_shoot               = weapons\svd\layers\svd_shoot_a_1
-snd_shoot1               = weapons\svd\layers\svd_shoot_a_2
-snd_shoot2               = weapons\svd\layers\svd_shoot_a_3
+snd_shoot = weapons\extra\svd\f0
+snd_shoot1 = weapons\extra\svd\f0
+snd_shoot2 = weapons\extra\svd\f0
 snd_empty					= weapons\svd\mechanics\svd_dry_1
 snd_empty1					= weapons\svd\mechanics\svd_dry_2
 snd_reload					= weapons\svd\mechanics\svd_reload
@@ -218,9 +218,9 @@ snd_shutter           = weapons\svd\mechanics\svd_shutter
 snd_bore1				= weapons\mp5_bore
 snd_jammed_click     = weapons\svd\mechanics\svd_check
 
-snd_silncer_shot        = weapons\svd\layers\svd_silencer_a_1
-snd_silncer_shot1        = weapons\svd\layers\svd_silencer_a_2
-snd_silncer_shot2        = weapons\svd\layers\svd_silencer_a_3
+snd_silncer_shot = weapons\extra\svd\s0
+snd_silncer_shot1 = weapons\extra\svd\s0
+snd_silncer_shot2 = weapons\extra\svd\s0
 
 [wpn_svd_hud]:hud_base
 zoom_hide_crosshair		= true

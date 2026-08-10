@@ -20,21 +20,21 @@ def_hide_bones = body, body2, body3, bone, bone2, bone3, handler2, handler3, for
 repair_group = bizon
 
 ;-------------------------------------------------------------------------------
-cost              		= 14000            ; the price of the item
+cost              		= 22500; the price of the item
 weapon_class            = assault_rifle      ; the type of the box that will be used in buy-menu in multiplayer mode
-inv_weight				= 2.7								; weight in inventory
+inv_weight				= 2.1; weight in inventory
 
 upgrades = vartree_bizon_mag_lock, vartree_bizon_mag_shnek, vartree_bizon_tsevie, vartree_bizon_sights, vartree_bizon_stock, vartree_bizon_handle
 installed_upgrades = 
 upgrade_scheme = upgrade_scheme_bizon
 ;-ТТХ---------------------------------------------------------------------------
 
-hit_power           	= 0.72, 0.72, 0.72, 0.72
-hit_impulse          	= 85    ; size of physic impulse by bullet
+hit_power           	= 1
+hit_impulse          	= 85; size of physic impulse by bullet
 hit_type            	= fire_wound            ; [] type of the wound
-fire_distance           = 200    ; maximum fire distance that bullet can fly
-bullet_speed            = 210    ; starting bullet speed
-rpm                     = 700    ; max round per minute
+fire_distance           = 200; maximum fire distance that bullet can fly
+bullet_speed            = 361; starting bullet speed
+rpm                     = 700; max round per minute
 rpm_empty_click         = 10
 use_aim_bullet          = false                ;Поддерживается ли первая суппер пуля
 time_to_aim             = 1.0
@@ -56,11 +56,11 @@ misfire_end_prob	     	= 0.15
 ;увеличение изношености при одиночном выстреле
 condition_shot_dec      	= 0.0007
 ;увеличение изношености при выстреле очередью
-condition_queue_shot_dec	= 0.0010
+condition_queue_shot_dec	= 0.001
 
 
 ammo_elapsed            = 64           ; obsolete
-ammo_mag_size        	= 64           ; clip (magazine) size
+ammo_mag_size        	= 64; clip (magazine) size
 fire_modes           	= 1, -1
 
 ammo_class           	= ammo_9x18_fmj, ammo_9x18_pmm, ammo_9x18_pbp
@@ -75,7 +75,7 @@ reload_dof           = 0.0, 0.5, 5, 2
 
 ;----Дисперсия---------------------------------------------------------------------------
 ;базовая дисперсия
-fire_dispersion_base    = 0.25  ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base    = 0.25;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 control_inertion_factor = 1.1f
 crosshair_inertion   	= 3.3
 
@@ -83,12 +83,12 @@ crosshair_inertion   	= 3.3
 cam_return			 = 0
 cam_relax_speed      = 5		;скорость возврата в исходное положение
 cam_relax_speed_ai   = 120.75
-cam_dispersion       = 0.7		;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc   = 0.5		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion       = 0.84;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc   = 0.31;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac  = 1.0		;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle        = 90.0		;максимальный угол отдачи
 cam_max_angle_horz   = 90.0		;(degree) maximum shot horizontal degree
-cam_step_angle_horz  = 1.5		;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz  = 1.47;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_base 				= 1.2
 PDM_disp_vel_factor 		= 1.2
@@ -98,14 +98,14 @@ PDM_disp_crouch_no_acc 		= 0.9
 
 zoom_cam_relax_speed        = 10    ; scope & ironsight
 zoom_cam_relax_speed_ai     = 120.75
-zoom_cam_dispersion         = 0.25
-zoom_cam_dispersion_inc     = 0.25
+zoom_cam_dispersion         = 0.47
+zoom_cam_dispersion_inc     = 0.21
 zoom_cam_dispersion_frac    = 1.0
 zoom_cam_max_angle          = 90.0
 zoom_cam_max_angle_horz     = 90.0
-zoom_cam_step_angle_horz    = 1.5
+zoom_cam_step_angle_horz    = 1.42
 
-fire_dispersion_condition_factor = 9        ;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 9;увеличение дисперсии в процентах при максимальном износе
 
 ;-------------------------------------------------------------------------------
 holder_range_modifier   = 1.0                       ; во сколько раз увеличивается eye_range
@@ -196,7 +196,7 @@ silencer_y 				= 13
 
 snd_draw		= weapons\ak74u\mechanics\ak74u_draw
 snd_holster		= weapons\ak74u\mechanics\ak74u_hide
-snd_shoot		= weapons\silence
+snd_shoot = weapons\extra\bizon\f0
 snd_empty		= weapons\ak74u\mechanics\ak74u_dry_1
 snd_reload              = weapons\bizon\mechanics\bizon_reload
 snd_reload_empty        = weapons\bizon\mechanics\bizon_reload_empty
@@ -209,22 +209,22 @@ snd_switch_firemode     = weapons\ak74\mechanics\ak74_firemode_1
 snd_switch_firemode1     = weapons\ak74\mechanics\ak74_firemode_2
 snd_jammed_click     = weapons\ak74u\mechanics\ak74u_check
 
-snd_shoot_start                 = weapons\bizon\layers\bizon_shoot_a_1
-snd_shoot_start1                = weapons\bizon\layers\bizon_shoot_a_2
-snd_shoot_start2                = weapons\bizon\layers\bizon_shoot_a_3
-snd_silencer_shoot_start        = weapons\bizon\layers\bizon_silencer_a_1
-snd_silencer_shoot_start        = weapons\bizon\layers\bizon_silencer_a_2
-snd_silencer_shoot_start        = weapons\bizon\layers\bizon_silencer_a_3
+;snd_shoot_start                 = weapons\bizon\layers\bizon_shoot_a_1
+;snd_shoot_start1                = weapons\bizon\layers\bizon_shoot_a_2
+;snd_shoot_start2                = weapons\bizon\layers\bizon_shoot_a_3
+;snd_silencer_shoot_start        = weapons\bizon\layers\bizon_silencer_a_1
+;snd_silencer_shoot_start        = weapons\bizon\layers\bizon_silencer_a_2
+;snd_silencer_shoot_start        = weapons\bizon\layers\bizon_silencer_a_3
 
-snd_shoot_loop            = weapons\bizon\layers\bizon_loop_a
-snd_shoot_loop_tail        = weapons\mp5\layers\mp5_tail_a_1
-snd_shoot_loop_tail1        = weapons\mp5\layers\mp5_tail_a_2
-snd_shoot_loop_tail2        = weapons\mp5\layers\mp5_tail_a_3
+;snd_shoot_loop            = weapons\bizon\layers\bizon_loop_a
+;snd_shoot_loop_tail        = weapons\mp5\layers\mp5_tail_a_1
+;snd_shoot_loop_tail1        = weapons\mp5\layers\mp5_tail_a_2
+;snd_shoot_loop_tail2        = weapons\mp5\layers\mp5_tail_a_3
 
-snd_silencer_shoot_loop        = weapons\bizon\layers\bizon_silencer_loop_a
-snd_silencer_shoot_loop_tail    = weapons\mp5sd\layers\mp5sd_tail_a_1
-snd_silencer_shoot_loop_tail1    = weapons\mp5sd\layers\mp5sd_tail_a_2
-snd_silencer_shoot_loop_tail2    = weapons\mp5sd\layers\mp5sd_tail_a_3
+;snd_silencer_shoot_loop        = weapons\bizon\layers\bizon_silencer_loop_a
+;snd_silencer_shoot_loop_tail    = weapons\mp5sd\layers\mp5sd_tail_a_1
+;snd_silencer_shoot_loop_tail1    = weapons\mp5sd\layers\mp5sd_tail_a_2
+;snd_silencer_shoot_loop_tail2    = weapons\mp5sd\layers\mp5sd_tail_a_3
 
 snd_scope_brightness_plus = weapons\nv_intensity
 snd_scope_brightness_minus = weapons\nv_intensity
@@ -234,7 +234,7 @@ snd_scope_brightness_minus = weapons\nv_intensity
 ;silencer_flame_particles  = weapons\generic_weapon01
 silencer_smoke_particles   = weapons\generic_shoot_00
 
-snd_silncer_shot        = weapons\silence
+snd_silncer_shot = weapons\extra\bizon\s0
 
 silencer_light_color    = 0.6,0.5,0.3
 silencer_light_range    = 0.01

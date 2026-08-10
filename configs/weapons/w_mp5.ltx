@@ -15,9 +15,9 @@ sprint_allowed          = true
 control_inertion_factor = 1.0
 
 ;-------------------------------------------------------------------------------
-cost              = 15500            ; the price of the item
+cost              = 24000; the price of the item
 weapon_class      = assault_rifle      ; the type of the box that will be used in buy-menu in multiplayer mode
-inv_weight        = 3.25
+inv_weight        = 2.54
 
 upgrades = vartree_mp5_mag_fix, vartree_mp5_zatvor, vartree_mp5_rail, vartree_mp5_handle, vartree_mp5_sights, vartree_mp5_mag40, vartree_mp5_stock
 installed_upgrades = 
@@ -27,12 +27,12 @@ def_hide_bones = stock_plastic, stock_short, grip_handler, grip_sd, grip_rail, f
 def_show_bones = mag30, stock_teleskop, grip, iron_sight
 
 ;----TTX--------------------------------------------------------------------------
-hit_power            = 0.8, 0.8, 0.8, 0.8
-hit_impulse          = 100    ; size of physic impulse by bullet
+hit_power            = 0.985
+hit_impulse          = 100; size of physic impulse by bullet
 hit_type             = fire_wound            ; [] type of the wound
-fire_distance           = 200                  ; maximum fire distance that bullet can fly
-bullet_speed            = 270                ; starting bullet speed
-rpm                     = 840
+fire_distance           = 200; maximum fire distance that bullet can fly
+bullet_speed            = 385; starting bullet speed
+rpm                     = 800
 rpm_empty_click         = 10
 
 use_aim_bullet          = false                ;Поддерживается ли первая суппер пуля
@@ -55,7 +55,7 @@ condition_shot_dec      	= 0.0012
 condition_queue_shot_dec	= 0.0014
 
 ammo_elapsed      = 30
-ammo_mag_size     = 30           ; clip (magazine) size
+ammo_mag_size     = 30; clip (magazine) size
 fire_modes		  = 1, 3, -1
 ammo_class		  = ammo_9x19_fmj, ammo_9x19_pbp
 
@@ -69,7 +69,7 @@ reload_dof           = 0.0, 0.5, 5, 2
 
 ;---дисперсия---------------------------------------------------------------------------
 ;базовая дисперсия
-fire_dispersion_base    = 0.28  ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base    = 0.28;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 control_inertion_factor = 1.1f
 crosshair_inertion   	= 4.35
 
@@ -77,12 +77,12 @@ crosshair_inertion   	= 4.35
 cam_return			 = 0
 cam_relax_speed      = 5		;скорость возврата в исходное положение
 cam_relax_speed_ai   = 120.75
-cam_dispersion       = 0.9		;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc   = 0.25		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion       = 0.95;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc   = 0.36;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac  = 1.0		;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle        = 70.0		;максимальный угол отдачи
 cam_max_angle_horz   = 50.0		;(degree) maximum shot horizontal degree
-cam_step_angle_horz  = 1.5		;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz  = 1.5;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_base 				= 1.4
 PDM_disp_vel_factor 		= 1.2
@@ -93,13 +93,13 @@ PDM_disp_crouch_no_acc 		= 1.0
 zoom_cam_relax_speed        = 10    ; scope & ironsight
 zoom_cam_relax_speed_ai     = 120.75
 zoom_cam_dispersion         = 0.55
-zoom_cam_dispersion_inc     = 0.2
+zoom_cam_dispersion_inc     = 0.24
 zoom_cam_dispersion_frac    = 1.0
 zoom_cam_max_angle          = 50.0
 zoom_cam_max_angle_horz     = 50.0
 zoom_cam_step_angle_horz    = 1.5
 
-fire_dispersion_condition_factor = 9        ;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 9;увеличение дисперсии в процентах при максимальном износе
 
 ;-------------------------------------------------------------------------------
 holder_range_modifier   = 1.0                       ; во сколько раз увеличивается eye_range
@@ -193,7 +193,7 @@ silencer_y              = -13
 ;звуки
 snd_draw                = weapons\ak74u\mechanics\ak74u_draw
 snd_holster             = weapons\ak74u\mechanics\ak74u_hide
-snd_shoot               = weapons\silence
+snd_shoot = weapons\extra\mp5\f0
 snd_empty               = weapons\mp5\mechanics\mp5_dry_1
 snd_empty1               = weapons\mp5\mechanics\mp5_dry_2
 snd_reload              = weapons\mp5\mechanics\mp5_reload
@@ -214,24 +214,24 @@ snd_jammed_click     = weapons\ak74u\mechanics\ak74u_check
 ;silencer_flame_particles  = weapons\generic_weapon01
 silencer_smoke_particles   = weapons\generic_shoot_00
 
-snd_silncer_shot        = weapons\silence
+snd_silncer_shot = weapons\extra\mp5\s0
 
-snd_shoot_start                = weapons\mp5\layers\mp5_shoot_a_1
-snd_shoot_start1                = weapons\mp5\layers\mp5_shoot_a_2
-snd_shoot_start2                = weapons\mp5\layers\mp5_shoot_a_3
-snd_silencer_shoot_start        = weapons\mp5sd\layers\mp5sd_shoot_a_1
-snd_silencer_shoot_start1        = weapons\mp5sd\layers\mp5sd_shoot_a_2
-snd_silencer_shoot_start2        = weapons\mp5sd\layers\mp5sd_shoot_a_3
+;snd_shoot_start                = weapons\mp5\layers\mp5_shoot_a_1
+;snd_shoot_start1                = weapons\mp5\layers\mp5_shoot_a_2
+;snd_shoot_start2                = weapons\mp5\layers\mp5_shoot_a_3
+;snd_silencer_shoot_start        = weapons\mp5sd\layers\mp5sd_shoot_a_1
+;snd_silencer_shoot_start1        = weapons\mp5sd\layers\mp5sd_shoot_a_2
+;snd_silencer_shoot_start2        = weapons\mp5sd\layers\mp5sd_shoot_a_3
 
-snd_shoot_loop            = weapons\mp5\layers\mp5_loop_a
-snd_shoot_loop_tail        = weapons\mp5\layers\mp5_tail_a_1
-snd_shoot_loop_tail1        = weapons\mp5\layers\mp5_tail_a_2
-snd_shoot_loop_tail2        = weapons\mp5\layers\mp5_tail_a_3
+;snd_shoot_loop            = weapons\mp5\layers\mp5_loop_a
+;snd_shoot_loop_tail        = weapons\mp5\layers\mp5_tail_a_1
+;snd_shoot_loop_tail1        = weapons\mp5\layers\mp5_tail_a_2
+;snd_shoot_loop_tail2        = weapons\mp5\layers\mp5_tail_a_3
 
-snd_silencer_shoot_loop        = weapons\mp5sd\layers\mp5sd_loop_a
-snd_silencer_shoot_loop_tail    = weapons\mp5sd\layers\mp5sd_tail_a_1
-snd_silencer_shoot_loop_tail1    = weapons\mp5sd\layers\mp5sd_tail_a_2
-snd_silencer_shoot_loop_tail2    = weapons\mp5sd\layers\mp5sd_tail_a_3
+;snd_silencer_shoot_loop        = weapons\mp5sd\layers\mp5sd_loop_a
+;snd_silencer_shoot_loop_tail    = weapons\mp5sd\layers\mp5sd_tail_a_1
+;snd_silencer_shoot_loop_tail1    = weapons\mp5sd\layers\mp5sd_tail_a_2
+;snd_silencer_shoot_loop_tail2    = weapons\mp5sd\layers\mp5sd_tail_a_3
 
 silencer_light_color    = 0.6,0.5,0.3
 silencer_light_range    = 0.01

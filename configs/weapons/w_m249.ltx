@@ -1,4 +1,7 @@
 [wpn_m249]:identity_immunities,weapon_probability,default_weapon_params
+zoom_cam_step_angle_horz		= 0.6
+zoom_cam_dispersion_inc		= 0.2
+zoom_cam_dispersion		= 0.25
 GroupControlSection     = spawn_group
 $spawn                  = "weapons\m249"                ; option for Level Editor
 $npc                    = on                                ; option for Level Editor
@@ -19,7 +22,7 @@ default_to_ruck         = false
 sprint_allowed          = true
 
 ;-------------------------------------------------------
-cost                    = 51500
+cost                    = 120000
 weapon_class            = assault_rifle        ; Type of the weapon
 inv_weight              = 7.5
 
@@ -30,11 +33,11 @@ upgrade_scheme          = upgrade_scheme_pkm
 def_show_bones          =
 def_hide_bones          = wpn_silencer, sight, bayonet, rail
 ;--TTX----------------------------------------------------------------------------
-hit_power              = 1.03
+hit_power              = 0.943
 hit_impulse            = 100
 hit_type               = fire_wound
 fire_distance           = 200
-bullet_speed            = 915;начальная скорость пули
+bullet_speed            = 907;начальная скорость пули
 rpm                     = 750
 rpm_empty_click         = 200
 
@@ -53,9 +56,9 @@ misfire_start_prob	     	= 0.002
 ;шанс осечки при изношености больше чем misfireEndCondition
 misfire_end_prob	     	= 0.03
 ;увеличение изношености при одиночном выстреле
-condition_shot_dec      	= 0.0015
+condition_shot_dec      	= 0.001
 ;увеличение изношености при выстреле очередью
-condition_queue_shot_dec	= 0.0019
+condition_queue_shot_dec	= 0.0012
 
 ammo_elapsed            = 100
 ammo_mag_size           = 100
@@ -76,12 +79,12 @@ crosshair_inertion		= 7.70
 cam_return				= 0
 cam_relax_speed         = 15               ;скорость возврата в исходное положение
 cam_relax_speed_ai      = 360                ;скорость возврата в исходное положение у АИ
-cam_dispersion          = 0.33                ;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc      = 0.23                ;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 0.35;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc      = 0.22;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac     = 1.0                ;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle           = 10.0                ;максимальный угол отдачи
 cam_max_angle_horz      = 50.0                ;(degree) maximum shot horizontal degree
-cam_step_angle_horz     = 1.65                    ;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz     = 0.8;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_base           = 1.0
 PDM_disp_vel_factor     = 3.0
@@ -89,7 +92,7 @@ PDM_disp_accel_factor   = 3.0
 PDM_disp_crouch         = 1.0
 PDM_disp_crouch_no_acc  = 1.0
 
-fire_dispersion_condition_factor = 15        ;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 15;увеличение дисперсии в процентах при максимальном износе
 
 ;---DOF------------------------------------------------------------------------
 zoom_dof                = 0.5, 1.0, 180
@@ -117,8 +120,8 @@ inv_name_short          = st_wpn_m249
 
 inv_grid_width     = 6
 inv_grid_height    = 2
-inv_grid_x         = 35
-inv_grid_y         = 27
+inv_grid_x         = 30
+inv_grid_y         = 50
 
 upgr_icon_x			= 3018
 upgr_icon_y			= 564
@@ -186,7 +189,7 @@ ironsight_zoom_factor   = 85
 ;звуки
 snd_draw                = weapons\m249\m249_draw
 snd_holster             = weapons\pkm\mechanics\pkm_hide
-snd_shoot               = weapons\silence
+snd_shoot = weapons\extra\m249\f0
 snd_empty               = weapons\ak74u\mechanics\ak74u_dry_1
 snd_empty1              = weapons\ak74u\mechanics\ak74u_dry_2
 snd_empty2              = weapons\ak74u\mechanics\ak74u_dry_3
@@ -201,24 +204,24 @@ snd_switch_firemode     = weapons\ak74\mechanics\ak74_firemode_1
 snd_switch_firemode1    = weapons\ak74\mechanics\ak74_firemode_2
 snd_jammed_click        = weapons\pkm\mechanics\pkm_check
 
-snd_silncer_shot               = weapons\silence
+snd_silncer_shot = weapons\extra\m249\s0
 
-snd_shoot_start                = weapons\pkm\layers\pkm_shoot_a_1
-snd_shoot_start1               = weapons\pkm\layers\pkm_shoot_a_2
-snd_shoot_start2               = weapons\pkm\layers\pkm_shoot_a_3
-snd_silencer_shoot_start        = weapons\sig552\layers\sig552_silencer_a_1
-snd_silencer_shoot_start1        = weapons\sig552\layers\sig552_silencer_a_2
-snd_silencer_shoot_start2        = weapons\sig552\layers\sig552_silencer_a_3
+;snd_shoot_start                = weapons\pkm\layers\pkm_shoot_a_1
+;snd_shoot_start1               = weapons\pkm\layers\pkm_shoot_a_2
+;snd_shoot_start2               = weapons\pkm\layers\pkm_shoot_a_3
+;snd_silencer_shoot_start        = weapons\sig552\layers\sig552_silencer_a_1
+;snd_silencer_shoot_start1        = weapons\sig552\layers\sig552_silencer_a_2
+;snd_silencer_shoot_start2        = weapons\sig552\layers\sig552_silencer_a_3
 
-snd_shoot_loop                 = weapons\pkm\layers\pkm_loop_a
-snd_shoot_loop_tail            = weapons\akm\layers\akm_tail_a_1
-snd_shoot_loop_tail1           = weapons\akm\layers\akm_tail_a_2
-snd_shoot_loop_tail2           = weapons\akm\layers\akm_tail_a_3
+;snd_shoot_loop                 = weapons\pkm\layers\pkm_loop_a
+;snd_shoot_loop_tail            = weapons\akm\layers\akm_tail_a_1
+;snd_shoot_loop_tail1           = weapons\akm\layers\akm_tail_a_2
+;snd_shoot_loop_tail2           = weapons\akm\layers\akm_tail_a_3
 
-snd_silencer_shoot_loop        = weapons\sig552\layers\sig552_silencer_loop_a
-snd_silencer_shoot_loop_tail        = weapons\val\layers\val_tail_a_1
-snd_silencer_shoot_loop_tail1        = weapons\val\layers\val_tail_a_2
-snd_silencer_shoot_loop_tail2        = weapons\val\layers\val_tail_a_3
+;snd_silencer_shoot_loop        = weapons\sig552\layers\sig552_silencer_loop_a
+;snd_silencer_shoot_loop_tail        = weapons\val\layers\val_tail_a_1
+;snd_silencer_shoot_loop_tail1        = weapons\val\layers\val_tail_a_2
+;snd_silencer_shoot_loop_tail2        = weapons\val\layers\val_tail_a_3
 
 ;настройки для глушителя
 silencer_hit_power      = 0.9, 0.9, 0.9, 0.9
@@ -229,7 +232,7 @@ silencer_bullet_speed   = 500
 ;silencer_flame_particles  = weapons\generic_weapon01
 silencer_smoke_particles   = weapons\generic_shoot_00
 
-snd_silncer_shot        = weapons\pkm\pkm_shot1
+snd_silncer_shot = weapons\extra\m249\s0
 
 silencer_light_color    = 0.6,0.5,0.3
 silencer_light_range    = 0.01
