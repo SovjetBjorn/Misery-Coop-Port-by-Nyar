@@ -20,9 +20,9 @@ def_hide_bones = wpn_silencer, flash, line, light, body3, rail, handler3, mag30,
 repair_group = saiga
 
 ;-------------------------------------------------------------------------------
-cost              		= 45000; the price of the item
+cost              		= 28000; the price of the item
 weapon_class            = assault_rifle      ; the type of the box that will be used in buy-menu in multiplayer mode
-inv_weight				= 4; weight in inventory
+inv_weight				= 4.3; weight in inventory
 
 upgrades           = vartree_vepr_magfix, vartree_vepr_foregrip, vartree_vepr_sights, vartree_vepr_mag, vartree_vepr_handle
 installed_upgrades = 
@@ -30,11 +30,11 @@ upgrade_scheme     = upgrade_scheme_saiga12
 
 ;-ТТХ---------------------------------------------------------------------------
 
-hit_power            	= 0.981
+hit_power            	= 1
 hit_impulse          	= 150; size of physic impulse by bullet
 hit_type            	= fire_wound            ; [] type of the wound
 fire_distance           = 130; maximum fire distance that bullet can fly
-bullet_speed            = 478; starting bullet speed
+bullet_speed            = 400; starting bullet speed
 rpm                     = 300; max round per minute
 rpm_empty_click         = 10
 
@@ -56,13 +56,13 @@ misfire_start_prob	     	= 0.003
 ;шанс осечки при изношености больше чем misfireEndCondition
 misfire_end_prob	     	= 0.5
 ;увеличение изношености при одиночном выстреле
-condition_shot_dec      	= 0.0043
+condition_shot_dec      	= 0.0018
 ;увеличение изношености при выстреле очередью
-condition_queue_shot_dec	= 0.0043
+condition_queue_shot_dec	= 0.0023
 
 
 ammo_elapsed            = 12           ; obsolete
-ammo_mag_size        	= 12; clip (magazine) size
+ammo_mag_size        	= 12           ; clip (magazine) size
 fire_modes           	= 1
 
 ammo_class           	= ammo_12x76_zhekan, ammo_12x70_buck, ammo_12x76_dart       
@@ -84,22 +84,22 @@ crosshair_inertion		   = 6.5
 cam_return              = 0
 cam_relax_speed         = 12			;скорость возврата в исходное положение
 cam_relax_speed_ai     	= 120.75
-cam_dispersion          = 3.9;увеличения угла (в градусах) с первым выстрелом
-cam_dispersion_inc      = 2.2;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 3.9		;увеличения угла (в градусах) с первым выстрелом
+cam_dispersion_inc      = 1.75	;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac     = 0.8	    ;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle			= 10.0      ;максимальный угол отдачи
 cam_max_angle_horz      = 10.0      ;(degree) maximum shot horizontal degree
-cam_step_angle_horz     = 2.2;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz     = 1.5		;(degree) size of step camera moved in horizontal position while shooting
 
 zoom_cam_relax_speed         = 10	    ; scope & ironsight
 zoom_cam_relax_speed_ai      = 360
-zoom_cam_dispersion          = 2.88
-zoom_cam_dispersion_inc      = 2.2
+zoom_cam_dispersion          = 3.3
+zoom_cam_dispersion_inc      = 1.5
 zoom_cam_dispersion_frac     = 1.0
 zoom_cam_max_angle           = 50.0
 zoom_cam_max_angle_horz      = 5.0
-zoom_cam_step_angle_horz     = 2.2
-fire_dispersion_condition_factor    = 10;увеличение дисперсии в процентах при максимальном износе
+zoom_cam_step_angle_horz     = 1.0
+fire_dispersion_condition_factor    = 10         ;увеличение дисперсии в процентах при максимальном износе
 
 PDM_disp_base 				= 2.9
 PDM_disp_vel_factor 		= 2.3
@@ -131,8 +131,8 @@ inv_name_short      = st_wpn_vepr
 
 inv_grid_width     = 6
 inv_grid_height    = 2
-inv_grid_x         = 0
-inv_grid_y         = 57
+inv_grid_x         = 35
+inv_grid_y         = 39
 
 
 
@@ -199,9 +199,9 @@ silencer_y 				= 17
 ;звуки
 snd_draw		= weapons\saiga12\mechanics\saiga12_draw
 snd_holster		= weapons\saiga12\mechanics\saiga12_hide
-snd_shoot = weapons\extra\vepr\f0
-snd_shoot1 = weapons\extra\vepr\f0
-snd_shoot2 = weapons\extra\vepr\f0
+snd_shoot		= weapons\saiga12\layers\saiga12_shoot_a_1
+snd_shoot1		= weapons\saiga12\layers\saiga12_shoot_a_2
+snd_shoot2		= weapons\saiga12\layers\saiga12_shoot_a_3
 snd_empty		= weapons\ak74u\mechanics\ak74u_dry_1
 snd_empty1		= weapons\ak74u\mechanics\ak74u_dry_2
 snd_empty2		= weapons\ak74u\mechanics\ak74u_dry_3

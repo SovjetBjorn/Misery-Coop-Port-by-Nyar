@@ -12,7 +12,7 @@ description					= st_wpn_taurus_descr
 ef_weapon_type				= 5
 
 ;-----------------------------------------------------------------------------
-cost					= 20000
+cost					= 9000
 inv_weight				= 2
 
 upgrades                = vartree_deagle_gazootvod, vartree_deagle_mag1, vartree_deagle_rail, vartree_deagle_sights, vartree_deagle_handle
@@ -27,7 +27,7 @@ hit_power           	= 1
 hit_impulse	 		 	= 130
 hit_type 				= fire_wound
 fire_distance           = 100
-bullet_speed		 	= 463
+bullet_speed		 	= 450
 rpm                     = 220
 rpm_empty_click 	 	= 10
 
@@ -46,9 +46,9 @@ misfire_start_prob	     	= 0.01
 ;шанс осечки при изношености больше чем misfireEndCondition
 misfire_end_prob	     	= 0.2
 ;увеличение изношености при одиночном выстреле
-condition_shot_dec      	= 0.0055
+condition_shot_dec      	= 0.0025
 ;увеличение изношености при выстреле очередью
-condition_queue_shot_dec	= 0.0055
+condition_queue_shot_dec	= 0.0025
 
 
 ammo_elapsed		 	= 8
@@ -63,7 +63,7 @@ reload_dof				= 0.0, 0.5, 5, 1.7
 
 ;--дисперсия----------------------------------------------------------------------------
 ;базовая дисперсия
-fire_dispersion_base		= 0.25;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base		= 0.25 			;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 control_inertion_factor		= 1.1
 crosshair_inertion			= 4
 
@@ -71,12 +71,12 @@ crosshair_inertion			= 4
 cam_return					= 0
 cam_relax_speed         	= 0.01			;скорость возврата в исходное положение
 cam_relax_speed_ai      	= 120.75
-cam_dispersion          	= 1.5;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc			= 1.44;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          	= 3.5		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 2.8		;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac			= 0.7		;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle				= 65.0		;максимальный угол отдачи
 cam_max_angle_horz			= 15.0		;(degree) maximum shot horizontal degree
-cam_step_angle_horz			= 1.12;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz			= 1.0		;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_base 				= 2.5
 PDM_disp_vel_factor 		= 1.3
@@ -84,12 +84,12 @@ PDM_disp_accel_factor 		= 1.1
 PDM_disp_crouch	 			= 1.0
 PDM_disp_crouch_no_acc 		= 1.0
 
-fire_dispersion_condition_factor = 12;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 12		;увеличение дисперсии в процентах при максимальном износе
 
 zoom_cam_relax_speed        = 1.2    ; scope & ironsight
 zoom_cam_relax_speed_ai     = 120.75
-zoom_cam_dispersion         = 0.54
-zoom_cam_dispersion_inc     = 0.85
+zoom_cam_dispersion         = 2.0
+zoom_cam_dispersion_inc     = 1.6
 zoom_cam_dispersion_frac    = 0.95
 zoom_cam_max_angle          = 45.0
 zoom_cam_max_angle_horz     = 10.0
@@ -182,7 +182,7 @@ scope_zoom_factor	    	= 85
 ;звуки
 snd_draw				    	= weapons\desert_eagle\mechanics\desert_eagle_draw
 snd_holster						= weapons\desert_eagle\mechanics\desert_eagle_hide
-snd_shoot = weapons\extra\taurus\f0
+snd_shoot						= weapons\taurus\taurus_shoot
 snd_empty		                = weapons\sr1m\mechanics\sr1m_dry_1
 snd_reload						= weapons\taurus\taurus_reload_empty
 snd_reload_empty        		= weapons\taurus\taurus_reload_empty

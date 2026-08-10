@@ -1,7 +1,4 @@
 [wpn_pkm]:identity_immunities,weapon_probability,default_weapon_params
-zoom_cam_step_angle_horz		= 0.25
-zoom_cam_dispersion_inc		= 0.53
-zoom_cam_dispersion		= 0.65
 GroupControlSection     = spawn_group
 $spawn                  = "weapons\pkm"                ; option for Level Editor
 $npc                    = on                                ; option for Level Editor
@@ -22,7 +19,7 @@ default_to_ruck         = false
 sprint_allowed          = true
 
 ;-------------------------------------------------------
-cost                    = 130000
+cost                    = 46000
 weapon_class            = assault_rifle        ; Type of the weapon
 inv_weight              = 7.5
 
@@ -31,12 +28,12 @@ installed_upgrades      =
 upgrade_scheme          = upgrade_scheme_pkm
 
 ;--TTX----------------------------------------------------------------------------
-hit_power              = 0.883
+hit_power              = 0.9, 0.9, 0.9, 0.9
 hit_impulse            = 120
 hit_type               = fire_wound
 fire_distance           = 150
-bullet_speed            = 825;начальная скорость пули
-rpm                     = 650
+bullet_speed            = 600        ;начальная скорость пули
+rpm                     = 620
 rpm_empty_click         = 200
 
 use_aim_bullet          = false ;true                ;Поддерживается ли первая суппер пуля
@@ -69,7 +66,7 @@ single_handed           = 0
 
 ;-дисперсия-----------------------------------------------------------------------------
 ;базовая дисперсия
-fire_dispersion_base    = 0.32;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base    = 0.32        ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 control_inertion_factor = 1.8f ; 2.2f
 crosshair_inertion		= 7.70
 
@@ -77,12 +74,12 @@ crosshair_inertion		= 7.70
 cam_return				= 0
 cam_relax_speed         = 15               ;скорость возврата в исходное положение
 cam_relax_speed_ai      = 360                ;скорость возврата в исходное положение у АИ
-cam_dispersion          = 1.8;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc      = 1.16;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 0.33                ;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc      = 0.23                ;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac     = 1.0                ;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle           = 10.0                ;максимальный угол отдачи
 cam_max_angle_horz      = 50.0                ;(degree) maximum shot horizontal degree
-cam_step_angle_horz     = 0.32;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz     = 1.65                    ;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_base           = 1.0
 PDM_disp_vel_factor     = 3.0
@@ -90,7 +87,7 @@ PDM_disp_accel_factor   = 3.0
 PDM_disp_crouch         = 1.0
 PDM_disp_crouch_no_acc  = 1.0
 
-fire_dispersion_condition_factor = 15;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 15        ;увеличение дисперсии в процентах при максимальном износе
 
 ;---DOF------------------------------------------------------------------------
 zoom_dof                = 0.5, 1.0, 180
@@ -182,7 +179,7 @@ ironsight_zoom_factor   = 85
 ;звуки
 snd_draw                = weapons\pkm\mechanics\pkm_draw
 snd_holster             = weapons\pkm\mechanics\pkm_hide
-snd_shoot = weapons\extra\pkm\f0
+snd_shoot               = weapons\silence
 snd_empty               = weapons\ak74u\mechanics\ak74u_dry_1
 snd_empty1               = weapons\ak74u\mechanics\ak74u_dry_2
 snd_empty2               = weapons\ak74u\mechanics\ak74u_dry_3
@@ -197,19 +194,19 @@ snd_switch_firemode     = weapons\ak74\mechanics\ak74_firemode_1
 snd_switch_firemode1     = weapons\ak74\mechanics\ak74_firemode_2
 snd_jammed_click     = weapons\pkm\mechanics\pkm_check
 
-snd_silncer_shot = weapons\extra\pkm\s0
+snd_silncer_shot        = weapons\silence
 
-;snd_shoot_start                = weapons\pkm\layers\pkm_shoot_a_1
-;snd_shoot_start1                = weapons\pkm\layers\pkm_shoot_a_2
-;snd_shoot_start2                = weapons\pkm\layers\pkm_shoot_a_3
-;snd_silencer_shoot_start        = weapons\ak74\layers\ak74_silencer_a_1
-;snd_silencer_shoot_start1        = weapons\ak74\layers\ak74_silencer_a_2
-;snd_silencer_shoot_start2        = weapons\ak74\layers\ak74_silencer_a_3
+snd_shoot_start                = weapons\pkm\layers\pkm_shoot_a_1
+snd_shoot_start1                = weapons\pkm\layers\pkm_shoot_a_2
+snd_shoot_start2                = weapons\pkm\layers\pkm_shoot_a_3
+snd_silencer_shoot_start        = weapons\ak74\layers\ak74_silencer_a_1
+snd_silencer_shoot_start1        = weapons\ak74\layers\ak74_silencer_a_2
+snd_silencer_shoot_start2        = weapons\ak74\layers\ak74_silencer_a_3
 
-;snd_shoot_loop            = weapons\pkm\layers\pkm_loop_a
-;snd_shoot_loop_tail        = weapons\akm\layers\akm_tail_a_1
-;snd_shoot_loop_tail1        = weapons\akm\layers\akm_tail_a_2
-;snd_shoot_loop_tail2        = weapons\akm\layers\akm_tail_a_3
+snd_shoot_loop            = weapons\pkm\layers\pkm_loop_a
+snd_shoot_loop_tail        = weapons\akm\layers\akm_tail_a_1
+snd_shoot_loop_tail1        = weapons\akm\layers\akm_tail_a_2
+snd_shoot_loop_tail2        = weapons\akm\layers\akm_tail_a_3
 
 
 ;настройки для глушителя
@@ -221,7 +218,7 @@ silencer_bullet_speed   = 600
 ;silencer_flame_particles  = weapons\generic_weapon01
 silencer_smoke_particles   = weapons\generic_shoot_00
 
-snd_silncer_shot = weapons\extra\pkm\s0
+snd_silncer_shot        = weapons\pkm\pkm_shot1
 
 silencer_light_color    = 0.6,0.5,0.3
 silencer_light_range    = 0.01

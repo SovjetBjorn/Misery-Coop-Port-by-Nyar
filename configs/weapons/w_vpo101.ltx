@@ -1,5 +1,4 @@
 [wpn_vpo101]:identity_immunities,weapon_probability,default_weapon_params
-snd_shoot = weapons\extra\vpo101\f0
 GroupControlSection		= spawn_group
 $spawn                  = "weapons\vpo101"		; option for Level Editor
 $npc			 		= on				; option for Level Editor
@@ -16,7 +15,7 @@ default_to_ruck         = false
 sprint_allowed       	= true
 
 ;-------------------------------------------------------------------------------
-cost					= 42500
+cost					= 26000
 weapon_class			= sniper_rifle
 inv_weight				= 3.9
 
@@ -27,12 +26,12 @@ upgrade_scheme          = upgrade_scheme_svd
 def_hide_bones = scope1, scope2, scope3, scope4, scope5, scope6, scope7, sight, sheka, knife
 
 ;------TTX------------------------------------------------------------------------
-hit_power           	= 0.875
-hit_impulse		 		= 200
+hit_power           	= 1
+hit_impulse		 		= 150
 hit_type 				= fire_wound
-fire_distance           = 800
-bullet_speed		 	= 816;830	;начальная скорость пули
-rpm                     = 300
+fire_distance           = 200
+bullet_speed		 	= 800 ;830	;начальная скорость пули
+rpm                     = 250
 rpm_empty_click         = 100
 
 use_aim_bullet				= false		;Поддерживается ли первая суппер пуля
@@ -50,9 +49,9 @@ misfire_start_prob	     	= 0.0005
 ;шанс осечки при изношености больше чем misfireEndCondition
 misfire_end_prob	     	= 0.075
 ;увеличение изношености при одиночном выстреле
-condition_shot_dec      	= 0.0085
+condition_shot_dec      	= 0.00075
 ;увеличение изношености при выстреле очередью
-condition_queue_shot_dec	= 0.0055
+condition_queue_shot_dec	= 0.00095
 
 ammo_elapsed			= 0
 ammo_mag_size			= 10
@@ -93,7 +92,7 @@ zoom_cam_max_angle          = 10.0
 zoom_cam_max_angle_horz     = 5.0
 zoom_cam_step_angle_horz    = 0.25
 
-fire_dispersion_condition_factor = 12;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 18	;увеличение дисперсии в процентах при максимальном износе
 
 ;---DOF-------------------------------------------------------------------------
 ;zoom_dof				= 0.5, 1.0, 350
@@ -122,8 +121,8 @@ inv_name_short			= st_wpn_vpo101
 
 inv_grid_width     = 6
 inv_grid_height    = 2
-inv_grid_x         = 6
-inv_grid_y         = 57
+inv_grid_x         = 35
+inv_grid_y         = 35
 
 
 
@@ -204,12 +203,12 @@ silencer_light_time 		= 0.2
 ;звуки
 snd_draw				    = weapons\svd\mechanics\svd_draw
 snd_holster					= weapons\svd\mechanics\svd_hide
-;snd_shoot_start             = weapons\lr300\layers\lr300_shoot_a_1
-;snd_shoot_start1            = weapons\lr300\layers\lr300_shoot_a_2
-;snd_shoot_start2            = weapons\lr300\layers\lr300_shoot_a_3
-;snd_silencer_shoot_start    = weapons\sig552\layers\sig552_silencer_a_1
-;snd_silencer_shoot_start1   = weapons\sig552\layers\sig552_silencer_a_2
-;snd_silencer_shoot_start2   = weapons\sig552\layers\sig552_silencer_a_3
+snd_shoot_start             = weapons\lr300\layers\lr300_shoot_a_1
+snd_shoot_start1            = weapons\lr300\layers\lr300_shoot_a_2
+snd_shoot_start2            = weapons\lr300\layers\lr300_shoot_a_3
+snd_silencer_shoot_start    = weapons\sig552\layers\sig552_silencer_a_1
+snd_silencer_shoot_start1   = weapons\sig552\layers\sig552_silencer_a_2
+snd_silencer_shoot_start2   = weapons\sig552\layers\sig552_silencer_a_3
 snd_empty					= weapons\svd\mechanics\svd_dry_1
 snd_empty1					= weapons\svd\mechanics\svd_dry_2
 snd_reload					= weapons\svd\mechanics\svd_reload
@@ -224,15 +223,15 @@ snd_shutter                 = weapons\svd\mechanics\svd_shutter
 snd_bore1			    	= weapons\mp5_bore
 snd_jammed_click            = weapons\svd\mechanics\svd_check
 
-;snd_silencer_shoot_loop          = weapons\sig552\layers\sig552_silencer_loop_a
-;snd_silencer_shoot_loop_tail     = weapons\val\layers\val_tail_a_1
-;snd_silencer_shoot_loop_tail1    = weapons\val\layers\val_tail_a_2
-;snd_silencer_shoot_loop_tail2    = weapons\val\layers\val_tail_a_3
+snd_silencer_shoot_loop          = weapons\sig552\layers\sig552_silencer_loop_a
+snd_silencer_shoot_loop_tail     = weapons\val\layers\val_tail_a_1
+snd_silencer_shoot_loop_tail1    = weapons\val\layers\val_tail_a_2
+snd_silencer_shoot_loop_tail2    = weapons\val\layers\val_tail_a_3
 
-;snd_shoot_loop                   = weapons\lr300\layers\lr300_loop_a
-;snd_shoot_loop_tail              = weapons\groza\layers\groza_tail_a_1
-;snd_shoot_loop_tail1             = weapons\groza\layers\groza_tail_a_2
-;snd_shoot_loop_tail2             = weapons\groza\layers\groza_tail_a_3
+snd_shoot_loop                   = weapons\lr300\layers\lr300_loop_a
+snd_shoot_loop_tail              = weapons\groza\layers\groza_tail_a_1
+snd_shoot_loop_tail1             = weapons\groza\layers\groza_tail_a_2
+snd_shoot_loop_tail2             = weapons\groza\layers\groza_tail_a_3
 
 [wpn_vpo101_hud]:hud_base
 zoom_hide_crosshair		= true

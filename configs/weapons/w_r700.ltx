@@ -1,7 +1,4 @@
-;; Misery_Coop_Port: repoint upgrade tree to sibling w_svd (tools\build_upgrade_variants.py)
 [wpn_r700]:identity_immunities,weapon_probability,default_weapon_params
-upgrades = vartree_svd_podavatel, vartree_svd_kompensator, vartree_svd_tilnik, vartree_svd_sights, vartree_svd_mag
-upgrade_scheme = upgrade_scheme_svd
 GroupControlSection	= spawn_group
 discovery_dependency = 
 $spawn                  = "weapons\r700"		; option for Level Editor
@@ -20,20 +17,20 @@ sprint_allowed       	= true
 control_inertion_factor = 1.0
 
 ;-------------------------------------------------------------------------------
-cost					= 55000
+cost					= 49500
 weapon_class			= sniper_rifle
-inv_weight				= 4.6
+inv_weight				= 4
 
 def_show_bones = =
 def_hide_bones = scope1, scope2, scope3, scope4, scope5, scope6, scope7, scope8, scope9, scope10, scope11, sight, sheka, knife
 
 ;---TTX---------------------------------------------------------------------------
-hit_power           	= 1
+hit_power           	= 1.05
 hit_impulse		 			= 150
 hit_type 					= fire_wound
 fire_distance           = 200
-bullet_speed		 	= 853;начальная скорость пули
-rpm                     = 25
+bullet_speed		 	= 820;начальная скорость пули
+rpm                     = 30
 rpm_empty_click         = 10
 
 use_aim_bullet			= false		;Поддерживается ли первая суппер пуля
@@ -51,10 +48,10 @@ misfire_start_prob	     	= 0.006
 ;шанс осечки при изношености больше чем misfireEndCondition
 misfire_end_prob	     	= 0.072
 ;увеличение изношености при одиночном выстреле
-condition_shot_dec      	= 0.0014
+condition_shot_dec      	= 0.00085
 ;увеличение изношености при выстреле очередью
-condition_queue_shot_dec	= 0.0015
-fire_dispersion_condition_factor = 5;увеличение дисперсии в процентах при максимальном износе
+condition_queue_shot_dec	= 0.00085
+fire_dispersion_condition_factor = 7        ;увеличение дисперсии в процентах при максимальном износе
 ammo_limit				= 60
 ammo_current			= 10
 ammo_elapsed			= 0
@@ -78,12 +75,12 @@ crosshair_inertion   	= 5
 ;отдача
 cam_relax_speed         = 3	;скорость возврата в исходное положение
 cam_relax_speed_ai      = 360	;скорость возврата в исходное положение
-cam_dispersion          = 3.0;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc		= 1.94;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 0.7	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.01	;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle			= 0.01	;максимальный угол отдачи
 cam_max_angle_horz		= 0.01	;(degree) maximum shot horizontal degree
-cam_step_angle_horz		= 0.53;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz		= 0.01	;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_base 			= 1.2
 PDM_disp_vel_factor 	= 2.0
@@ -93,12 +90,12 @@ PDM_disp_crouch_no_acc 	= 1.0
 
 zoom_cam_relax_speed        = 3   ; scope & ironsight
 zoom_cam_relax_speed_ai     = 360
-zoom_cam_dispersion         = 0.97
-zoom_cam_dispersion_inc     = 0.88
+zoom_cam_dispersion         = 0.2
+zoom_cam_dispersion_inc     = 0.01
 zoom_cam_dispersion_frac    = 1.0
 zoom_cam_max_angle          = 0.01
 zoom_cam_max_angle_horz     = 0.01
-zoom_cam_step_angle_horz    = 0.35
+zoom_cam_step_angle_horz    = 0.01
 
 fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе
 ;-------------------------------------------------------------------------------
@@ -208,7 +205,7 @@ scope_y 					= -2
 ;звуки
 snd_draw		        = weapons\svd\mechanics\svd_draw
 snd_holster		        = weapons\svd\mechanics\svd_hide
-snd_shoot = weapons\extra\r700\f0
+snd_shoot			    = weapons\dvl_10\dvl_shoot1
 snd_empty		        = weapons\svd\mechanics\svd_dry_1
 snd_reload				= weapons\rem700_firebreath\m700_reload
 snd_reload_empty		= weapons\rem700_firebreath\m700_reload_empty
@@ -235,7 +232,7 @@ snd_headlamp_off        = weapons\headflash_off
 snd_nv_on               = weapons\nv_act
 snd_nv_off              = weapons\nv_deact
 snd_kick		        = weapons\ak74\ak74_bayonet
-snd_silncer_shot = weapons\extra\r700\s0
+snd_silncer_shot        = weapons\dvl_10\dvl_bolt
 
 wanm_idle_empty = idle
 wanm_shoot = idle

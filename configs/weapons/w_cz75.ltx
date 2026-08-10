@@ -11,8 +11,8 @@ description					= st_wpn_cz75_descr
 ef_weapon_type				= 5
 
 ;-----------------------------------------------------------------------------
-cost					= 10000
-inv_weight				= 1
+cost					= 9000
+inv_weight				= 0.89
 
 upgrades                = vartree_cz75_body, vartree_cz75_kompensator, vartree_cz75_sights, vartree_cz75_mag, vartree_cz75_handle
 installed_upgrades      =
@@ -22,11 +22,11 @@ upgrade_scheme_beretta = barrel_silencer, sight
 def_show_bones = barrel
 
 ;-TTX-----------------------------------------------------------------------------
-hit_power           		= 0.666
+hit_power           		= 1
 hit_impulse	 		 		= 65
 hit_type 					= fire_wound
 fire_distance           	= 100
-bullet_speed		 		= 338
+bullet_speed		 		= 360
 rpm                     	= 320
 rpm_empty_click 	 		= 10
 
@@ -45,9 +45,9 @@ misfire_start_prob	     	= 0.0075
 ;шанс осечки при изношености больше чем misfireEndCondition
 misfire_end_prob	     	= 0.075
 ;увеличение изношености при одиночном выстреле
-condition_shot_dec      	= 0.0034
+condition_shot_dec      	= 0.0012
 ;увеличение изношености при выстреле очередью
-condition_queue_shot_dec	= 0.0034
+condition_queue_shot_dec	= 0.0012
 
 ammo_elapsed		 	= 15
 ammo_mag_size		 	= 15
@@ -61,7 +61,7 @@ reload_dof				= 0.0, 0.5, 5, 1.7
 
 ;-дисперсия-------------------------------------------------------------------------------
 ;базовая дисперсия
-fire_dispersion_base	= 0.27;0.18 			;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base	= 0.27 ;0.18 			;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 control_inertion_factor = 1.0
 crosshair_inertion		= 3.45
 
@@ -69,12 +69,12 @@ crosshair_inertion		= 3.45
 cam_return				= 0
 cam_relax_speed         = 5				;скорость возврата в исходное положение
 cam_relax_speed_ai      = 360
-cam_dispersion          = 0.95;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc		= 0.87;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 0.9				;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.9				;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac		= 1.0				;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle			= 30.0			;максимальный угол отдачи
 cam_max_angle_horz		= 5.0			;(degree) maximum shot horizontal degree
-cam_step_angle_horz		= 0.68;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz		= 1.0				;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_base 				= 1.4
 PDM_disp_vel_factor 		= 1.1
@@ -82,16 +82,16 @@ PDM_disp_accel_factor 		= 1.1
 PDM_disp_crouch	 				= 1.0
 PDM_disp_crouch_no_acc 			= 1.0
 
-fire_dispersion_condition_factor = 12;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 12		;увеличение дисперсии в процентах при максимальном износе
 
 zoom_cam_relax_speed        = 10    ; scope & ironsight
 zoom_cam_relax_speed_ai     = 120.75
-zoom_cam_dispersion         = 0.32
-zoom_cam_dispersion_inc     = 0.54
+zoom_cam_dispersion         = 0.3
+zoom_cam_dispersion_inc     = 0.75
 zoom_cam_dispersion_frac    = 0.7
 zoom_cam_max_angle          = 5.0
 zoom_cam_max_angle_horz     = 10.0
-zoom_cam_step_angle_horz    = 1.22
+zoom_cam_step_angle_horz    = 1.5
 						
 ;-------------------------------------------------------------------------------
 holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range
@@ -186,7 +186,7 @@ scope_zoom_factor	    		= 85
 ;звуки
 snd_draw				    	= weapons\desert_eagle\mechanics\desert_eagle_draw
 snd_holster						= weapons\desert_eagle\mechanics\desert_eagle_hide
-snd_shoot = weapons\extra\cz75\f0
+snd_shoot						= weapons\browning\layers\browning_shoot_a_1
 snd_empty		                = weapons\sr1m\mechanics\sr1m_dry_1
 snd_reload						= weapons\browning\mechanics\browning_reload
 snd_reload_empty       		    = weapons\browning\mechanics\browning_reload_empty
@@ -210,9 +210,9 @@ silencer_y                  = -21
 
 ;silencer_flame_particles 	    = weapons\generic_weapon01
 silencer_smoke_particles 	    = weapons\generic_shoot_00
-snd_silncer_shot = weapons\extra\cz75\s0
-snd_silncer_shot1 = weapons\extra\cz75\s0
-snd_silncer_shot2 = weapons\extra\cz75\s0
+snd_silncer_shot				= weapons\fiveseven\layers\fiveseven_silencer_a_1
+snd_silncer_shot1				= weapons\fiveseven\layers\fiveseven_silencer_a_2
+snd_silncer_shot2				= weapons\fiveseven\layers\fiveseven_silencer_a_3
 silencer_light_color			= 0.6,0.5,0.3
 silencer_light_range			= 0.01
 silencer_light_var_color	    = 0.05

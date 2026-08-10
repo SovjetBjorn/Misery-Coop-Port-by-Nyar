@@ -1,7 +1,4 @@
-;; Misery_Coop_Port: repoint upgrade tree to sibling w_svd (tools\build_upgrade_variants.py)
 [wpn_dvl10]:identity_immunities,weapon_probability,default_weapon_params
-upgrades = vartree_svd_podavatel, vartree_svd_kompensator, vartree_svd_tilnik, vartree_svd_sights, vartree_svd_mag
-upgrade_scheme = upgrade_scheme_svd
 GroupControlSection	= spawn_group
 discovery_dependency = 
 $spawn                  = "weapons\dvl10"		; option for Level Editor
@@ -20,19 +17,19 @@ sprint_allowed       	= true
 control_inertion_factor = 1.0
 
 ;-------------------------------------------------------------------------------
-cost					= 110000
+cost					= 56000
 weapon_class			= sniper_rifle
-inv_weight				= 5.1
+inv_weight				= 4.8
 
 def_show_bones = barrel
 def_hide_bones = scope1, scope2, scope3, scope4, scope5, scope6, scope7, scope8, scope9, scope10, scope11, sight, sheka, knife, barrel1
 
 ;---TTX---------------------------------------------------------------------------
-hit_power           	= 0.939
+hit_power           	= 1.05
 hit_impulse		 			= 155
 hit_type 					= fire_wound
 fire_distance           = 200
-bullet_speed		 	= 842;начальная скорость пули
+bullet_speed		 	= 820;начальная скорость пули
 rpm                     = 30
 rpm_empty_click         = 10
 
@@ -51,10 +48,10 @@ misfire_start_prob	     	= 0.006
 ;шанс осечки при изношености больше чем misfireEndCondition
 misfire_end_prob	     	= 0.072
 ;увеличение изношености при одиночном выстреле
-condition_shot_dec      	= 0.0014
+condition_shot_dec      	= 0.0011
 ;увеличение изношености при выстреле очередью
-condition_queue_shot_dec	= 0.0015
-fire_dispersion_condition_factor = 3;увеличение дисперсии в процентах при максимальном износе
+condition_queue_shot_dec	= 0.0011
+fire_dispersion_condition_factor = 7        ;увеличение дисперсии в процентах при максимальном износе
 ammo_limit				= 60
 ammo_current			= 10
 ammo_elapsed			= 0
@@ -78,12 +75,12 @@ crosshair_inertion   	= 9
 ;отдача
 cam_relax_speed         = 4.5	;скорость возврата в исходное положение
 cam_relax_speed_ai      = 360	;скорость возврата в исходное положение
-cam_dispersion          = 2.69;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc		= 1.74;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 2.24	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 2.24	;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac		= 1.1	;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle			= 50.0	;максимальный угол отдачи
 cam_max_angle_horz		= 50.0	;(degree) maximum shot horizontal degree
-cam_step_angle_horz		= 0.48;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz		= 0.64	;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_accel_factor       = 2.355
 PDM_disp_base               = 1.45
@@ -93,12 +90,12 @@ PDM_disp_vel_factor         = 2.355
 
 zoom_cam_relax_speed        = 0.75   ; scope & ironsight
 zoom_cam_relax_speed_ai     = 360
-zoom_cam_dispersion         = 0.87
-zoom_cam_dispersion_inc     = 0.79
+zoom_cam_dispersion         = 1.00
+zoom_cam_dispersion_inc     = 1.54
 zoom_cam_dispersion_frac    = 1.0
 zoom_cam_max_angle          = 50.0
 zoom_cam_max_angle_horz     = 50.0
-zoom_cam_step_angle_horz    = 0.32
+zoom_cam_step_angle_horz    = 0.49
 
 fire_dispersion_condition_factor = 0.001	;увеличение дисперсии в процентах при максимальном износе
 ;-------------------------------------------------------------------------------
@@ -187,7 +184,7 @@ grenade_launcher_status		= 0
 silencer_name           = wpn_silencer_svd   ; section name for the attachable silencer
 silencer_x              = 253                ; offset in inventory icon
 silencer_y              = 17
-snd_silncer_shot = weapons\extra\dvl10\s0
+snd_silncer_shot		= weapons\svd\svds_shoot_s
 silencer_light_color		= 0.6,0.5,0.3
 silencer_light_range		= 0.01
 silencer_light_var_color	= 0.05
@@ -207,7 +204,7 @@ scope_y 						= -2
 ;звуки
 snd_draw		        = weapons\svd\mechanics\svd_draw
 snd_holster		        = weapons\svd\mechanics\svd_hide
-snd_shoot = weapons\extra\dvl10\f0
+snd_shoot			    = weapons\dvl_10\sv98_shoot_sil
 snd_bolt_action         = weapons\rem700_firebreath\bolt
 snd_empty		        = weapons\svd\mechanics\svd_dry_1
 snd_reload				= weapons\rem700_firebreath\reload
@@ -228,7 +225,7 @@ snd_torch_on	        = weapons\vss\vss_firemode
 snd_torch_off	        = weapons\vss\vss_firemode
 snd_headlamp_on         = weapons\headflash_on
 snd_headlamp_off        = weapons\headflash_off
-snd_silncer_shot = weapons\extra\dvl10\s0
+snd_silncer_shot        = weapons\dvl_10\sv98_shoot_sil
 
 wanm_idle_empty = idle
 wanm_shoot = idle

@@ -15,7 +15,7 @@ sprint_allowed          = true
 control_inertion_factor = 1.0
 
 ;-------------------------------------------------------------------------------
-cost					= 11000; the price of the item
+cost					= 9000           ; the price of the item
 inv_weight				= 0.69
 
 upgrades = vartree_walther_titan, vartree_walther_patronnik, vartree_walther_ramka, vartree_walther_sights, vartree_walther_mag, vartree_walther_handle
@@ -26,11 +26,11 @@ def_hide_bones = barrel_silencer, barrel_compensator, flash, laser, sight
 def_show_bones = barrel
 
 ;----TTX--------------------------------------------------------------------------
-hit_power           		= 0.555
+hit_power           		= 1.01, 1.01, 1.01, 1.01
 hit_impulse	 		 		= 75
 hit_type 					= fire_wound
 fire_distance           	= 200
-bullet_speed		 		= 318
+bullet_speed		 		= 225
 rpm                     	= 320
 rpm_empty_click 	 		= 10
 
@@ -54,7 +54,7 @@ condition_shot_dec      	= 0.0023
 condition_queue_shot_dec	= 0.0023
 
 ammo_elapsed      = 16
-ammo_mag_size     = 16; clip (magazine) size
+ammo_mag_size     = 16           ; clip (magazine) size
 ammo_class		  = ammo_9x19_fmj, ammo_9x19_pbp
 
 launch_speed      = 0
@@ -67,7 +67,7 @@ reload_dof           = 0.0, 0.5, 5, 1.7
 
 ;---дисперсия---------------------------------------------------------------------------
 ;базовая дисперсия
-fire_dispersion_base	= 0.21;0.15 			;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base	= 0.21 ;0.15 			;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
 control_inertion_factor = 1.0
 crosshair_inertion   	= 2.40
 
@@ -75,12 +75,12 @@ crosshair_inertion   	= 2.40
 cam_return				= 0
 cam_relax_speed         = 8				;скорость возврата в исходное положение
 cam_relax_speed_ai      = 360
-cam_dispersion          = 1.29;увеличения угла (в градусах) с каждым выстрелом
-cam_dispersion_inc		= 1.18;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 0.75			;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.75			;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac		= 1.0			;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle			= 35.0			;максимальный угол отдачи
 cam_max_angle_horz		= 5.0			;(degree) maximum shot horizontal degree
-cam_step_angle_horz		= 0.92;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz		= 0.5			;(degree) size of step camera moved in horizontal position while shooting
 
 PDM_disp_base 				= 1.2
 PDM_disp_vel_factor 		= 1.1
@@ -90,14 +90,14 @@ PDM_disp_crouch_no_acc 			= 1.0
 
 zoom_cam_relax_speed        = 10    ; scope & ironsight
 zoom_cam_relax_speed_ai     = 120.75
-zoom_cam_dispersion         = 0.44
-zoom_cam_dispersion_inc     = 0.74
+zoom_cam_dispersion         = 0.3
+zoom_cam_dispersion_inc     = 0.75
 zoom_cam_dispersion_frac    = 0.7
 zoom_cam_max_angle          = 10.0
 zoom_cam_max_angle_horz     = 10.0
 zoom_cam_step_angle_horz    = 1.5
 
-fire_dispersion_condition_factor = 7;увеличение дисперсии в процентах при максимальном износе
+fire_dispersion_condition_factor = 7        ;увеличение дисперсии в процентах при максимальном износе
 
 ;-------------------------------------------------------------------------------
 holder_range_modifier	= 1.0               ; во сколько раз увеличивается eye_range
@@ -188,7 +188,7 @@ silencer_y 				= -19
 ;звуки
 snd_draw						= weapons\pm\mechanics\pm_draw
 snd_holster						= weapons\pm\mechanics\pm_hide
-snd_shoot = weapons\extra\walther\f0
+snd_shoot				= weapons\p99\layers\p99_shoot_a_1
 
 snd_empty						= weapons\sr1m\mechanics\sr1m_dry_1
 snd_reload				= weapons\p99\mechanics\p99_reload
@@ -206,9 +206,9 @@ snd_jammed_click     = weapons\pm\mechanics\pm_check
 
 ;silencer_flame_particles  = weapons\generic_weapon01
 silencer_smoke_particles 	= weapons\generic_shoot_00
-snd_silncer_shot = weapons\extra\walther\s0
-snd_silncer_shot1 = weapons\extra\walther\s0
-snd_silncer_shot2 = weapons\extra\walther\s0
+snd_silncer_shot				= weapons\fiveseven\layers\fiveseven_silencer_a_1
+snd_silncer_shot1				= weapons\fiveseven\layers\fiveseven_silencer_a_2
+snd_silncer_shot2				= weapons\fiveseven\layers\fiveseven_silencer_a_3
 silencer_light_color			= 0.6,0.5,0.3
 silencer_light_range			= 0.01
 silencer_light_var_color	= 0.05

@@ -1,5 +1,5 @@
 [up_sect_iz17_stock]
-cost = 700
+cost = 2400
 
 cam_dispersion = +2.0
 inv_weight              = -0.8
@@ -37,7 +37,7 @@ icon = ui_up_toz34_stock
 ;------------------------------------------toz34_plate------------------------------------------
 
 [up_sect_iz17_plate]
-cost = 700
+cost = 2400
 value = -20
 cam_relax_speed = +2
 cam_dispersion = -1
@@ -68,7 +68,7 @@ icon = ui_up_toz34_plate
 ;------------------------------------------toz34_usm------------------------------------------
 
 [up_sect_iz17_usm]
-cost = 700
+cost = 2400
 value = +20
 misfire_start_prob	     	= -0.001
 misfire_end_prob	     	= -0.005
@@ -113,7 +113,7 @@ icon = ui_up_toz34_barrel
 ;------------------------------------------toz34_sights------------------------------------------
 
 [up_sect_iz17_sights]
-cost = 700
+cost = 2400
 crosshair_inertion = -0.3
 control_inertion_factor = -0.1
 
@@ -158,7 +158,7 @@ icon = ui_up_toz34_barrel_narezka
 ;------------------------------------------toz34_reliability------------------------------------------
 
 [up_sect_iz17_reliability]
-cost = 700
+cost = 2400
 value = +20
 condition_shot_dec      	= -0.003
 condition_queue_shot_dec	= -0.003
@@ -183,7 +183,7 @@ icon = ui_up_toz34_reliability
 ;------------------------------------------toz34_calibration------------------------------------------
 
 [up_sect_iz17_calibration]
-cost = 1700
+cost = 2400
 value = 30
 fire_dispersion_base    = -0.04
 cam_dispersion		= -2
@@ -210,7 +210,7 @@ icon = ui_up_toz34_calibration
 ;------------------------------------------toz34_weaver------------------------------------------
 
 [up_sect_iz17_weaver]
-cost = 1700
+cost = 2400
 inv_weight = +0.1
 
 
@@ -254,18 +254,3 @@ elements = up_iz17_calibration
 
 [vartree_iz17_rail]
 elements = up_iz17_weaver
-
-;; Misery_Coop_Port: define missing up_sect(s) (mirror saiga12; tools\build_upgrade_variants.py)
-[up_sect_iz17_barrel]
-cost = 1700
-value = +15
-bullet_speed = 50
-fire_dispersion_base = -0.03
-
-[up_sect_iz17_barrel_narezka]
-cost = 3600
-value = +20
-bullet_speed = 100
-condition_shot_dec = 0.002
-fire_dispersion_base = -0.06
-ammo_class = ammo_12x76_zhekan

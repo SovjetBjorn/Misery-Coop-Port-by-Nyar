@@ -1,5 +1,5 @@
 [up_sect_sr2m_mag_lock]
-cost = 5400
+cost = 4400
 value = +10
 misfire_start_condition = -0.05
 misfire_end_condition = -0.05
@@ -27,7 +27,7 @@ icon = ui_up_bizon_mag_lock
 ;------------------------------------------bizon_usm_recoil------------------------------------------
 
 [up_sect_sr2m_usm_recoil]
-cost = 5400
+cost = 4400
 value = -20
 PDM_disp_base = -0.25
 cam_dispersion = -0.1
@@ -52,7 +52,7 @@ icon = ui_up_bizon_usm_recoil
 ;------------------------------------------bizon_usm_rpm------------------------------------------
 
 [up_sect_sr2m_usm_rpm]
-cost = 5400
+cost = 4400
 value = +20
 condition_queue_shot_dec = +0.0003
 rpm = +100
@@ -76,7 +76,7 @@ icon = ui_up_bizon_usm_rpm
 ;------------------------------------------bizon_barrel_bullet_speed------------------------------------------
 
 [up_sect_sr2m_barrel_bullet_speed]
-cost = 12600
+cost = 4400
 value = +30
 bullet_speed  = +70
 
@@ -99,7 +99,7 @@ icon = ui_up_bizon_barrel_bullet_speed
 ;------------------------------------------bizon_barrel_dispersion------------------------------------------
 
 [up_sect_sr2m_barrel_dispersion]
-cost = 12600
+cost = 4400
 value = +30
 PDM_disp_base = -0.2
 fire_dispersion_base = -0.08
@@ -143,7 +143,7 @@ icon = ui_up_bizon_barrel_9x19
 ;------------------------------------------bizon_mag_shnek------------------------------------------
 
 [up_sect_sr2m_mag_shnek]
-cost = 5400
+cost = 4400
 value = +10
 misfire_start_condition = -0.2
 misfire_end_condition = -0.2
@@ -168,7 +168,7 @@ icon = ui_up_bizon_mag_shnek
 ;------------------------------------------bizon_light_details------------------------------------------
 
 [up_sect_sr2m_light_details]
-cost = 8100
+cost = 4400
 value = -0.5
 inv_weight = -0.5
 
@@ -191,7 +191,7 @@ icon = ui_up_bizon_light_details
 ;------------------------------------------bizon_pokritie_reliability------------------------------------------
 
 [up_sect_sr2m_pokritie_reliability]
-cost = 5400
+cost = 4400
 value = +20
 misfire_end_prob = -0.02
 
@@ -217,7 +217,7 @@ icon = ui_up_bizon_pokritie_reliability
 ;------------------------------------------bizon_zatvor_balancer------------------------------------------
 
 [up_sect_sr2m_zatvor_balancer]
-cost = 5400
+cost = 4400
 value = -25
 PDM_disp_base - 0.1
 cam_dispersion = -0.15
@@ -244,7 +244,7 @@ icon = ui_up_bizon_zatvor_balancer
 ;------------------------------------------bizon_shell_ejector------------------------------------------
 
 [up_sect_sr2m_shell_ejector]
-cost = 5400
+cost = 4400
 value = +25
 misfire_start_prob = -0.003
 condition_shot_dec = -0.0001
@@ -270,7 +270,7 @@ icon = ui_up_bizon_shell_ejector
 ;------------------------------------------bizon_zatvor_prujina------------------------------------------
 
 [up_sect_sr2m_zatvor_prujina]
-cost = 8100
+cost = 4400
 value = +25
 rpm = +120
 
@@ -293,7 +293,7 @@ icon = ui_up_bizon_zatvor_prujina
 ;------------------------------------------bizon_light_tsevie------------------------------------------
 
 [up_sect_sr2m_light_tsevie]
-cost = 8100
+cost = 4400
 value = -0.3
 inv_weight              = -0.3
 control_inertion_factor = -0.05
@@ -317,7 +317,7 @@ icon = ui_up_bizon_light_tsevie
 ;------------------------------------------bizon_rail------------------------------------------
 
 [up_sect_sr2m_rail]
-cost = 5400
+cost = 4400
 inv_weight        = +0.05
 
 
@@ -345,7 +345,7 @@ icon = ui_up_bizon_rail
 ;------------------------------------------bizon_laser------------------------------------------
 
 [up_sect_sr2m_laser]
-cost = 5400
+cost = 4400
 inv_weight              = +0.2
 crosshair_inertion = -0.1
 
@@ -373,7 +373,7 @@ icon = ui_up_bizon_laser
 ;------------------------------------------bizon_flash------------------------------------------
 
 [up_sect_sr2m_flash]
-cost = 5400
+cost = 4400
 inv_weight              = +0.3
 
 
@@ -402,7 +402,7 @@ icon = ui_up_bizon_flash
 ;------------------------------------------bizon_sights------------------------------------------
 
 [up_sect_sr2m_sights]
-cost = 5400
+cost = 4400
 crosshair_inertion = -1
 control_inertion_factor = -0.05
 
@@ -429,7 +429,7 @@ icon = ui_up_bizon_sights
 ;------------------------------------------bizon_nakladka------------------------------------------
 
 [up_sect_sr2m_nakladka]
-cost = 5400
+cost = 4400
 value = -25
 PDM_disp_base = -0.1
 cam_dispersion          = -0.15
@@ -461,7 +461,7 @@ icon = ui_up_bizon_nakladka
 ;------------------------------------------bizon_handle------------------------------------------
 
 [up_sect_sr2m_handle]
-cost = 5400
+cost = 4400
 value = +10
 control_inertion_factor = -0.1
 cam_dispersion = -0.1
@@ -526,10 +526,3 @@ elements = up_sr2m_nakladka
 
 [vartree_sr2m_handle]
 elements = up_sr2m_handle
-
-;; Misery_Coop_Port: define missing up_sect(s) (mirror saiga12; tools\build_upgrade_variants.py)
-[up_sect_sr2m_barrel_9x19]
-cost = 12600
-value = +15
-bullet_speed = 50
-fire_dispersion_base = -0.03

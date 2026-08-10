@@ -15,9 +15,9 @@ default_to_ruck         = false
 sprint_allowed          = true
 
 ;-------------------------------------------------------------------------------
-cost              		= 20000; the price of the item
+cost              		= 21000            ; the price of the item
 weapon_class            = assault_rifle      ; the type of the box that will be used in buy-menu in multiplayer mode
-inv_weight				= 2.7; weight in inventory
+inv_weight				= 2.7								; weight in inventory
 
 upgrades = vartree_ak74u_barrel, vartree_ak74u_tsevie, vartree_ak74u_mag45, vartree_ak74u_sights, vartree_ak74u_priklad, vartree_ak74u_handle, vartree_ak74u_lastochka
 installed_upgrades      =
@@ -28,12 +28,12 @@ def_hide_bones = mag45, mag45_black, mag30_black, mag60, body2, body3, bone2, ha
 
 ;-““’---------------------------------------------------------------------------
 
-hit_power            	= 0.508
-hit_impulse          	= 100; size of physic impulse by bullet
+hit_power            	= 0.95, 0.95, 0.95, 0.95
+hit_impulse          	= 100    ; size of physic impulse by bullet
 hit_type            	= fire_wound            ; [] type of the wound
-fire_distance           = 200; maximum fire distance that bullet can fly
-bullet_speed            = 726; starting bullet speed
-rpm                     = 700; max round per minute
+fire_distance           = 200    ; maximum fire distance that bullet can fly
+bullet_speed            = 500    ; starting bullet speed
+rpm                     = 680    ; max round per minute
 rpm_empty_click         = 10
 
 use_aim_bullet          = false                ;ѕоддерживаетс€ ли перва€ суппер пул€
@@ -57,7 +57,7 @@ condition_queue_shot_dec	= 0.0007
 
 
 ammo_elapsed            = 30           ; obsolete
-ammo_mag_size        	= 30; clip (magazine) size
+ammo_mag_size        	= 30           ; clip (magazine) size
 fire_modes           	= 1, -1
 
 ammo_class           	= ammo_5.45x39_fmj, ammo_5.45x39_ap  ; name of the ltx-section of used ammo
@@ -71,7 +71,7 @@ zoom_dof             = 0.5, 1.0, 180
 reload_dof           = 0.0, 0.5, 5, 2
 
 ;----ƒисперси€---------------------------------------------------------------------------
-fire_dispersion_base       = 0.25;0.19      ;угол (в градусах) базовой дисперсии оружи€ (оружи€ зажатого в тисках)
+fire_dispersion_base       = 0.25 ;0.19      ;угол (в градусах) базовой дисперсии оружи€ (оружи€ зажатого в тисках)
 control_inertion_factor    = 1.0
 crosshair_inertion		   = 5.50
 
@@ -79,22 +79,22 @@ crosshair_inertion		   = 5.50
 cam_return              = 0
 cam_relax_speed         = 12			;скорость возврата в исходное положение
 cam_relax_speed_ai     	= 120.75
-cam_dispersion          = 0.55;увеличени€ угла (в градусах) с первым выстрелом
-cam_dispersion_inc      = 0.32;увеличениe cam_dispersion с каждым выстрелом
+cam_dispersion          = 1.2		;увеличени€ угла (в градусах) с первым выстрелом
+cam_dispersion_inc      = 0.6	;увеличениe cam_dispersion с каждым выстрелом
 cam_dispersion_frac     = 1.0	    ;ствол будет подыматьс€ на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
 cam_max_angle			= 50.0      ;максимальный угол отдачи
 cam_max_angle_horz      = 5.0      ;(degree) maximum shot horizontal degree
-cam_step_angle_horz     = 1.29;(degree) size of step camera moved in horizontal position while shooting
+cam_step_angle_horz     = 1.5		;(degree) size of step camera moved in horizontal position while shooting
 
 zoom_cam_relax_speed         = 10	    ; scope & ironsight
 zoom_cam_relax_speed_ai      = 360
-zoom_cam_dispersion          = 0.39
-zoom_cam_dispersion_inc      = 0.24
+zoom_cam_dispersion          = 0.6
+zoom_cam_dispersion_inc      = 0.3
 zoom_cam_dispersion_frac     = 1.0
 zoom_cam_max_angle           = 50.0
 zoom_cam_max_angle_horz      = 5.0
-zoom_cam_step_angle_horz     = 0.97
-fire_dispersion_condition_factor    = 10;увеличение дисперсии в процентах при максимальном износе
+zoom_cam_step_angle_horz     = 1.0
+fire_dispersion_condition_factor    = 10         ;увеличение дисперсии в процентах при максимальном износе
 
 PDM_disp_base 				= 1.4
 PDM_disp_vel_factor 		= 2.1
@@ -189,7 +189,7 @@ silencer_y 					= 15
 ;звуки
 snd_draw                = weapons\ak74u\mechanics\ak74u_draw
 snd_holster             = weapons\ak74u\mechanics\ak74u_hide
-snd_shoot = weapons\extra\ak74u\f0
+snd_shoot               = weapons\silence
 
 snd_empty               = weapons\ak74u\mechanics\ak74u_dry_1
 snd_empty1               = weapons\ak74u\mechanics\ak74u_dry_2
@@ -209,24 +209,24 @@ snd_jammed_click     = weapons\ak74u\mechanics\ak74u_check
 ;silencer_flame_particles  = weapons\generic_weapon01
 silencer_smoke_particles   = weapons\generic_shoot_00
 
-snd_silncer_shot = weapons\extra\ak74u\s0
+snd_silncer_shot        = weapons\silence
 
-;snd_shoot_start                = weapons\ak74u\layers\ak74u_shoot_a_1
-;snd_shoot_start1                = weapons\ak74u\layers\ak74u_shoot_a_2
-;snd_shoot_start2                = weapons\ak74u\layers\ak74u_shoot_a_3
-;snd_silencer_shoot_start        = weapons\ak74\layers\ak74_silencer_a_1
-;snd_silencer_shoot_start1        = weapons\ak74\layers\ak74_silencer_a_2
-;snd_silencer_shoot_start2        = weapons\ak74\layers\ak74_silencer_a_3
+snd_shoot_start                = weapons\ak74u\layers\ak74u_shoot_a_1
+snd_shoot_start1                = weapons\ak74u\layers\ak74u_shoot_a_2
+snd_shoot_start2                = weapons\ak74u\layers\ak74u_shoot_a_3
+snd_silencer_shoot_start        = weapons\ak74\layers\ak74_silencer_a_1
+snd_silencer_shoot_start1        = weapons\ak74\layers\ak74_silencer_a_2
+snd_silencer_shoot_start2        = weapons\ak74\layers\ak74_silencer_a_3
 
-;snd_shoot_loop            = weapons\ak74u\layers\ak74u_loop_a
-;snd_shoot_loop_tail        = weapons\ak74u\layers\ak74u_tail_a_1
-;snd_shoot_loop_tail1        = weapons\ak74u\layers\ak74u_tail_a_2
-;snd_shoot_loop_tail2        = weapons\ak74u\layers\ak74u_tail_a_3
+snd_shoot_loop            = weapons\ak74u\layers\ak74u_loop_a
+snd_shoot_loop_tail        = weapons\ak74u\layers\ak74u_tail_a_1
+snd_shoot_loop_tail1        = weapons\ak74u\layers\ak74u_tail_a_2
+snd_shoot_loop_tail2        = weapons\ak74u\layers\ak74u_tail_a_3
 
-;snd_silencer_shoot_loop        = weapons\ak74u\layers\ak74u_silencer_loop_a
-;snd_silencer_shoot_loop_tail    = weapons\mp5sd\layers\mp5sd_tail_a_1
-;snd_silencer_shoot_loop_tail1    = weapons\mp5sd\layers\mp5sd_tail_a_2
-;snd_silencer_shoot_loop_tail2    = weapons\mp5sd\layers\mp5sd_tail_a_3
+snd_silencer_shoot_loop        = weapons\ak74u\layers\ak74u_silencer_loop_a
+snd_silencer_shoot_loop_tail    = weapons\mp5sd\layers\mp5sd_tail_a_1
+snd_silencer_shoot_loop_tail1    = weapons\mp5sd\layers\mp5sd_tail_a_2
+snd_silencer_shoot_loop_tail2    = weapons\mp5sd\layers\mp5sd_tail_a_3
 
 silencer_light_color    = 0.6,0.5,0.3
 silencer_light_range    = 0.01
