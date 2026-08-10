@@ -1106,12 +1106,16 @@ local function probe(entry)
 		return false, "no local actor"
 	end
 	-- spawn to inventory via the console path (same as manual g_spawn_to_inventory)
+	-- This boundary marker reaches xray_*.log before the C++ console call. If
+	-- execution hard-crashes, ATTEMPT without QUEUED identifies that exact edge.
+	slog("ATTEMPT [%s] (%s)", section, kind)
 	local ok, err = pcall(function()
 		get_console():execute("g_spawn_to_inventory " .. section)
 	end)
 	if not ok then
 		return false, "spawn: " .. tostring(err)
 	end
+	slog("QUEUED [%s] (%s)", section, kind)
 	-- armor: force-equip so attach/actor_visual load is exercised, not just spawn
 	if kind == "helmet" or kind == "outfit" then
 		local ok2, err2 = pcall(function()

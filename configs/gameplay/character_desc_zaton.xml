@@ -26,11 +26,6 @@
 			kolbasa = 1 \n
 			conserva = 2 \n
 			guitar_a = 1 \n
-#include "gameplay\character_items.xml"
-#include "gameplay\character_food.xml"
-#include "gameplay\character_drugs.xml"
-#include "gameplay\character_drugs_neutral.xml"
-
 			
     </supplies>
 
@@ -62,11 +57,6 @@
 			medkit = 2 \n
 
 			conserva = 1 \n
-#include "gameplay\character_items.xml"
-#include "gameplay\character_food.xml"
-#include "gameplay\character_drugs.xml"
-#include "gameplay\character_drugs_neutral.xml"
-
     </supplies>
 	
 	   <money min="2500"  max="3500"  infinitive="0"/>
@@ -100,11 +90,6 @@
 			bread = 2 \n
 			
 			guitar_a = 1 \n
-#include "gameplay\character_items.xml"
-#include "gameplay\character_food.xml"
-#include "gameplay\character_drugs.xml"
-#include "gameplay\character_drugs_neutral.xml"
-
     </supplies>
 	
 	    <money min="1500"  max="2500"  infinitive="0"/>
@@ -135,11 +120,6 @@
 			medkit = 2 \n
 
 			conserva = 3 \n
-#include "gameplay\character_items.xml"
-#include "gameplay\character_food.xml"
-#include "gameplay\character_drugs.xml"
-#include "gameplay\character_drugs_neutral.xml"
-
     </supplies>
 
     <money min="1500"  max="2500"  infinitive="0"/>
