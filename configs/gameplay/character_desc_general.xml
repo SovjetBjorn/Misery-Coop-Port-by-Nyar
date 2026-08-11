@@ -719,7 +719,7 @@
     <rank>60</rank>
     <reputation>0</reputation>
 	<money min="5000" max="10000" infinitive="0"/>
-    <visual>actors\stalker_dolg\stalker_dolg_4</visual>
+    <visual>actors\stalker_dolg\stalker_dolg_3</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_sell_weapons.xml"
@@ -744,7 +744,7 @@
     <rank>60</rank>
     <reputation>0</reputation>
 	<money min="5000" max="10000" infinitive="0"/>
-    <visual>actors\stalker_dolg\stalker_dolg_4</visual>
+    <visual>actors\stalker_dolg\stalker_dolg_3</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_sell_weapons.xml"
@@ -769,7 +769,7 @@
     <rank>60</rank>
     <reputation>0</reputation>
 	<money min="5000" max="10000" infinitive="0"/>
-    <visual>actors\stalker_dolg\stalker_dolg_4</visual>
+    <visual>actors\stalker_dolg\stalker_dolg_3</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_sell_weapons.xml"
@@ -794,7 +794,7 @@
     <rank>60</rank>
     <reputation>0</reputation>
 	<money min="5000" max="10000" infinitive="0"/>
-    <visual>actors\stalker_dolg\stalker_dolg_4</visual>
+    <visual>actors\stalker_dolg\stalker_dolg_3</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_sell_weapons.xml"
@@ -1507,7 +1507,7 @@
     <rank>60</rank>
     <reputation>0</reputation>
 	<money min="5000" max="10000" infinitive="0"/>
-    <visual>actors\stalker_freedom\stalker_freedom_4</visual>
+    <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_sell_weapons.xml"
@@ -1533,7 +1533,7 @@
     <rank>60</rank>
     <reputation>0</reputation>
 	<money min="5000" max="10000" infinitive="0"/>
-    <visual>actors\stalker_freedom\stalker_freedom_4</visual>
+    <visual>actors\stalker_freedom\stalker_freedom_2_mask</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_sell_weapons.xml"
@@ -2444,7 +2444,7 @@
     <rank>55</rank>
 	<money min="2500" max="5000" infinitive="0"/>
     <reputation>0</reputation>
-    <visual>actors\stalker_merc\stalker_merc_4</visual>
+    <visual>actors\stalker_merc\stalker_merc_2</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_items_nd_nl.xml"
@@ -2466,7 +2466,7 @@
     <rank>55</rank>
 	<money min="2500" max="5000" infinitive="0"/>
     <reputation>0</reputation>
-    <visual>actors\stalker_merc\stalker_merc_4</visual>
+    <visual>actors\stalker_merc\stalker_merc_2</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_items_nd.xml"
@@ -2488,7 +2488,7 @@
     <rank>55</rank>
 	<money min="2500" max="5000" infinitive="0"/>
     <reputation>0</reputation>
-    <visual>actors\stalker_merc\stalker_merc_4</visual>
+    <visual>actors\stalker_merc\stalker_merc_2</visual>
 <!-- CHANGED - BETA
       wpn_protecta \n
       ammo_12x76_zhekan = 1 \n
@@ -2514,7 +2514,7 @@
     <rank>55</rank>
 	<money min="2500" max="5000" infinitive="0"/>
     <reputation>0</reputation>
-    <visual>actors\stalker_merc\stalker_merc_4</visual>
+    <visual>actors\stalker_merc\stalker_merc_2</visual>
 <!-- CHANGED - BETA
       wpn_protecta \n
       ammo_12x76_zhekan = 1 \n
@@ -2566,7 +2566,7 @@
     <rank>60</rank>
 	<money min="5000" max="10000" infinitive="0"/>
     <reputation>0</reputation>
-    <visual>actors\stalker_merc\stalker_merc_4</visual>
+    <visual>actors\stalker_merc\stalker_merc_2</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_items_nd_nl.xml"
@@ -3447,7 +3447,7 @@
     <rank>60</rank>
 	<money min="5000" max="10000" infinitive="0"/>
     <reputation>0</reputation>
-    <visual>actors\stalker_neutral\stalker_neutral_4</visual>
+    <visual>actors\stalker_neutral\stalker_neutral_3</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_sell_weapons.xml"
@@ -3472,7 +3472,7 @@
     <rank>60</rank>
 	<money min="5000" max="10000" infinitive="0"/>
     <reputation>0</reputation>
-    <visual>actors\stalker_neutral\stalker_neutral_4</visual>
+    <visual>actors\stalker_neutral\stalker_neutral_3</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_sell_weapons.xml"
@@ -4203,7 +4203,7 @@
     <snd_config>characters_voice\human_02\monolith\</snd_config>
     <rank>60</rank>
     <reputation>0</reputation>
-    <visual>actors\stalker_monolith\stalker_monolith_4</visual>
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_items_monolith.xml"
@@ -4227,7 +4227,7 @@
     <snd_config>characters_voice\human_02\monolith\</snd_config>
     <rank>60</rank>
     <reputation>0</reputation>
-    <visual>actors\stalker_monolith\stalker_monolith_4</visual>
+    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_items_monolith.xml"
@@ -5386,7 +5386,7 @@
     <rank>55</rank>
 	<money min="1500" max="3500" infinitive="0" />
     <reputation>0</reputation>
-    <visual>actors\stalker_neutral\stalker_neutral_4</visual>
+    <visual>actors\stalker_neutral\stalker_neutral_3</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_items_2.xml"
@@ -5409,7 +5409,7 @@
     <rank>75</rank>
 	<money min="1500" max="3500" infinitive="0" />
     <reputation>0</reputation>
-    <visual>actors\stalker_neutral\stalker_neutral_4</visual>
+    <visual>actors\stalker_neutral\stalker_neutral_3</visual>
     <supplies>
       [spawn] \n
 #include "gameplay\character_items_2.xml"
