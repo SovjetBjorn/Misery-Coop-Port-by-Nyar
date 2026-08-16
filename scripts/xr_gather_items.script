@@ -9,8 +9,6 @@ local function server_object(id)
 end
 
 local function protected_item(item_id, se_item)
-	-- se_item may be `false`: caller passes `itm_id and Items[itm_id] == nil and server_object(itm_id)`,
-	-- which yields false (not nil) when the item is already reserved by another NPC. Must test truthiness.
 	if item_id == nil or item_id == 0 or not se_item or se_item.parent_id ~= 65535 then return true end
 	if get_object_story_id(item_id) ~= nil then return true end -- quest/story item
 	local manager = treasure_manager and treasure_manager.get_treasure_manager and treasure_manager.get_treasure_manager()

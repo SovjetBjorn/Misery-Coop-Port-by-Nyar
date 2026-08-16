@@ -180,6 +180,13 @@ function mp_actor_binder:on_item_take(obj)
 	end
 	
 	if isArtefact(obj) then
+		-- PORT (Misery_Coop_Port): hard client CTD at the elseif below, "attempt to index
+		-- field 'object' (a nil value)". net_destroy releases self.object, and while the
+		-- teardown now clears callback.on_item_take, the artefact take still reaches a
+		-- binder whose object is gone (remote player picking up at zat_b18, artefact
+		-- handed over during the same frame the binder unbinds). Both branches deref
+		-- self.object, so guard the block rather than each branch.
+		if self.object == nil then return end
 		if OnServer() then
 			local anomal_zone = bind_anomaly_zone.parent_zones_by_artefact_id[obj:id()]
 			if anomal_zone ~= nil then
@@ -439,7 +446,13 @@ function mp_actor_binder:net_destroy()
 	self.object:set_callback(callback.level_border_exit, nil)
 	self.object:set_callback(callback.take_item_from_box, nil)
 	self.object:set_callback(callback.use_object, nil)
-	
+	-- PORT (Misery_Coop_Port): reinit binds these two as well (see the set_callback block
+	-- above), but the base teardown never cleared them. object_binder.net_destroy releases
+	-- self.object, so a gesture / trade event arriving afterwards re-entered the dead binder
+	-- and indexed a nil self.object -> hard CTD in use_gesture. Clear every callback reinit set.
+	self.object:set_callback(callback.trade_sell_buy_item, nil)
+	self.object:set_callback(callback.gesture, nil)
+
 	object_binder.net_destroy(self)
 end
 ----------------------------------------------------------------------------------------------------------------------
