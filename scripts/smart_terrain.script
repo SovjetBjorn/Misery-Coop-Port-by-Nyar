@@ -318,7 +318,8 @@ function se_smart_terrain:read_params()
 --	self.max_population = utils.cfg_get_number(ini, SMART_TERRAIN_SECT, "max_population", self, false, 0)
 	local max_population = utils.cfg_get_string(ini, SMART_TERRAIN_SECT, "max_population", self, false, "", 0)
 	local parsed_condlist = xr_logic.parse_condlist(nil, SMART_TERRAIN_SECT, "max_population", max_population)
-	self.max_population = tonumber(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, parsed_condlist))
+	local resolved_max_population = xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, parsed_condlist)
+	self.max_population = tonumber(resolved_max_population) or 0
 
 --	self.sim_avail		= utils.cfg_get_string(ini, SMART_TERRAIN_SECT, "sim_avail", 	self, false, "")
 --	if self.sim_avail ~= nil then
@@ -1339,7 +1340,8 @@ function se_smart_terrain:target_precondition(squad, need_to_dec_population)
 	if need_to_dec_population then
 		squad_count = squad_count - 1
 	end
-	if squad_count ~= nil and (self.max_population <= squad_count) then
+	local max_population = tonumber(self.max_population) or 0
+	if squad_count ~= nil and max_population <= squad_count then
 		--printf("smart terrain [%s] precondition returns false for squad [%s]", self:name(), squad:name())
 --		if tonumber(self.props["surge"]) > 0 and xr_conditions.surge_started() then
 --			printf("SURGE_SMART_STATS : smart [%s]\n max_population = %d \ squad_count = %d", self:name(), self.max_population, squad_count)
@@ -1530,8 +1532,9 @@ function se_smart_terrain:try_respawn()
 		return
 	end
 	local squad_count = smart_terrain_squad_count(self.board.smarts[self.id].squads)
-	if self.max_population <= squad_count then
-		respawn_diagnostic(self, 'population_cap', false, 'count=%s cap=%s', tostring(squad_count), tostring(self.max_population))
+	local max_population = tonumber(self.max_population) or 0
+	if squad_count ~= nil and max_population <= squad_count then
+		respawn_diagnostic(self, 'population_cap', false, 'count=%s cap=%s', tostring(squad_count), tostring(max_population))
 		return
 	end
 	local actor_pos, actor_dist_sqr = self:get_nearest_actor_pos(actors)
