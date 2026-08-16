@@ -226,7 +226,15 @@ function cl_on_use(packet)
 	if is_canned_food(section) then
 		local a = getLocalActor()
 		if has_can_opener(a) then
-			send_smoke(a:id(), "", section .. "_opened")
+			local opened_section = section .. "_opened"
+			-- Original Misery opens and consumes this variant immediately. The coop RPC
+			-- spawns it server-side, so explicitly run its camera/equipment effect here:
+			-- opened cans own the look-down sequence and hand/input restoration chain.
+			if actor_effects and actor_effects.use_item then
+				local ok, err = pcall(actor_effects.use_item, opened_section)
+				if not ok then mc_core.mc_log("[canfood] effect failed: %s", tostring(err)) end
+			end
+			send_smoke(a:id(), "", opened_section)
 			mc_core.mc_log("[canfood] '%s' opened -> eat %s_opened", tostring(section), tostring(section))
 		else
 			send_smoke(a:id(), section, "")

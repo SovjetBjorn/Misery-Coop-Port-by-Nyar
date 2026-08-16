@@ -215,12 +215,29 @@ end
 -- camera/sound FX, and the postproces_mod screen post-process. All guarded; client-side.
 function mp_actor_binder:use_inventory_item(obj)
 	if (obj == nil) then return end
+	-- This callback can arrive after the actor binder is torn down. Guard its
+	-- owner before dereferencing self.object (the smoking rail_guard CTD).
+	local owner = self and self.object
+	if not owner then
+		if mc_core then mc_core.mc_log("[itms] ignored use callback without binder object") end
+		return
+	end
+	local owner_ok, owner_id = pcall(function() return owner:id() end)
+	if not owner_ok then
+		if mc_core then mc_core.mc_log("[itms] ignored use callback with invalid binder object") end
+		return
+	end
+	local item_ok, section = pcall(function() return obj:section() end)
+	if not item_ok or not section then
+		if mc_core then mc_core.mc_log("[itms] ignored use callback with invalid item") end
+		return
+	end
 	local la = getLocalActor()
-	if mc_core then mc_core.mc_log("[itms] use_inv srv=%s cli_local=%s sec=%s", tostring(OnServer()), tostring(la ~= nil and self.object:id() == la:id()), tostring(obj:section())) end
-	if not (la and self.object:id() == la:id()) then
+	if mc_core then mc_core.mc_log("[itms] use_inv srv=%s cli_local=%s sec=%s", tostring(OnServer()), tostring(la ~= nil and owner_id == la:id()), tostring(section)) end
+	if not (la and owner_id == la:id()) then
 		-- coop: use_object fires SERVER-side for a remote client's actor. Don't run the
 		-- client handlers here (getLocalActor nil -> crash); RPC that client so they run there.
-		if OnServer() and mc_cooking and mc_cooking.notify_use then mc_cooking.notify_use(self.object:id(), obj) end
+		if OnServer() and mc_cooking and mc_cooking.notify_use then mc_cooking.notify_use(owner_id, obj) end
 		return
 	end
 	-- pcall each handler: a ported Misery handler that indexes a coop-nil (e.g. a stale
@@ -233,8 +250,9 @@ function mp_actor_binder:use_inventory_item(obj)
 	-- COOP ANIM FIX: skip the Misery use-FX cinematic for items XRMPE/AGWP already animates
 	-- (real consumable hud) -- else the engine eat anim + the Misery one DOUBLE (bread 'eat
 	-- twice + fade + ~15s cam lockout'). eat_* satiety is engine-applied. See mc_cooking.
-	if (not (mc_cooking and mc_cooking.has_agwp_use_anim and mc_cooking.has_agwp_use_anim(obj:section())) and actor_effects and actor_effects.use_item) then _pc(actor_effects.use_item, obj:section()) end
-	if (not (mc_cooking and mc_cooking.has_agwp_use_anim and mc_cooking.has_agwp_use_anim(obj:section())) and postproces_mod and postproces_mod.use_obj) then _pc(postproces_mod.use_obj, obj) end
+	local _agwp_anim = mc_cooking and mc_cooking.has_agwp_use_anim and mc_cooking.has_agwp_use_anim(section)
+	if (not _agwp_anim and actor_effects and actor_effects.use_item) then _pc(actor_effects.use_item, section) end
+	if (not _agwp_anim and postproces_mod and postproces_mod.use_obj) then _pc(postproces_mod.use_obj, obj) end
 end
 
 -- PORT (Misery_Coop_Port) [POWER_LIVE]: the coop mp_actor_binder:reinit binds
