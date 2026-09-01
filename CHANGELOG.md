@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.6 — 2026-09-01
+
+Crash fixes only — no balance or item changes. Same install as v0.5 (AGWP 2 first,
+then this mod). Existing saves keep working.
+
+- Fixed the crash when eating. Bread, canned food and sausage each crashed the
+  game the moment the eating animation started.
+- Fixed the crash when drawing or holstering the RG-6 grenade launcher. It was
+  buyable from traders, so anyone who bought one crashed on first use.
+- Fixed a client crash that could hit on respawn, or just after another player
+  joined, before the weather system had finished starting up.
+
 ## v0.5 — 2026-08-16
 
 **Install requirement changed: this build needs AGWP 2, not AGWP 1.**

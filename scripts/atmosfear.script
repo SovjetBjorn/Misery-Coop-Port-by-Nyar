@@ -43,10 +43,16 @@ function actor_on_update(se_actor)
 	end
 	if(se_actor.atmosfear) then
 		se_actor.atmosfear:update()
-	end
-	if not getLocalActor():has_info("atmosfear_default_console_settings_loaded") then
-		se_actor.atmosfear:loadDefaultConsoleSettings()
-		getLocalActor():give_info_portion("atmosfear_default_console_settings_loaded")
+		-- PORT (Misery_Coop_Port): client CTD, "attempt to index field 'atmosfear'
+		-- (a nil value)". This block sat OUTSIDE the guard above, so an actor_on_update
+		-- reaching a local actor whose actor_on_init has not run yet dereferenced a nil
+		-- se_actor.atmosfear. mc_player_loop gates init on `actor_inited`, which resets
+		-- on respawn / level change, so update can legitimately win the race. There is
+		-- nothing to load without the object anyway -- moved inside the guard.
+		if not getLocalActor():has_info("atmosfear_default_console_settings_loaded") then
+			se_actor.atmosfear:loadDefaultConsoleSettings()
+			getLocalActor():give_info_portion("atmosfear_default_console_settings_loaded")
+		end
 	end
 end
 
