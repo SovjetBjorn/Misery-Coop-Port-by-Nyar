@@ -59,6 +59,8 @@ local inv_check = {}
 
 local inv_arts_rad = 0
 local time_previous = 0
+local next_inventory_sync = 0
+local inventory_actor = nil
 local time_step = 287
 local rad_factor = 0.5  --Yasti: 1.0 = full radiation_restore_speed hit while in inventory,  change to 0.0 if you want no inventory radiation
 
@@ -73,6 +75,16 @@ end
 function actor_on_update()
 	if (getLocalActor() == nil) then return end
 	local tg = time_global()
+	local actor = getLocalActor()
+	if inventory_actor ~= actor then
+		inventory_actor = actor
+		next_inventory_sync = 0
+		time_previous = tg
+	end
+	if tg >= next_inventory_sync then
+		sync_inventory(actor)
+		next_inventory_sync = tg + 1000
+	end
 	if use_day_radiation then
 		day_radiation()
 	end
@@ -81,24 +93,30 @@ end
 
 
 function actor_on_item_take(obj)
-	local obj_id = obj:id()
-	local obj_sect = obj:section()
-	local obj_clsid = obj:clsid()
- 
-	if (obj_clsid == clsid.artefact) or (obj_clsid == clsid.artefact_s) then 
-		register_artefact(obj_sect, 1)
-    end
+	-- Binder callbacks may describe another player or arrive before local init.
+	-- Recount the actual local inventory after network ownership has settled.
+	next_inventory_sync = 0
 end
 
-
 function actor_on_item_drop(obj)
-	local obj_id = obj:id()
-	local obj_sect = obj:section()
-	local obj_clsid = obj:clsid()
+	next_inventory_sync = 0
+end
 
-	if (obj_clsid == clsid.artefact) or (obj_clsid == clsid.artefact_s) then 
-		register_artefact(obj_sect, -1)
-	end	
+function sync_inventory(actor)
+	inv_arts = {}
+	local total = 0
+	actor:iterate_inventory(function(owner, item)
+		local class = item:clsid()
+		if class == clsid.artefact or class == clsid.artefact_s then
+			local index = register_artefact(item:section(), 0, true)
+			if index > 0 then
+				inv_arts[index] = (inv_arts[index] or 0) + 1
+				total = total + cfg_arts[index].inv_rad
+			end
+		end
+	end, actor)
+	-- Container variants use their own configured radiation value (lead boxes: 0).
+	inv_arts_rad = math.max(0, total) + (use_day_radiation and day_rad_count == 2 and old_day_rad or 0)
 end
 
 
@@ -225,7 +243,7 @@ function register_artefact(obj_sec, number, in_container)
 		end
 	else -- If artefact is already in cfg_arts table
 		if not in_container then
-			inv_arts[f]=inv_arts[f] + number
+			inv_arts[f]=(inv_arts[f] or 0) + number
 			change_inv_arts_rad(number*cfg_arts[f].inv_rad)
 		end
 	end

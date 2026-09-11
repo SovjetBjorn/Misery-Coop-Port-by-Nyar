@@ -1,5 +1,11 @@
 # Changelog
 
+# v0.6.1 — 2026-09-11
+
+- Fixed helmet visor HUDs being suppressed when an existing settings file lacked the HUD option.
+- Rebuilt carried-artifact radiation from the local inventory after load, reconnect, and container changes.
+- Applied the Yanov station no-assault truce to co-op players, preventing hostile NPC fire inside the station.
+
 ## v0.6 — 2026-09-01
 
 Crash fixes only — no balance or item changes. Same install as v0.5 (AGWP 2 first,
